@@ -4,13 +4,13 @@
    <div class="ui breadcrumb">
       {% for item in breadcrumbs %}
          {% if forloop.last %}
-            <div id="active-page" class="active section">{% blocktranslate with b=item.name %}{{ b }}{% endblocktranslate %}</div>
+            <div id="active-page" class="active section">{{ item.name }}</div>
          {% else %}
             {% if item.resolved %}
-               <a class="section" href="{{ item.url }}">{{ b }}</a>
+               <a class="section" href="{{ item.url }}">{{ item.name }}</a>
                <i class="right angle icon divider"></i>
             {%else%}
-               <div class="section">{{ b }}{% endblocktranslate %}</div>
+               <div class="section">{{  }}</div>
                <i class="right angle icon divider"></i>
             {%endif%}
          {% endif %}
