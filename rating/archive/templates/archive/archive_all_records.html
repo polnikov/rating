@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load customfilters %}
+
+{% block title %}Архив{% endblock %}
+
+{% block content %}
+
+<div id="segments" class="ui basic segments">
+
+   <!-- Title & button -->
+   <div id="buttons-segment" class="ui basic segment">
+      <table class="ui very basic table">
+         <tbody>
+               <tr>
+                  <td><h2 style="font-family: Hack">Архивные записи</h2></td>
+                  <td class="right aligned"></td>
+               </tr>
+         </tbody>
+      </table>
+   </div>
+
+   <!-- Tabs -->
+   <div id="tabs-segment" class="ui basic segment">
+
+      <!-- Tabs title's -->
+      <div class="ui top attached tabular menu" style="font-family: Hack">
+         <a class="item active" data-tab="1"><i class="user friends icon"></i>Студенты</a>
+         <a class="item" data-tab="2"><i class="address book icon"></i>Оценки</a>
+         <a class="item" data-tab="3"><i class="folder icon"></i>Дисциплины</a>
+         <a class="item" data-tab="4"><i class="university icon"></i>Назначения</a>
+         <a class="item" data-tab="5"><i class="users icon"></i>Группы</a>
+      </div>
+
+      <!-- Tab 1 -->
+      <!-- Students -->
+      <div class="ui bottom attached tab segment active" data-tab="1">
+         <table id="students" class="ui selectable celled striped table">
+
+            <thead>
+               <tr class="center aligned">
+                  <th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
+                  <th>ФИО</th>
+                  <th class="collapsing">Группа</th>
+                  <th class="collapsing">Семестр</th>
+                  <th class="collapsing">Статус</th>
+                  <th class="collapsing">Примечание</th>
+               </tr>
+            </thead>
+
+            <tbody>
+               {% for student in students %}
+                  <tr>
+                     <td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
+                     <td class="collapsing"><a href="{{ student.get_absolute_url }}">{{ student.fullname }}</a></td>
+                     <td class="center aligned">{{ student.group }}</td>
+                     <td class="center aligned">{{ student.semester.semester }}</td>
+                     <td class="center aligned collapsing">
+                           {{ student.get_status_display }} 
+                           {% if student.tag %}
+                              <div class="ui small pink label">{{ student.tag }}</div>
+                           {% endif %}
+                     </td>
+                     <td>{{ student.comment|truncatechars:25 }}</td>
+                  </tr>
+               {% endfor %}
+            </tbody>
+         </table>
+      </div>
+
+      <!-- Tab 2 -->
+      <!-- Marks -->
+      <div class="ui bottom attached tab segment" data-tab="2">
+         <table id="marks" class="ui selectable celled striped table">
+               <thead>
+                  <tr class="center aligned">
+                     <th id="semester" class="collapsing">Семестр</th>
+                     <th class="collapsing">Группа</th>
+                     <th>Студент</th>
+                     <th>Дисциплина</th>
+                     <th>Форма контроля</th>
+                     <th name="mark" class="collapsing">Оценка</th>
+                     <th>Дата аттестации</th>
+                  </tr>
+               </thead>
+
+               <tbody>
+                  {% for item in results %}
+                     <tr style="padding-right: 0">
+                           <td class="collapsing center aligned" style="width: 30px">{{ item.groupsubject.subjects.semester.semester }}</td>
+                           <td class="collapsing center aligned">{{ item.groupsubject.groups }}</td>
+                           <td class="collapsing">
+                              <a href="{{ item.students.get_absolute_url }}">
+                                 {{ item.students.fullname }}
+                              </a>
+                           </td>
+                           <td>
+                              <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
+                                 {{ item.groupsubject.subjects.name|truncatechars:80 }}
+                              </a>
+                           </td>
+                           <td class="collapsing center aligned">{{ item.groupsubject.subjects.form_control }}</td>
+
+                           <td class="collapsing center aligned"><a href="{{ item.get_absolute_url }}">
+                              <div class="ui equal width grid collapsing center aligned">
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
+                              </div></a>
+                           </td>
+
+                           <td class="collapsing center aligned">{{ item.groupsubject.subjects.empty_att_date }}</td>
+                     </tr>
+                  {% endfor %}
+               </tbody>
+               <tfoot>
+                  <tr class="center aligned">
+                     <th>Семестр</th>
+                     <th>Группа</th>
+                     <th>Студент</th>
+                     <th>Дисциплина</th>
+                     <th>Форма контроля</th>
+                     <th>Оценка</th>
+                     <th>Дата аттестации</th>
+                  </tr>
+               </tfoot>
+         </table>
+      </div>
+
+      <!-- Tab 3 -->
+      <!-- Subjects -->
+      <div class="ui bottom attached tab segment" data-tab="3">
+         <table id="subjects" class="ui selectable celled striped table">
+
+            <thead>
+               <tr class="center aligned">
+                  <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+                  <th>Название</th>
+                  <th class="collapsing">Форма контроля</th>
+                  <th class="collapsing">Семестр</th>
+                  <th class="collapsing">Преподаватель {% if empty_teacher %}<div id="count-label" class="ui left pointing red tiny label">
+                     {{ empty_teacher }}</div>{% endif %}
+                  </th>
+                  <th class="collapsing">Дата аттестации {% if empty_date %}<div id="count-label" class="ui left pointing red tiny label">
+                     {{ empty_date }}</div>{% endif %}
+                  </th>
+                  <th class="collapsing center aligned">Кафедра</th>
+                  <th>Примечание</th>
+               </tr>
+            </thead>
+
+            <tbody>
+               {% for subject in subjects %}
+                  <tr>
+                     <td class="collapsing center aligned">{{ forloop.counter }}</td>
+                     <td class="collapsing">
+                        <a href="{{ subject.get_absolute_url }}">{{ subject.name|truncatechars:50 }}</a>
+                     </td>
+                     <td class="collapsing center aligned">{{ subject.form_control }}</td>
+                     <td class="collapsing center aligned">{{ subject.semester.semester }}</td>
+
+                     {% if subject.teacher %}
+                        <td>{{ subject.teacher }}</td>
+                     {% else %}
+                        <td class="negative collapsing center aligned"><i class="icon close"></i>
+                           {{ subject.empty_teacher }}
+                        </td>
+                     {% endif %}
+
+                     {% if subject.att_date %}
+                        <td class="collapsing center aligned">
+                           {{ subject.empty_att_date | date:"D d M Y" }}
+                        </td>
+                     {% else %}
+                        <td class="negative collapsing center aligned"><i class="icon close"></i>
+                           {{ subject.empty_att_date }}
+                        </td>
+                     {% endif %}
+
+                     {% if subject.cathedra %}
+                        <td class="collapsing center aligned">
+                           {{ subject.cathedra.short_name|default_if_none:"" }}
+                        </td>
+                     {% else %}
+                        <td class="negative collapsing center aligned">
+                           <i class="icon close"></i> {{ subject.empty_cathedra }}
+                        </td>
+                     {% endif %}
+                     <td class="collapsing">{{ subject.comment|truncatechars:20 }}</td>
+                  </tr>
+               {% endfor %}
+            </tbody>
+            <tfoot>
+               <tr class="center aligned">
+                  <th></th>
+                  <th>Название</th>
+                  <th >Форма контроля</th>
+                  <th >Семестр</th>
+                  <th>Преподаватель</th>
+                  <th>Дата аттестации</th>
+                  <th>Кафедра</th>
+                  <th>Примечание</th>
+               </tr>
+            </tfoot>
+         </table>
+      </div>
+      <!-- Tab 4 -->
+      <!-- Group-Subjects -->
+      <div class="ui bottom attached tab segment" data-tab="4">
+         <table id="groupsubjects" class="ui selectable celled striped table">
+            <thead>
+               <tr class="center aligned">
+                  <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+                  <th>Дисциплина</th>
+                  <th class="collapsing">Форма контроля</th>
+                  <th class="collapsing">Группа</th>
+                  <th class="collapsing">Семестр</th>
+                  <th class="collapsing">Кафедра</th>
+               </tr>
+            </thead>
+            <thead>
+               <tr class="center aligned">
+                  <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+                  <th>Дисциплина</th>
+                  <th class="collapsing">Форма контроля</th>
+                  <th class="collapsing">Группа</th>
+                  <th class="collapsing">Семестр</th>
+                  <th class="collapsing">Кафедра</th>
+               </tr>
+            </thead>
+
+            <tbody>
+                  {% for item in group_subjects %}
+                     <tr>
+                        <td class="collapsing center aligned">{{ forloop.counter }}</td>
+                        <td><a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name }}</a></td>
+                        <td class="center aligned collapsing">{{ item.subjects.form_control }}</td>
+                        <td class="center aligned collapsing">{{ item.groups }}</td>
+                        <td class="center aligned collapsing">{{ item.subjects.semester.semester }}</td>
+                        <td class="center aligned negative collapsing">
+                           <i class="icon close"></i>{{ item.subjects.empty_cathedra }}
+                        </td>
+                     </tr>
+                  {% endfor %}
+            </tbody>
+            <tfoot>
+               <tr class="center aligned">
+                  <th>11<th>
+                  <th>Дисциплина</th>
+                  <th>Форма контроля</th>
+                  <th>Группа</th>
+                  <th>Семестр</th>
+                  <th>Кафедра</th>
+               </tr>
+            </tfoot>
+         </table>
+      </div>
+      <!-- Tab 5 -->
+      <!-- Groups -->
+      <div class="ui bottom attached tab segment" data-tab="5">
+         <table id="groups" class="ui selectable celled striped table">
+            <thead>
+               <tr class="center aligned">
+                  <th><i class="hashtag small icon"></i></th>
+                  <th>Название</th>
+                  <th>Направление</th>
+                  <th>Профиль | Специализация</th>
+                  <th>Шифр</th>
+               </tr>
+            </thead>
+
+            <tbody>
+                  {% for group in groups %}
+                     <tr>
+                        <td class="center aligned" data-tooltip="{{ group.level }}" data-position="left center" data-inverted="">{{ forloop.counter }}</td>
+                        <td class="collapsing">{{ group.name }}</td>
+                        <td>{{ group.direction }}</td>
+                        <td>{{ group.profile }}</td>
+                        <td class="center aligned">{{ group.code }}</td>
+                     </tr>
+                  {% endfor %}
+            </tbody>
+            <tfoot>
+               <tr class="center aligned">
+                  <th></th>
+                  <th>Название</th>
+                  <th>Направление</th>
+                  <th>Профиль | Специализация</th>
+                  <th>Шифр</th>
+               </tr>
+            </tfoot>
+         </table>
+      </div>
+   </div>
+</div>
+
+<script type="text/javascript" src="{% static 'js\script.js' %}"></script>
+
+<!-- DataTable -->
+<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
+
+<script>
+// tabs
+$('.menu .item').tab();
+
+// DataTables
+$(document).ready(function() {
+   let firstRowStudents = $('#students thead tr')[0];
+   let secondRowStudents = firstRowStudents.cloneNode(true);
+   firstRowStudents.after(secondRowStudents);
+   $('#students thead tr + tr th').each( function(i, elem) {
+      let cellWidth = elem.offsetWidth;
+      let inputWidth = cellWidth - 15;
+      if(i != 0) {
+         $(this).html('<div class="ui input">' + '<input style=width: "' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>');
+      } else {
+         $(this).html("");
+      };
+   });
+   document.querySelector('#students').style.width = "100%";
+   // DataTable
+   let studentsTable = $('#students').DataTable({
+      language: {
+         lengthMenu: '_MENU_ записей на страницу',
+         zeroRecords: 'Записей нет...',
+         info: 'Всего записей: _MAX_',
+         infoEmpty: '',
+         infoFiltered: 'Найдено: _TOTAL_',
+         search: '',
+         searchPlaceholder: 'поиск',
+         paginate: {
+            first:    '«',
+            previous: '‹',
+            next:     '›',
+            last:     '»'
+         }
+      },
+      lengthMenu: [
+         [20, 50, -1],
+         [20, 50, 'Все']
+      ],
+      pageLength: 20,
+      columnDefs: [
+         { searchable: false, targets: 0 }
+      ],
+   });
+   // Filter event handler
+   $(studentsTable.table().container()).on('keyup', 'thead input', function() {
+      studentsTable
+         .column($(this).data('index'))
+         .search(this.value)
+         .draw();
+   });
+
+   let firstRowMarks = $('#marks thead tr')[0];
+   let secondRowMarks = firstRowStudents.cloneNode(true);
+   firstRowMarks.after(secondRowMarks);
+   $('#marks thead tr + tr th').each( function(i, elem) {
+      let cellWidth = elem.offsetWidth;
+      let inputWidth = cellWidth - 15;
+      $(this).html('<div class="ui input">' + '<input style=max-width: "' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>');
+   });
+   //document.querySelector('#marks').style.width = "100%";
+   // DataTable
+   let marksTable = $('#marks').DataTable({
+      language: {
+         lengthMenu: '_MENU_ записей на страницу',
+         zeroRecords: 'Записей нет...',
+         info: 'Всего записей: _MAX_',
+         infoEmpty: '',
+         infoFiltered: ' | _TOTAL_ найдено',
+         search: '',
+         searchPlaceholder: 'поиск',
+         paginate: {
+            first:    '«',
+            previous: '‹',
+            next:     '›',
+            last:     '»'
+         }
+      },
+      lengthMenu: [
+         [20, 50, -1],
+         [20, 50, 'Все']
+      ],
+      pageLength: 20,
+      autoWidth: false,
+      columnDefs: [
+         { "width": "50px", "targets": 0 },
+         { "width": "50px", "targets": 1 },
+         { "width": "100px", "targets": 4 },
+      ],
+   });
+   // Filter event handler
+   $(marksTable.table().container()).on('keyup', 'thead input', function() {
+      marksTable
+         .column($(this).data('index'))
+         .search(this.value)
+         .draw();
+   });
+
+   $('#subjects tfoot th').each( function(i) {
+      if(i != 0) {
+         $(this).html('<div class="ui input">' + '<input style="min-width: 80px; max-width: 100px" type="text" data-index="' + i + '" /></div>');
+      };
+   });
+   // DataTable
+   let subjectsTable = $('#subjects').DataTable({
+      language: {
+         lengthMenu: '_MENU_ записей на страницу',
+         zeroRecords: 'Записей нет...',
+         info: 'Всего записей: _MAX_',
+         infoEmpty: '',
+         infoFiltered: 'Найдено: _TOTAL_',
+         search: '',
+         searchPlaceholder: 'поиск',
+         paginate: {
+            first:    '«',
+            previous: '‹',
+            next:     '›',
+            last:     '»'
+         }
+      },
+      lengthMenu: [
+         [20, 50, -1],
+         [20, 50, 'Все']
+      ],
+      pageLength: 20,
+      columnDefs: [
+         { searchable: false, targets: 0 }
+      ],
+   });
+   // Filter event handler
+   $(subjectsTable.table().container()).on('keyup', 'tfoot input', function() {
+      subjectsTable
+         .column($(this).data('index'))
+         .search(this.value)
+         .draw();
+   });
+
+   $('#groupsubjects tfoot th').each( function(i) {
+      if(i != 0) {
+         $(this).html('<div class="ui input">' + '<input style="min-width: 80px; max-width: 100px" type="text" data-index="' + i + '" /></div>');
+      };
+   });
+   // DataTable
+   /*let groupSubjectsTable = $('#groupsubjects').DataTable({
+      language: {
+         lengthMenu: '_MENU_ записей на страницу',
+         zeroRecords: 'Записей нет...',
+         info: 'Всего записей: _MAX_',
+         infoEmpty: '',
+         infoFiltered: 'Найдено: _TOTAL_',
+         search: '',
+         searchPlaceholder: 'поиск',
+         paginate: {
+            first:    '«',
+            previous: '‹',
+            next:     '›',
+            last:     '»'
+         }
+      },
+      lengthMenu: [
+         [20, 50, -1],
+         [20, 50, 'Все']
+      ],
+      columnDefs: [
+         { searchable: false, targets: 0 }
+      ],
+      pageLength: 20,
+   });
+   // Filter event handler
+   $(groupSubjectsTable.table().container()).on('keyup', 'tfoot input', function() {
+      groupSubjectsTable
+         .column($(this).data('index'))
+         .search(this.value)
+         .draw();
+   });
+*/
+
+   let firstRowGroups = $('#groups thead tr')[0];
+   let secondRowGroups = firstRowGroups.cloneNode(true);
+   firstRowGroups.after(secondRowGroups);
+   $('#groups thead tr th').each( function(i) {
+      if(i != 0) {
+         $(this).html('<div class="ui input">' + '<input style="min-width: 80px; max-width: 100px" type="text" data-index="' + i + '" /></div>');
+      } else {
+         $(this).html("");
+      };
+   });
+   document.querySelector('#groups').style.width = "100%";
+   // DataTable
+   let groupsTable = $('#groups').DataTable({
+      language: {
+         lengthMenu: '_MENU_ записей на страницу',
+         zeroRecords: 'Записей нет...',
+         info: 'Всего записей: _MAX_',
+         infoEmpty: '',
+         infoFiltered: 'Найдено: _TOTAL_',
+         search: '',
+         searchPlaceholder: 'поиск',
+         paginate: {
+            first:    '«',
+            previous: '‹',
+            next:     '›',
+            last:     '»'
+         }
+      },
+      lengthMenu: [
+         [20, 50, -1],
+         [20, 50, 'Все']
+      ],
+      pageLength: 20,
+      columnDefs: [
+         { searchable: false, targets: 0 }
+      ],
+   });
+   // Filter event handler
+   $(groupsTable.table().container()).on('keyup', 'thead input', function() {
+      groupsTable
+         .column($(this).data('index'))
+         .search(this.value)
+         .draw();
+   });
+
+
+
+
+
+
+
+
+
+
+
+});
+
+
+
+
+</script>
+
+{% endblock %}

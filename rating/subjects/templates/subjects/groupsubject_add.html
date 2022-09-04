@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load semanticui %}
+
+{% load static %}
+
+{% block title %}Добавить назначение{% endblock %}
+
+{% block content %}
+
+<div class="ui container" style="font-family: Hack; padding-top: 50px">
+    
+	<div class="ui segments">
+        <div class="ui center aligned secondary segment">
+            <h3 style="font-family: Hack">Добавить назначение</h3>
+        </div>
+
+        <!-- Form -->
+		<div class="ui segment">
+            <form action="{% url 'subjects:groupsubject-add' %}" method="post">
+                {% csrf_token %}
+                <div class="ui large form">
+                    <div class="required field">
+                        {% render_field form.subjects placeholder="Выбрать дисципилину" %}
+                    </div>
+                    <div class="required field">
+                        {% render_field form.groups placeholder="Выбрать группу" %}
+                    </div>
+                </div>
+            </div>
+                <!-- Button's -->
+                <div class="ui right aligned secondary segment">
+                    <a href="{% url 'subjects:groupsubjects' %}">
+                        <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                    </a>
+                    <button type="submit" class="positive ui button" style="font-family: Hack"><i class="save icon"></i>Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

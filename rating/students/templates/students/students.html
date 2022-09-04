@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load customfilters %}
+
+{% block title %}Студенты{% endblock %}
+
+{% block content %}
+
+<div id="segments" class="ui basic segments">
+
+	<!-- Title & button -->
+	<div id="buttons-segment" class="ui basic segment">
+		
+		<table class="ui very basic table">
+			<tbody>
+				<tr>
+					<td><h2 style="font-family: Hack">Студенты</h2></td>
+					<td class="right aligned">
+						<a href="{% url 'students:import' %}">
+							<button id="import-button" class="ui orange small button" style="font-family: Hack"><i class="icon download"></i>Импорт CSV</button>
+						</a>
+						<a href="{% url 'students:add' %}">
+							<button id="add-button" class="ui positive small button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
+						</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Table -->
+	<div id="datatable-segment" class="ui basic segment">
+		{% if students_list %}
+			<div class="ui segment">
+				<table id="students" class="ui selectable celled striped table">
+
+					<thead>
+						<tr class="center aligned">
+							<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
+							<th>ФИО
+								<div id="count-label" class="ui left pointing grey tiny label">{{ num_students }}</div></th>
+							<th class="collapsing">Группа</th>
+							<th class="collapsing">Семестр</th>
+							<th class="collapsing">Статус</th>
+							<th class="collapsing">Гражданство</th>
+							<th class="collapsing">Примечание</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						{% for student in students_list %}
+							<tr>
+								<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
+								<td class="collapsing">{% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %}{% if student.is_archived %}<i class="archive brown icon"></i>{% endif %}
+									<a href="{{ student.get_absolute_url }}">
+										{{ student.fullname }}
+									</a>
+								</td>
+								<td class="center aligned">{{ student.group }}</td>
+								<td class="center aligned">{{ student.semester.semester }}</td>
+
+								{% if student.get_status_display == 'Отчислен' %}
+								<td class="center aligned negative collapsing"><i class="icon close"></i>
+									{{ student.get_status_display }}
+								</td>
+								{% elif student.get_status_display == 'Академический отпуск' %}
+									<td class="center aligned warning collapsing"><i class="icon hourglass half"></i>
+										{{ student.get_status_display }}
+									</td>
+								{% elif student.get_status_display == 'Выпускник' %}
+									<td class="center aligned grey collapsing"><i class="icon rocket"></i>
+										{{ student.get_status_display }}
+									</td>
+								{% else %}
+									<td class="center aligned collapsing"><i class="icon checkmark"></i>
+										{{ student.get_status_display }} {% if student.tag %}<div class="ui small pink label">{{ student.tag }}</div>{% endif %}
+									</td>
+								{% endif %}
+
+								<td class="center aligned">{{ student.citizenship }}</td>
+
+								<td>{{ student.comment|truncatechars:25 }}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+
+				</table>
+			</div>
+		{% else %}
+			{% include 'empty_records.html' %}
+		{% endif %}
+	</div>
+</div>
+
+<script type="text/javascript" src="{% static 'js\script.js' %}"></script>
+
+<!-- DataTable -->
+<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
+
+<script type="text/javascript">
+
+// DataTable
+$(document).ready(function() {
+	let firstRow = $('#students thead tr')[0];
+	let secondRow = firstRow.cloneNode(true);
+	firstRow.after(secondRow);
+
+	let filterColumns = $('#students thead tr')[0].children;
+	for (let i = 0; i < filterColumns.length; i++) {
+		let inputWidth = filterColumns[i].offsetWidth - 15;
+		if(i != 0) {
+			filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
+		} else {filterColumns[i].innerHTML = ""};
+	};
+
+	document.querySelector('#students').style.width = "100%";
+	// DataTable
+	var table = $('#students').DataTable({
+		language: {
+			lengthMenu: '_MENU_ записей на страницу',
+			zeroRecords: 'Записей нет...',
+			info: 'Всего записей: _MAX_',
+			infoEmpty: '',
+			infoFiltered: 'Найдено: _TOTAL_',
+			search: '',
+			searchPlaceholder: 'поиск',
+			paginate: {
+            first:    '«',
+            previous: '‹',
+            next:     '›',
+            last:     '»'
+         }
+		},
+		lengthMenu: [
+         [20, 50, -1],
+         [20, 50, 'Все']
+      ],
+      pageLength: 20,
+      columnDefs: [
+         { searchable: false, targets: 0 }
+      ],
+	});
+
+	// Filter event handler
+	$(table.table().container()).on('keyup', 'thead input', function() {table
+		.column($(this).data('index'))
+		.search(this.value)
+		.draw();
+	});
+
+	// Очистка фильтров двойным кликом выше head
+   $(document).on("dblclick",  ".ui.stackable.grid", function() {
+      let inputs = document.getElementsByName("filter");
+      inputs.forEach(e => {
+         e.value = "";
+      });
+      table.search('');
+      table.columns().search('').draw();
+   });
+	changeDatatableInputFont();
+});
+
+deletePaddingTopBottomForTitleBlock();
+deletePaddingTopForDatatableSegment();
+
+</script>
+
+{% endblock %}

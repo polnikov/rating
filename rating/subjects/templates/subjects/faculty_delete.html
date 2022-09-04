@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% block title %}Удалить {{ faculty.name }}{% endblock %}
+
+{% block content %}
+
+<div class="ui container" style="padding-top: 50px; width: 60%">
+    
+	<div class="ui segments">
+        <div class="ui center aligned inverted red segment">
+            <h3 style="font-family: Hack">Удалить факультет</h3>
+        </div>
+
+        <!-- Form -->
+        <div class="ui center aligned segment">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="ui container">
+                        <table class="ui very basic table">
+                            <tbody>
+                                <tr>
+                                    <td class="collapsing"><h4 style="font-family: Hack">Вы уверены, что хотите удалить факультет:</h4></td>
+                                    <td class="left aligned">
+                                        <div class="ui large label">
+                                            {{ faculty.name }} ({{ faculty.short_name }})
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Button's -->
+                    <table class="ui very basic table">
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td class="right aligned">
+                                    <a href="{% url 'subjects:faculties' %}">
+                                        <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                                    </a>
+                                    <button type="submit" class="ui red button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load customfilters %}
+
+{% block title %}{{ subject.name }}{% endblock %}
+
+{% block content %}
+
+<div id="segments" class="ui basic segments">
+    <!-- Title & button -->
+    <div id="buttons-segment" class="ui basic segment">
+        <table class="ui very basic table">
+            <tbody>
+                <tr>
+                    <td><h3 style="font-family: Hack">{% if subject.is_archived %}<i class="archive brown icon"></i>{% endif %}{{ subject.name|truncatechars:70 }}</h3></td>
+                    <td class="right aligned">
+                        <a href="{% url 'subjects:delete' subject.id %}">
+                            <button id="trash-button" type="button" class="ui red small button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button></a>
+                        <a href="{% url 'subjects:subjects' %}">
+                            <button id="back-button" class="ui grey small button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
+                        <a href="{% url 'subjects:update' subject.id %}">
+                            <button id="update-button" type="submit" class="positive ui small button" style="font-family: Hack"><i class="sync alternate icon"></i>Обновить</button></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tabs -->
+    <div id="tabs-segment" class="ui basic segment">
+
+        <!-- Tabs title's -->
+        <div class="ui top attached tabular menu" style="font-family: Hack">
+            <a class="item active" data-tab="first"><i class="info icon"></i>Сводная информация</a>
+            <a class="item" data-tab="second"><i class="users icon"></i></i>Студенты</a>
+            <a class="item" data-tab="third"><i class="history icon"></i>История изменений</a>
+        </div>
+
+        <!-- Tab 1 -->
+        <!-- Details -->
+        <div class="ui bottom attached tab segment active" data-tab="first">
+            <table class="ui definition table">
+                <tbody>
+                    <tr>
+                        <td>Семестр</td>
+                        <td><div id="semester-label" class="ui grey basic small label">{{ subject.semester.semester }}</div></td>
+                    </tr>
+                    <tr>
+                        <td class="three wide">Группы</td>
+                        <td>
+                            {% for group in groups %}
+                                <a id="groups-in-subject" class="ui grey small basic label" onclick="window.location.href = '{% url 'groups:detail' groupname=group.groups semester=subject.semester.semester %}'">
+                                    {{ group.groups }}-{{ subject.semester.semester }}
+                                </a>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Форма контроля</td>
+                        <td>{{ subject.get_form_control_display }}</td>
+                    </tr>
+                    <tr>
+                        <td>Факультет</td>
+                            {% if subject.cathedra.faculty.short_name and subject.cathedra.faculty.name is not None %}
+                        <td>
+                            {{ subject.cathedra.faculty.name }}
+                        </td>
+                        {% else %}
+                            <td class="negative collapsing">
+                                <i class="icon close"></i> Нет
+                            </td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>Кафедра</td>
+                        {% if subject.cathedra %}
+                            <td>
+                                {{ subject.cathedra|default_if_none:"" }}
+                            </td>
+                        {% else %}
+                            <td class="negative collapsing">
+                                <i class="icon close"></i> Нет
+                            </td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>Преподаватель</td>
+                        {% if subject.teacher %}
+                            <td class="positive">
+                                <i class="icon checkmark"></i>
+                                {{ subject.teacher }}
+                            </td>
+                        {% else %}
+                            <td class="negative">
+                                <i class="icon close"></i>
+                                {{ subject.empty_teacher }}
+                            </td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>Дата аттестации</td>
+                            {% if subject.att_date %}
+                        <td>
+                            {{ subject.att_date|date:"l" }}, 
+                            {{ subject.empty_att_date }}
+                        </td>
+                        {% else %}
+                            <td class="negative">
+                                <i class="icon close"></i>
+                                {{ subject.empty_att_date }}
+                            </td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>Примечание</td>
+                        <td>{{ subject.comment }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tab 2 -->
+        <!-- Students -->
+        <div class="ui bottom attached tab segment" data-tab="second">
+            <table id="subject-students" class="ui selectable celled striped table">
+                <thead>
+                    <tr class="center aligned">
+                        <th class="collapsing">Семестр</th>
+                        <th class="collapsing">Группа</th>
+                        <th>ФИО</th>
+                        <th>Преподаватель</th>
+                        <th>Дата аттестации</th>
+                        <th name="mark">Оценка</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td class="collapsing center aligned">{{ student.groupsubject.subjects.semester.semester }}</td>
+                            <td class="collapsing center aligned">
+                                <a href="{% url 'groups:detail' groupname=student.groupsubject.groups semester=student.groupsubject.subjects.semester.semester %}">
+                                    {{ student.groupsubject.groups }}
+                                </a>
+                            </td>
+                            <td>{% if student.students.is_ill %}<i class="heart broken red icon"></i>{% endif %}
+                                <a href="{{ student.students.get_absolute_url }}">
+                                    {{ student.students.fullname }}
+                                </a>
+                            </td>
+                            <td class="collapsing center aligned">{{ student.groupsubject.subjects.empty_teacher }}</td>
+                            <td class="collapsing center aligned">{{ student.groupsubject.subjects.empty_att_date }}</td>
+
+                            <td class="two wide center aligned">
+                                <div class="ui equal width grid center aligned">
+                                        <div name="mark" class="column">{{ student.mark|slice:":1"|unpack_mark }}</div>
+                                        <div name="mark" class="column">{{ student.mark|slice:"1:2"|unpack_mark }}</div>
+                                        <div name="mark" class="column">{{ student.mark|slice:"2:3"|unpack_mark }}</div>
+                                </div>
+                            </td>
+
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- History -->
+        <div class="ui bottom attached tab segment" data-tab="third">
+            <table class="ui unstackable table">
+                <tbody>
+                    <tr class="blue">
+                        <td class="left aligned"><i class="plus circle icon"></i> {{ subject.created_date }}</td>
+                        <td class="right aligned"><i class="sync alternate icon"></i> {{ subject.updated_date }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% if history %}
+                <table id="subject-history" class="ui selectable celled striped table">
+                    <thead>
+                        <tr class="center aligned">
+                            <th>Дата и время</th>
+                            <th>Автор</th>
+                            <th>Свойство</th>
+                            <th>Было</th>
+                            <th>Стало</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for record in history %}
+                            <tr>
+                                <td class="collapsing">{{ record.timestamp|date:"d.m.y | H:i:s" }}</td>
+                                <td class="collapsing">{{ record.user_id|get_username }}</td>
+                                <td class="collapsing">{{ record.field }}</td>
+                                {% if record.field == 'Attestaion date' %}
+                                    <td>{{ record.old_value|date_or_else }}</td>
+                                    <td>{{ record.new_value|date_or_else }}</td>
+                                {% else %}
+                                    <td>{{ record.old_value|default:"---"|truncatechars:40 }}</td>
+                                    <td>{{ record.new_value|default:"---"|truncatechars:40 }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="ui one column centered grid">
+                    <div class="one column"></div>
+                    <div class="ui center aligned container">
+                        <p>Изменений пока нет...</p>
+                    </div>
+                    <div class="one column"></div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// tabs
+$('.menu .item').tab();
+
+// datatables
+$(document).ready(function () {
+    $('#subject-history').DataTable({
+        language: {
+            lengthMenu: '_MENU_ записей на страницу',
+            zeroRecords: 'Записей нет...',
+            info: 'Всего записей: _MAX_',
+            infoEmpty: '',
+            infoFiltered: 'Найдено: _TOTAL_',
+            search: '',
+            searchPlaceholder: 'поиск',
+            paginate: {
+                first:    '«',
+                previous: '‹',
+                next:     '›',
+                last:     '»'
+            }
+        },
+        lengthMenu: [
+            [20, 50, -1],
+            [20, 50, 'Все']
+        ],
+        pageLength: 20,
+        autoWidth: false,
+        fixedColumns: true,
+        columnDefs: [
+            { width: 170, targets: 0 },
+            { width: 130, targets: 1 },
+            { width: 130, targets: 2 },
+        ],
+        order: [[0, 'desc']]
+    });
+});
+
+// datatables
+$(document).ready(function () {
+    $('#subject-students').DataTable({
+        language: {
+            lengthMenu: '_MENU_ записей на страницу',
+            zeroRecords: 'Записей нет...',
+            info: 'Всего записей: _MAX_',
+            infoEmpty: '',
+            infoFiltered: 'Найдено: _TOTAL_',
+            search: '',
+            searchPlaceholder: 'поиск',
+            paginate: {
+                first:    '«',
+                previous: '‹',
+                next:     '›',
+                last:     '»'
+            }
+        },
+        lengthMenu: [
+            [20, 50, -1],
+            [20, 50, 'Все']
+        ],
+        pageLength: 20,
+        autoWidth: false,
+        fixedColumns: true,
+        columnDefs: [
+            { width: 50, targets: 0 },
+            { width: 50, targets: 1 },
+            { width: 150, targets: 5 },
+        ],
+    });
+});
+
+// убрать боковой отступ для ячеек с оценками
+let thElements = document.getElementsByName("mark");
+thElements.forEach(element => {
+    element.style.paddingLeft = '0';
+    element.style.paddingRight = '0';
+});
+
+// убрать нижний отступ сегмента с заголовком и кнопками
+let segments = document.getElementById("segments");
+segments.style.paddingBottom = '0';
+
+// убрать верхний отступ сегмента с вкладками
+let tabsSegment = document.getElementById("tabs-segment");
+tabsSegment.style.paddingTop = '0';
+</script>
+
+{% endblock %}

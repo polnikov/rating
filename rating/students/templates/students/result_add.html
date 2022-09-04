@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% block content %}
+
+{% load static %}
+
+{% load semanticui %}
+
+<body>
+
+<div class="ui container" style="font-family: Hack; padding-top: 50px">
+	<div class="ui segments">
+      <div class="ui center aligned secondary segment">
+         <h3 style="font-family: Hack">Добавить оценку</h3>
+      </div>
+
+      <!-- Form -->
+   <div class="ui left aligned segment">
+         <form id="form" action="{% url 'students:result-add' %}" method="post">
+               {% csrf_token %}
+               <div class="ui large form">
+                  <div class="required field">
+                     <label>Студент</label>
+                     {% render_field form.students _no_label='True' placeholder='Выбрать...' _style='ChoiceField' %}
+                  </div>
+                  <div class="required field">
+                     <label>Дисциплина</label>
+                     {% render_field form.groupsubject _no_label='True' placeholder='Выбрать...' %}
+                  </div>
+                  <div class="required field" style="width: 150px">
+                     <label>Оценки</label>
+                     {% render_field form.mark _no_label='True' _help='True' %}
+                  </div>
+
+                  <div class="ui hidden divider"></div>
+
+                  <div class="inline fields">
+                     <label>Тэг</label>
+                     {% for tag in form.tag %}
+                        <div class="field">
+                           <div class="ui basic label">{{ tag }}</div>
+                        </div>
+                     {% endfor %}
+                  </div>
+               </div>
+      </div>
+
+      <!-- Button's -->
+      <div class="ui right aligned secondary segment">
+         <a href="{% url 'students:results' %}">
+               <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button></a>
+         <a href="{% url 'students:results' %}">
+               <button type="submit" class="positive ui button" style="font-family: Hack"><i class="save icon"></i>Сохранить</button></a>
+      </div>
+         </form>
+   </div>
+</div>
+
+<!-- Scripts -->
+<script type="text/javascript" src="{% static 'js\script.js' %}"></script>
+<script type="text/javascript">
+   changeFormsInputFont();
+</script>
+
+</body>
+{% endblock %}
+

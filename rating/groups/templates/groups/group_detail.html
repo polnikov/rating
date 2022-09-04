@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load customfilters %}
+
+{% block title %}{{ group }}-{{ semester }}{% endblock %}
+
+{% block content %}
+
+<!-- Title & button -->
+<div id="segments" class="ui basic segment" style="padding-bottom: 0">
+   <table class="ui very basic table">
+      <tbody>
+         <tr>
+            <td class="collapsing">
+               <div class="ui steps">
+                  <div id="group-info-label" class="active step">
+                     <div class="content">
+                        <div id="groupname" class="title"><h2 style="font-family: Hack">{{ group }}</h2></div>
+                        <div class="description"><font size="2px">
+                           {{ group.code }}<br>
+                           {{ group.direction }}<br>
+                           {{ group.profile }}</font>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </td>
+            <td id="back-button-cell" class="top aligned" colspan="2">
+               <button id="transfer" class="ui green small button" style="font-family: Hack; ; display: none" onclick="transferStudents()"><i class="level up alternate icon"></i>Перевести</button>
+               <button id="cancel-button" class="ui red small button" style="font-family: Hack; display: none" onclick="closeCheckboxColumn()"><i class="times circle icon"></i></i>Отмена</button>
+               <button id="transfer-button" class="ui violet small button" style="font-family: Hack" onclick="openCheckboxColumn()"><i class="level up alternate icon"></i>Перевод</button>
+               <a href="{% url 'groups:cards' %}">
+                  <button id="back-button" class="ui grey small button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
+            </td>
+         </tr>
+      </tbody>
+   </table>
+   <!-- Group info -->
+   <table class="ui very basic collapsing table">
+      <tbody>
+         <tr>
+            <td>
+               <div class="ui grey basic large label">
+                  Курс
+                  <div class="detail">
+                     {% autoescape off %}
+                        {{ course }}
+                     {% endautoescape %}
+                  </div>
+               </div>
+            </td>
+            <td>
+               <div class="ui grey basic large label">
+                  Семестр
+                  <div id="semester" class="detail">{{ semester }}</div>
+               </div>
+            </td>
+            <td>
+               <div class="ui grey basic large label">
+                  Численность
+                  <div class="detail">{{ students.count }}</div>
+               </div>
+            </td>
+         </tr>
+      </tbody>
+   </table>
+</div>
+
+<div class="ui basic segment">
+   {% if students or subjects %}
+
+   <!-- Table -->
+      <table id="group-detail-table" class="ui structured selectable celled table">
+         <!-- Head -->
+         <thead>
+            <tr>
+               <th id="hash" class="collapsing center aligned" rowspan="2">#</th>
+               <th class="collapsing center aligned" rowspan="2">
+                  <span class="rotated-text left aligned">Основа обучения</span>
+               </th>
+               <th id="fio" class="center aligned" rowspan="2">ФИО</th>
+               <th class="collapsing center aligned" rowspan="2">
+                  <span class="rotated-text left aligned">Стипендия</span>
+               </th>
+               <th name="att" class="collapsing center aligned" rowspan="2">
+                  <span class="rotated-text left aligned">Сессия</span>
+               </th>
+               <th name="att" class="collapsing center aligned" rowspan="2">
+                  <span class="rotated-text left aligned">Пересдача</span>
+               </th>
+               <th name="att" class="collapsing center aligned" rowspan="2">
+                  <span class="rotated-text left aligned">Комиссия</span>
+               </th>
+               {% if subjects %}
+                  {% for item in subjects %}
+                     <th name="subjects" class="center aligned">
+                        <span class="rotated-text left aligned"><a style="color: black" href="{{ item.subjects.get_absolute_url }}">
+                              {{ item.subjects.name|truncatewords:10 }}
+                        </a></span>
+                     </th>
+                  {% endfor %}
+               {% endif %}
+            </tr>
+            <tr>
+               {% if subjects %}
+                  {% for item in subjects %}
+                     <th name="formcontrol" class="one wide center aligned tooltip">
+                        {{ item.subjects.form_control|short_form_control }}
+                        <div class="tooltiptext">
+                           {% if item.subjects.att_date %}{{ item.subjects.att_date|date:"d.m.Y" }}{% else %}{{ item.subjects.empty_att_date}}{% endif %}<br>{{ item.subjects.empty_teacher }}
+                        </div>
+                     </th>
+                  {% endfor %}
+               {% endif %}
+            </tr>
+         </thead>
+
+         <!-- Body -->
+         <tbody id="groupmarks">
+            <tr>
+               {%csrf_token %}
+               {% for student in students %}
+                  <tr>
+                     <td name="number" class="collapsing center aligned" data-student-id="{{ student.student_id }}">{{ forloop.counter }}</td>
+                     <td name="has-negative" class="collapsing center aligned">{{ student.basis|short_basis }}</td>
+                     <td name="student" class="collapsing"><a href="{{ student.get_absolute_url }}">{% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %} {{ student.fullname }}</a> {% if student.tag %}<div class="ui tiny pink label">{{ student.tag }}</div>{% endif %}</td>
+
+                     <!-- Statistics and Marks -->
+
+                  </tr>
+               {% endfor %}
+            </tr>
+         </tbody>
+      </table>
+
+   {% else %}
+      {% include 'empty_records.html' %}
+   {% endif %}
+</div>
+
+<script type="text/javascript" src="{% static 'js\script.js' %}"></script>
+<script type="text/javascript" src="{% static 'js\script_group_detail.js' %}"></script>
+
+<script type="text/javascript">
+/* on page ************************************************************************************************************/
+
+$('.ui.checkbox').checkbox();
+
+/* script *************************************************************************************************************/
+
+deleteSidePadding("name", "formcontrol");
+deleteSidePadding("name", "subjects");
+deletePaddingTopBottomForTitleBlock();
+
+/* script_group_detail ************************************************************************************************/
+
+addHighlightMarks();
+addHightlightBasis();
+addColorForAttCells();
+
+</script>
+{% endblock %}

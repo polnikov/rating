@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load customfilters %}
+
+{% block title %}Кафедры{% endblock %}
+
+{% block content %}
+
+<div id="segments" class="ui basic segments">
+
+    <!-- Title & button -->
+    <div id="buttons-segment" class="ui basic segment">
+        
+        <table class="ui very basic table">
+            <tbody>
+                <tr>
+                    <td><h2 style="font-family: Hack">Кафедры</h2></td>
+                    <td class="right aligned">
+                        <a href="{% url 'subjects:cathedras-import' %}">
+							<button id="import-button" class="ui orange small button" style="font-family: Hack"><i class="icon download"></i>Импорт CSV</button>
+						</a>
+                        <a href="{% url 'subjects:cathedra-add' %}">
+                            <button id="add-button" class="ui positive small button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Table -->
+	<div id="datatable-segment" class="ui basic segment">
+        {% if cathedra_list %}
+            <div class="ui segment">
+                <table id="cathedras" class="ui selectable celled striped table">
+                    <thead>
+                        <tr class="center aligned">
+                            <th class="collapsing"><i class="hashtag small icon"></i></th>
+                            <th>Факультет</th>
+                            <th class="collapsing">Сокращение</th>
+                            <th>Полное название <div id="count-label" class="ui left pointing grey tiny label">{{ cathedra_list.count }}</div></th>
+                            <th class="collapsing">Удалить</th>
+                            <th class="collapsing">Изменить</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for cathedra in cathedra_list %}
+                            <tr>
+                                <td class="center aligned">{{ forloop.counter }}</td>
+                                <td class="collapsing center aligned">{{ cathedra.faculty.short_name|default_if_none:"" }}</td>
+                                <td class="collapsing center aligned">{{ cathedra.short_name }}</td>
+                                <td>{{ cathedra.name|truncatechars:85 }}</td>
+                                <td class="center aligned collapsing">
+                                    <a href="{% url 'subjects:cathedra_delete' cathedra.id %}">
+                                        <button id="trash-button" class="circular ui red tiny icon button">
+                                            <i class="trash alternate outline icon"></i>
+                                        </button>
+                                    </a>
+                                </td>
+                                <td class="center aligned collapsing">
+                                    <a href="{% url 'subjects:cathedra_update' cathedra.id %}">
+                                        <button id="edit-button" class="circular ui blue tiny icon button">
+                                            <i class="edit icon"></i>
+                                        </button>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            {% include 'empty_records.html' %}
+        {% endif %}
+    </div>
+</div>
+
+<script type="text/javascript" src="{% static 'js\script.js' %}"></script>
+
+<script type="text/javascript">
+
+// DataTable
+$(document).ready(function () {
+    $('#cathedras').DataTable({
+        language: {
+            lengthMenu: '_MENU_ записей на страницу',
+            zeroRecords: 'Записей нет...',
+            info: 'Всего записей: _MAX_',
+            infoEmpty: '',
+            infoFiltered: 'Найдено: _TOTAL_',
+            search: '',
+            searchPlaceholder: 'поиск',
+            paginate: {
+                first:    '«',
+                previous: '‹',
+                next:     '›',
+                last:     '»'
+            }
+        },
+        lengthMenu: [
+            [20, 50, -1],
+            [20, 50, 'Все']
+        ],
+        "columnDefs": [
+            { "searchable": false, "targets": [0, 4, 5] },
+            { "orderable": false, "targets": [4, 5] }
+        ],
+        pageLength: 20,
+    });
+});
+
+deletePaddingTopBottomForTitleBlock();
+deletePaddingTopForDatatableSegment();
+
+</script>
+
+{% endblock %}

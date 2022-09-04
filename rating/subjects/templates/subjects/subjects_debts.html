@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Задолженности по дисциплинам{% endblock %}
+
+{% block content %}
+
+<div id="segments" class="ui basic segments">
+
+   <!-- Title & button -->
+   <div id="buttons-segment" class="ui basic segment">
+      <table class="ui very basic table">
+         <tbody>
+               <tr>
+                  <td><h2 style="font-family: Hack">Задолженности по дисциплинам</h2></td>
+                  <td class="right aligned"></td>
+               </tr>
+         </tbody>
+      </table>
+   </div>
+
+	<!-- Table -->
+   <div id="datatable-segment" class="ui basic segment">
+      
+		{% if groupsubject_list %}
+			<div class="ui segment">
+            <table id="subjects-debts" class="ui selectable celled striped table">
+
+					<thead>
+						<tr class="center aligned">
+							<th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+							<th class="collapsing">Название</th>
+							<th class="collapsing" style="width: 50px">Форма контроля</th>
+							<th class="collapsing">Группа</th>
+							<th class="collapsing">Семестр</th>
+							<th class="collapsing">Преподаватель {% if empty_teacher %}<div id="count-label" class="ui left pointing red tiny label">
+								{{ empty_teacher }}</div>{% endif %}
+							</th>
+							<th class="collapsing">Сессия</th>
+                     <th class="collapsing">Пересдача</th>
+                     <th class="collapsing">Комиссия</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						{% for item in groupsubject_list %}
+							<tr>
+								<td class="collapsing center aligned">{{ forloop.counter }}</td>
+								<td class="collapsing">
+									<a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name|truncatechars:30 }}</a>
+								</td>
+								<td class="collapsing">{{ item.subjects.form_control }}</td>
+								<td class="collapsing center aligned">
+                           <a href="{% url 'groups:detail' groupname=item.groups.name semester=item.subjects.semester.semester %}">
+                              {{ item.groups.name }}
+                           </a>
+                        </td>
+								<td class="collapsing center aligned">{{ item.subjects.semester.semester }}</td>
+
+								{% if item.subjects.teacher %}
+									<td class="collapsing center aligned">{{ item.subjects.teacher }}</td>
+								{% else %}
+									<td class="negative collapsing center aligned"><i class="icon close"></i>
+										{{ item.subjects.empty_teacher }}
+									</td>
+								{% endif %}
+
+                        <td class="collapsing center aligned" style="width: 80px">
+                           {% if item.att1 == 0 %}
+                              <div id="att-label" class="ui red tiny label">{{ item.att1 }}</div>
+                           {% else %}
+                              <div id="att-label" class="ui grey tiny label">{{ item.att1 }}</div>
+                           {% endif %}
+                        </td>
+
+                        <td class="collapsing center aligned" style="width: 80px">
+                           {% if item.att2 %}
+                              <div id="att-label" class="ui grey tiny label">{{ item.att2 }}</div>
+                           {% else %}
+                              {{ item.att2|default:"" }}
+                           {% endif %}
+                        </td>
+
+                        <td class="collapsing center aligned" style="width: 80px">
+                           {% if item.att3 %}
+                              <div id="att-label" class="ui red tiny label">{{ item.att3 }}</div>
+                           {% else %}
+                              {{ item.att3|default:"" }}
+                           {% endif %}
+                        </td>
+                     </tr>
+						{% endfor %}
+					</tbody>
+
+            </table>
+         </div>
+      {% else %}
+			{% include 'empty_records.html' %}
+		{% endif %}
+   </div>
+</div>
+
+<script type="text/javascript" src="{% static 'js\script.js' %}"></script>
+
+<!-- DataTable -->
+<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
+
+<script>
+// DataTables
+$(document).ready(function() {
+   let firstRow = $('#subjects-debts thead tr')[0];
+   let secondRow = firstRow.cloneNode(true);
+   firstRow.after(secondRow);
+
+	let filterColumns = $('#subjects-debts thead tr')[0].children;
+	for (let i = 0; i < filterColumns.length; i++) {
+		let inputWidth = filterColumns[i].offsetWidth - 15;
+		if(i != 0) {
+         filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 100px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
+      } else {filterColumns[i].innerHTML = ""};
+   };
+
+	document.querySelector('#subjects-debts').style.width = "100%";
+   // DataTable
+   var table = $('#subjects-debts').DataTable({
+      language: {
+         lengthMenu: '_MENU_ записей на страницу',
+         zeroRecords: 'Записей нет...',
+         info: 'Всего записей: _MAX_',
+         infoEmpty: '',
+         infoFiltered: 'Найдено: _TOTAL_',
+         search: '',
+         searchPlaceholder: 'поиск',
+         paginate: {
+            first:    '«',
+            previous: '‹',
+            next:     '›',
+            last:     '»'
+         }
+      },
+      lengthMenu: [
+         [20, 50, -1],
+         [20, 50, 'Все']
+      ],
+      pageLength: 20,
+      autoWidth: false,
+      fixedColumns: true,
+      columnDefs: [
+         { searchable: false, targets: 0 },
+         { width: 10, targets: 0 },
+         { width: 50, targets: 3 },
+         { width: 50, targets: 4 },
+         { width: 80, targets: 6 },
+         { width: 80, targets: 7 },
+         { width: 80, targets: 8 },
+      ],
+   });
+
+	// Filter event handler
+   $(table.table().container()).on('keyup', 'thead input', function() {
+      table
+         .column($(this).data('index'))
+         .search(this.value)
+         .draw();
+   });
+
+   // Очистка фильтров двойным кликом выше head
+   $(document).on("dblclick",  ".ui.stackable.grid", function() {
+      let inputs = document.getElementsByName("filter");
+      inputs.forEach(e => {
+         e.value = "";
+      });
+      table.search('');
+      table.columns().search('').draw();
+   });
+   changeDatatableInputFont();
+});
+
+deletePaddingTopBottomForTitleBlock();
+deletePaddingTopForDatatableSegment();
+
+</script>
+
+{% endblock %}

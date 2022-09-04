@@ -1,0 +1,28 @@
+{% load i18n %}
+
+<div id="breadcrumb" class="ui basic segments">
+   <div class="ui breadcrumb">
+      {% for item in breadcrumbs %}
+         {% if forloop.last %}
+            <div id="active-page" class="active section">{% blocktranslate with b=item.name %}{{ b }}{% endblocktranslate %}</div>
+         {% else %}
+            {% if item.resolved %}
+               <a class="section" href="{{ item.url }}">{{ b }}</a>
+               <i class="right angle icon divider"></i>
+            {%else%}
+               <div class="section">{{ b }}{% endblocktranslate %}</div>
+               <i class="right angle icon divider"></i>
+            {%endif%}
+         {% endif %}
+      {% endfor %}
+   </div>
+</div>
+
+<style>
+.ui.breadcrumb {
+   font-size: 0.9rem;
+}
+.ui.breadcrumb a {
+   color: black;
+}
+</style>

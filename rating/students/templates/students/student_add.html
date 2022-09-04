@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load semanticui %}
+
+{% block title %}Добавить студента{% endblock %}
+
+{% block content %}
+
+<div class="ui container" style="font-family: Hack; padding-top: 50px; width: 80%">
+    
+	<div class="ui segments">
+        <div class="ui center aligned secondary segment">
+            <h3 style="font-family: Hack">Добавить студента</h3>
+        </div>
+
+        <!-- Form -->
+		<div class="ui left aligned segment">
+            <form id="form" action="{% url 'students:add' %}" method="post">
+                {% csrf_token %}
+                <div class="ui form">
+                    <div class="three fields">
+                        <div class="required field">
+                            <label>Фамилия</label>
+                            {{ form.last_name }}
+                        </div>
+                        <div class="required field">
+                            <label>Имя</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="field">
+                            <label>Отчество</label>
+                            {{ form.second_name }}
+                        </div>
+                    </div>
+
+                    <div class="ui hidden divider"></div>
+
+                    <div class="six fields">
+                        <div class="required two wide field {% if form.student_id.errors %} error {% endif %}">
+                            <label>Зачетная книжка</label>
+                            {% render_field form.student_id _no_label='True' placeholder='ID студента' %}
+                        </div>
+                        <div class="required two wide field">
+                            <label>Группа</label>
+                            {% render_field form.group _no_label='True' placeholder='Выбрать' %}
+                        </div>
+                        <div class="required two wide field">
+                            <label>Семестр</label>
+                            {% render_field form.semester _no_label='True' placeholder='Выбрать' %}
+                        </div>
+                        <div class="required two wide field">
+                            <label>Гражданство</label>
+                            {% render_field form.citizenship _no_label='True' %}
+                        </div>
+                        <div class="required two wide field">
+                            <label>Основа обучения</label>
+                            {% render_field form.basis _no_label='True' placeholder='Выбрать' %}
+                        </div>
+                        <div class="required three wide field">
+                            <label>Уровень обучения</label>
+                            {% render_field form.level _no_label='True' %}
+                        </div>
+
+                        <div class="required three wide field {% if form.start_date.errors %} error {% endif %}">
+                            <label>Дата зачисления</label>
+                            <div class="ui input left icon">
+                                <i class="calendar alternate outline icon"></i>
+                                {{ form.start_date }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ui hidden divider"></div>
+
+                    <div id="status" class="inline required fields">
+                        <label>Статус</label>
+                        {% for status in form.status %}
+                            <div class="field">
+                                <div class="ui basic label">{{ status }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="ui hidden divider"></div>
+
+                    <div class="inline fields">
+                        <label>Тэг</label>
+                        {% for tag in form.tag %}
+                            <div class="field">
+                                <div class="ui basic label">{{ tag }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="ui hidden divider"></div>
+
+                    <div class="inline required fields">
+                        <label>Стипендия</label>
+                        {% for money in form.money %}
+                            <div class="field">
+                                <div class="ui basic label">{{ money }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="ui hidden divider"></div>
+
+                    <div class="field">
+                        <label>Примечание</label>
+                        {{ form.comment }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Button's -->
+            <div class="ui right aligned secondary segment">
+                <a href="{% url 'students:students' %}">
+                    <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                </a>
+                <button type="submit" class="positive ui button" style="font-family: Hack"><i class="save icon"></i>Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" src="{% static 'js\script.js' %}"></script>
+<script>
+    $('select.dropdown').dropdown();
+    changeFormsInputFont();
+
+    // календарь
+    $(function () {
+        $("#id_start_date").datepicker({
+        weekStart: 1,
+        daysMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+        monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+        format:'dd.mm.yyyy',
+        autoHide: true,
+        });
+    });
+</script>
+
+{% endblock %}

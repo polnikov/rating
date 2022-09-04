@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load customfilters %}
+
+{% block title %}Архив{% endblock %}
+
+{% block content %}
+
+<div id="segments" class="ui basic segments">
+
+   <!-- Title & button -->
+   <div id="buttons-segment" class="ui basic segment">
+      
+      <table class="ui very basic table">
+         <tbody>
+               <tr>
+                  <td><h2 style="font-family: Hack">Оценки</h2></td>
+                  <td class="right aligned"></td>
+               </tr>
+         </tbody>
+      </table>
+   </div>
+
+	<!-- Table -->
+   <div id="datatable-segment" class="ui basic segment">
+		{% if result_list %}
+			<div class="ui segment">
+            <table id="marks" class="ui selectable celled striped table">
+
+               <thead>
+                  <tr class="center aligned">
+                     <th id="semester" class="collapsing">Семестр</th>
+                     <th class="collapsing">Группа</th>
+                     <th>Студент</th>
+                     <th>Дисциплина</th>
+                     <th>Форма контроля</th>
+                     <th name="mark" class="collapsing">Оценка</th>
+                     <th>Дата аттестации</th>
+                  </tr>
+               </thead>
+
+               <tbody>
+                  {% for item in result_list %}
+                     <tr style="padding-right: 0">
+                           <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
+                           <td class="collapsing center aligned">{{ item.groupsubject.groups }}</td>
+                           <td class="collapsing">
+                              <a href="{{ item.students.get_absolute_url }}">
+                                 {{ item.students.fullname }}
+                              </a>
+                           </td>
+                           <td>
+                              <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
+                                 {{ item.groupsubject.subjects.name|truncatechars:80 }}
+                              </a>
+                           </td>
+                           <td class="collapsing">{{ item.groupsubject.subjects.form_control }}</td>
+
+                           <td class="collapsing center aligned"><a href="{{ item.get_absolute_url }}">
+                              <div class="ui equal width grid collapsing center aligned">
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
+                              </div></a>
+                           </td>
+
+                           <td class="center aligned" style="width: 150px">{{ item.groupsubject.subjects.empty_att_date }}</td>
+                     </tr>
+                  {% endfor %}
+               </tbody>
+
+            </table>
+         </div>
+      {% else %}
+			{% include 'empty_records.html' %}
+		{% endif %}
+   </div>
+</div>
+
+<script type="text/javascript" src="{% static 'js\script.js' %}"></script>
+
+<!-- DataTable -->
+<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
+
+<script>
+
+// DataTable
+$(document).ready(function() {
+	let firstRow = $('#marks thead tr')[0];
+	let secondRow = firstRow.cloneNode(true);
+	firstRow.after(secondRow);
+
+	let filterColumns = $('#marks thead tr')[0].children;
+	for (let i = 0; i < filterColumns.length; i++) {
+		let inputWidth = filterColumns[i].offsetWidth - 15;
+      filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 250px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
+	};
+
+   document.querySelector('#marks').style.width = "100%";
+   // DataTable
+   var table = $('#marks').DataTable({
+      language: {
+         lengthMenu: '_MENU_ записей на страницу',
+         zeroRecords: 'Записей нет...',
+         info: 'Всего записей: _MAX_',
+         infoEmpty: '',
+         infoFiltered: ' | _TOTAL_ найдено',
+         search: '',
+         searchPlaceholder: 'поиск',
+         paginate: {
+            first:    '«',
+            previous: '‹',
+            next:     '›',
+            last:     '»'
+         }
+      },
+      lengthMenu: [
+         [20, 50, -1],
+         [20, 50, 'Все']
+      ],
+      pageLength: 20,
+      //autoWidth: false,
+   });
+   // Filter event handler
+   $(table.table().container()).on('keyup', 'thead input', function() {
+      table
+         .column($(this).data('index'))
+         .search(this.value)
+         .draw();
+   });
+   changeDatatableInputFont();
+
+   // Очистка фильтров двойным кликом выше head
+   $(document).on("dblclick",  ".ui.stackable.grid", function() {
+      let inputs = document.getElementsByName("filter");
+      inputs.forEach(e => {
+         e.value = "";
+      });
+      table.search('');
+      table.columns().search('').draw();
+   });
+});
+</script>
+
+{% endblock %}

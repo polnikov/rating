@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load customfilters %}
+
+{% block title %}{{ student.fullname }}{% endblock %}
+
+{% block content %}
+
+<div id="segments" class="ui basic segments">
+
+    <!-- Title & button -->
+    <div id="buttons-segment" class="ui basic segment">
+        
+        <table class="ui very basic table">
+            <tbody>
+                <tr>
+                    <td><h3 style="font-family: Hack">{{ student.fullname|truncatechars:70 }} {% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %}{% if student.is_archived %}<i class="archive brown icon"></i>{% endif %}</h3></td>
+                    <td class="right aligned">
+                        <a href="{% url 'students:delete' student.student_id %}">
+                            <button id="trash-button" type="button" class="ui red small button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button></a>
+                        <a href="{% url 'students:students' %}">
+                            <button id="back-button" class="ui grey small button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
+                        <a href="{% url 'students:update' student.student_id %}">
+                            <button id="update-button" type="submit" class="positive ui small button" style="font-family: Hack"><i class="sync alternate icon"></i>Обновить</button></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tabs -->
+    <div id="tabs-segment" class="ui basic segment">
+
+        <!-- Tabs title's -->
+        <div class="ui top attached tabular menu" style="font-family: Hack">
+            <a class="item active" data-tab="first"><i class="info icon"></i>Сводная информация</a>
+            <a class="item" data-tab="second"><i class="graduation cap icon"></i>Оценки</a>
+            <a class="item" data-tab="third"><i class="history icon"></i>История изменений</a>
+        </div>
+
+        <!-- Tab 1 -->
+        <!-- Details -->
+        <div class="ui bottom attached tab segment active" data-tab="first">
+            <div class="ui equal width grid">
+                <div class="column">
+                    <table class="ui definition table" style="width: 700px">
+                        <tbody>
+                            <tr>
+                                <td style="width: 200px">Зачетная книжка</td>
+                                <td>{{ student.student_id }}</td>
+                            </tr>
+                            <tr>
+                                <td>Гражданство</td>
+                                <td>{{ student.get_citizenship_display }}</td>
+                            </tr>
+                            <tr>
+                                <td>Основа обучения</td>
+                                <td>{{ student.basis }}</td>
+                            </tr>
+                            <tr>
+                                <td>Уровень обучения</td>
+                                <td>{{ student.get_level_display }}</td>
+                            </tr>
+                            <tr>
+                                <td>Группа</td>
+                                <td>
+                                    <a href="{% url 'groups:detail' groupname=student.group semester=student.semester.semester %}">
+                                        {{ student.group }}
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Семестр</td>
+                                <td>{{ student.semester.semester }}</td>
+                            </tr>
+                            <tr>
+                                <td>Дата зачисления</td>
+                                <td>{{ student.start_date|date:"l" }}, {{ student.start_date }}</td>
+                            </tr>
+                            <tr>
+                                <td>Стипендия</td>
+                                <td>{{ student.money }}</td>
+                            </tr>
+                            <tr>
+                                <td>Статус</td>
+                                {% if student.get_status_display == 'Отчислен' %}
+                                    <td class="negative"><i class="icon close"></i>
+                                        {{ student.get_status_display }}
+                                    </td>
+                                {% elif student.get_status_display == 'Академический отпуск' %}
+                                    <td class="warning"><i class="icon hourglass half"></i>
+                                        {{ student.get_status_display }}
+                                    </td>
+                                {% elif student.get_status_display == 'Выпускник' %}
+                                    <td class="positive"><i class="icon rocket"></i>
+                                        {{ student.get_status_display }}
+                                    </td>
+                                {% else %}
+                                    <td class="positive"><i class="icon checkmark"></i>
+                                        {{ student.get_status_display }} {% if student.tag %}<div class="ui small pink label">{{ student.tag }}</div>{% endif %}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td>Примечание</td>
+                                <td>{{ student.comment|truncatechars:100 }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="column">
+                    <h4 style="font-family: Hack">Средний балл</h4>
+                    <table class="ui compact celled fixed table center aligned">
+                        <thead>
+                            <tr>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                                {% if student.level == "Бакалавриат" %}
+                                    <th>5</th>
+                                    <th>6</th>
+                                    <th>7</th>
+                                    <th>8</th>
+                                {% endif %}
+                                <th>Общий</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for k, v in rating_by_semester.items %}
+                                    <td>{{ v }}</td>
+                                {% endfor %}
+                                <td>{{ rating }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2 -->
+        <!-- Marks -->
+        <div class="ui bottom attached tab segment" data-tab="second">
+            <table id="student-marks" class="ui selectable celled striped table">
+                <thead>
+                    <tr class="center aligned">
+                        <th id="semester" class="collapsing">Семестр</th>
+                        <th class="collapsing">Группа</th>
+                        <th>Дисциплина</th>
+                        <th>Форма контроля</th>
+                        <th name="mark" class="collapsing">Оценка</th>
+                        <th>Дата аттестации</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in marks %}
+                        <tr style="padding-right: 0">
+                            <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
+                            <td class="collapsing center aligned">
+                                <a href="{% url 'groups:detail' groupname=item.groupsubject.groups semester=item.groupsubject.subjects.semester.semester %}">
+                                    {{ item.groupsubject.groups }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
+                                    {{ item.groupsubject.subjects.name|truncatechars:80 }}
+                                </a>
+                            </td>
+                            <td class="collapsing">{{ item.groupsubject.subjects.form_control }}</td>
+
+                            <td class="collapsing center aligned">
+                                <div class="ui equal width grid collapsing center aligned">
+                                        <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
+                                        <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
+                                        <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
+                                </div>
+                            </td>
+
+                            <td class="collapsing center aligned">{{ item.groupsubject.subjects.empty_att_date }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tab 3 -->
+        <!-- History -->
+        <div class="ui bottom attached tab segment" data-tab="third">
+            <table class="ui unstackable table">
+                <tbody>
+                    <tr class="blue">
+                        <td class="left aligned"><i class="plus circle icon"></i> {{ student.created_date }}</td>
+                        <td class="right aligned"><i class="sync alternate icon"></i> {{ student.updated_date }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% if history %}
+                <table id="student-history" class="ui selectable celled striped table">
+
+                    <thead>
+                        <tr class="center aligned">
+                            <th class="collapsing">Дата и время</th>
+                            <th>Автор</th>
+                            <th>Свойство</th>
+                            <th>Было</th>
+                            <th>Стало</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for record in history %}
+                            <tr>
+                                <td class="center aligned collapsing">{{ record.timestamp|date:"d.m.y | H:i:s" }}</td>
+                                <td class="collapsing">{{ record.user_id|get_username }}</td>
+                                <td class="collapsing">{{ record.field }}</td>
+                                {% if record.field == 'Attestaion date' %}
+                                    <td>{{ record.old_value|date_or_else }}</td>
+                                    <td>{{ record.new_value|date_or_else }}</td>
+                                {% else %}
+                                    <td>{{ record.old_value|default:"---"|truncatechars:40 }}</td>
+                                    <td>{{ record.new_value|default:"---"|truncatechars:40 }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="ui one column centered grid">
+                    <div class="one column"></div>
+                    <div class="ui center aligned container">
+                        <p>Изменений пока нет...</p>
+                    </div>
+                    <div class="one column"></div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// tabs
+$('.menu .item').tab();
+
+// datatables
+$(document).ready(function () {
+    $('#student-marks').DataTable({
+        language: {
+            lengthMenu: '_MENU_ записей на страницу',
+            zeroRecords: 'Записей нет...',
+            info: 'Всего записей: _MAX_',
+            infoEmpty: '',
+            infoFiltered: ' | _TOTAL_ найдено',
+            search: '',
+            searchPlaceholder: 'поиск',
+            paginate: {
+                first:    '«',
+                previous: '‹',
+                next:     '›',
+                last:     '»'
+            }
+        },
+        lengthMenu: [
+            [20, 50, -1],
+            [20, 50, 'Все']
+        ],
+        autoWidth: false,
+        fixedColumns: true,
+        columnDefs: [
+            { width: 50, targets: 0 },
+            { width: 50, targets: 1 },
+            { width: 150, targets: 4 },
+        ],
+        pageLength: 20,
+        order: [[0, 'desc']],
+    });
+});
+
+// datatables
+$(document).ready(function () {
+    $('#student-history').DataTable({
+        language: {
+            lengthMenu: '_MENU_ записей на страницу',
+            zeroRecords: 'Записей нет...',
+            info: 'Всего записей: _MAX_',
+            infoEmpty: '',
+            infoFiltered: 'Найдено: _TOTAL_',
+            search: '',
+            searchPlaceholder: 'поиск',
+            paginate: {
+                first:    '«',
+                previous: '‹',
+                next:     '›',
+                last:     '»'
+            }
+        },
+        lengthMenu: [
+            [20, 50, -1],
+            [20, 50, 'Все']
+        ],
+        autoWidth: false,
+        fixedColumns: true,
+        columnDefs: [
+            { width: 170, targets: 0 },
+            { width: 130, targets: 1 },
+            { width: 130, targets: 2 },
+        ],
+        pageLength: 20,
+        order: [[0, 'desc']],
+    });
+});
+
+// убрать боковой отступ для ячеек с оценками
+let thElements = document.getElementsByName("mark");
+thElements.forEach(element => {
+    element.style.paddingLeft = '0';
+    element.style.paddingRight = '0';
+});
+
+// убрать нижний отступ сегмента с заголовком и кнопками
+let segments = document.getElementById("segments");
+segments.style.paddingBottom = '0';
+
+// убрать верхний отступ сегмента с вкладками
+let tabsSegment = document.getElementById("tabs-segment");
+tabsSegment.style.paddingTop = '0';
+</script>
+
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="ui container" style="padding-top: 20px">
+   <div class="ui grid center aligned">
+
+      <div class="ui cards">
+         <div class="ui raised card" style="width: 400px">
+
+            <div class="content">
+               <div class="ui icon header center aligned">
+                  <i class="file excel green icon"></i>
+               </div>
+               <div class="meta center aligned">
+                  Загрузите CSV файл...
+               </div>
+
+               <br>
+
+               <form method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <div class="description">
+                     <input name="import_file" type="file" style="width: 400px">
+                  </div>
+            </div>
+
+            <div class="extra content center aligned">
+               <!-- Button's -->
+               <a
+                  {% if request.path == '/students/import' %}
+                     href="{% url 'students:students' %}"
+                  {% elif request.path == '/subjects/import' %}
+                     href="{% url 'subjects:subjects' %}"
+                  {% elif request.path == '/subjects/cathedras/import' %}
+                     href="{% url 'subjects:cathedras' %}"
+                  {% elif request.path == '/subjects/groupsubjects/import' %}
+                     href="{% url 'subjects:groupsubjects' %}"
+                  {% endif %}>
+                  <button class="ui button center aligned" type="button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                  </a>
+               <button class="ui primary button center aligned" type="submit" style="font-family: Hack"><i class="icon download"></i>Загрузить</button>
+            </div>
+            </form>
+
+            {% if file_validation == False %}
+               <div class="extra content center aligned">
+                  <i class="times red icon"></i><font color="red">Отсутствует файл,<br>или неверный формат!</font>
+               </div>
+            {% elif date_validation == False %}
+               <div class="extra content center aligned">
+                  <i class="times red icon"></i><font color="red">Неверный формат даты зачисления!</font>
+               </div>
+            {% elif errors %}
+               <div class="extra content center aligned">
+                  <i class="times red icon"></i><font color="red">Следующие данные не были импортированы:</font>
+                  <div class="ui list left aligned">
+                     {% for error in errors %}
+                        <div class="item">
+                           <i class="bug red icon"></i>{{ error|truncatechars:40 }}
+                        </div>
+                     {% endfor %}
+                  </div>
+               </div>
+            {% elif success %}
+               <div class="extra content center aligned">
+                  <i class="check green icon"></i><font color="green">Все данные были успешно импортированы!</font>
+               </div>
+            {% endif %}
+
+         </div>
+      </div>
+
+      {% if request.path == '/students/import' %}
+         {% include "import/import_help_students.html" %}
+      {% elif request.path == '/subjects/import' %}
+         {% include "import/import_help_subjects.html" %}
+      {% elif request.path == '/subjects/cathedras/import' %}
+         {% include "import/import_help_cathedras.html" %}
+      {% elif request.path == '/subjects/groupsubjects/import' %}
+         {% include "import/import_help_groupsubjects.html" %}
+      {% endif %}
+
+   </div>
+</div>
+
+{% endblock %}
+
+
+

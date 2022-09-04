@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load semanticui %}
+
+{% block title %}Обновить дисциплину{% endblock %}
+
+{% block content %}
+
+<div class="ui container" style="font-family: Hack; padding-top: 50px; width: 80%">
+    
+	<div class="ui segments">
+        <div class="ui center aligned secondary segment">
+            <h3 style="font-family: Hack">Обновить дисциплину</h3>
+        </div>
+
+        <!-- Form -->
+        <div class="ui left aligned segment">
+            <form id="form" action="{% url 'subjects:update' subject.id %}" method="POST">
+                {% csrf_token %}
+                <div class="ui large form">
+                    <div class="required field">
+                        <label>Полное название дисциплины</label>
+                        {{ form.name }}
+                    </div>
+
+                    <div class="four fields">
+                        <div class="required four wide field">
+                            <label>Форма контроля</label>
+                            {% render_field form.form_control _no_label='True' %}
+                        </div>
+
+                        <div class="required two wide field">
+                            <label>Семестр</label>
+                            {% render_field form.semester _no_label='True' %}
+                        </div>
+
+                        <div class="four wide field {% if form.att_date.errors %} error {% endif %}">
+                            <label>Дата аттестации</label>
+                            <div class="ui calendar">
+                                <div class="ui input left icon">
+                                    <i class="calendar alternate outline icon"></i>
+                                    {{ form.att_date }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="six wide field {% if form.teacher.errors %} error {% endif %}">
+                            <label>Фамилия И.О. преподавателя</label>
+                            {{ form.teacher }}
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Кафедра</label>
+                        {% render_field form.cathedra _no_label='True' %}
+                    </div>
+
+                    <div class="field">
+                        <label>Примечание</label>
+                        {{ form.comment }}
+                    </div>
+
+                    <div class="field">
+                        {% render_field form.is_archived _no_label='True' %}
+                    </div>
+                </div>
+        </div>
+
+            <!-- Button's -->
+            <div class="ui right aligned secondary segment">
+                <a href="{% url 'subjects:detail' subject.id %}">
+                    <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                </a>
+                <a href="{% url 'subjects:detail' subject.id %}">
+                    <button type="submit" class="positive ui button" style="font-family: Hack"><i class="sync alternate icon"></i>Обновить</button>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" src="{% static 'js\script.js' %}"></script>
+<script>
+    changeFormsInputFont();
+    // календарь
+    $(function () {
+        $("#id_att_date").datepicker({
+        weekStart: 1,
+        daysMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+        monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+        format:'dd.mm.yyyy',
+        autoHide: true,
+        });
+    });
+</script>
+
+{% endblock %}

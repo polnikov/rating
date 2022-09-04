@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% block title %}Ошибка импорта{% endblock %}
+
+{% block content %}
+
+   <div class="ui container center aligned" style="font-family: Hack; padding-top: 50px; width: 30%">
+      <div class="ui red message" style="font-size: 16px; height: 250px">
+         <div class="ui icon header">
+            <i class="bomb icon"></i>
+            Ошибка импорта
+         </div>
+         <p>Формат файла или данных неверный,<br>или файл отсутствует!</p>
+         <div class="ui hidden divider"></div>
+         <a
+            {% if request.path == '/students/import' %}
+               href="{% url 'students:students' %}"
+            {% elif request.path == '/subjects/import' %}
+               href="{% url 'subjects:subjects' %}"
+            {% elif request.path == '/subjects/cathedras/import' %}
+               href="{% url 'subjects:cathedras' %}"
+            {% elif request.path == '/subjects/groupsubjects/import' %}
+               href="{% url 'subjects:groupsubjects' %}"
+            {% endif %}>
+            <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+         </a>
+         <a
+         {% if request.path == '/students/import' %}
+            href="{% url 'students:import' %}"
+         {% elif request.path == '/subjects/import' %}
+            href="{% url 'subjects:import' %}"
+         {% elif request.path == '/subjects/cathedras/import' %}
+            href="{% url 'subjects:cathedras-import' %}"
+         {% elif request.path == '/subjects/groupsubjects/import' %}
+            href="{% url 'subjects:groupsubjects-import' %}"
+         {% endif %}>
+            <button class="ui blue button" style="font-family: Hack">Еще раз<i class="right arrow icon"></i></button>
+         </a>
+      </div>
+   </div>
+
+{% endblock %}
