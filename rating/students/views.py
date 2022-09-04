@@ -3,20 +3,19 @@ from collections import Counter
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
+from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext as _
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
-
 from groups.models import Group
 from groups.views import _get_students_group_statistic_and_marks
-from rating.settings import IMPORT_DELIMITER
 from students.forms import ResultForm, StudentForm
 from students.models import Basis, Result, Semester, Student, StudentLog
 from subjects.models import GroupSubject
-from django.db.models import Q
+
+from rating.settings import IMPORT_DELIMITER
 
 
 class StudentListView(LoginRequiredMixin, ListView):
