@@ -1,6 +1,5 @@
-from django.urls import path
-
 from archive import apiviews, views
+from django.urls import path
 
 
 app_name = 'archive'

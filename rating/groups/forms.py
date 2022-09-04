@@ -1,7 +1,9 @@
-from django.forms import ModelForm
-from django.core.exceptions import ValidationError
-from groups.models import Group
 import re
+
+from django.core.exceptions import ValidationError
+from django.forms import ModelForm
+
+from groups.models import Group
 
 
 class GroupForm(ModelForm):

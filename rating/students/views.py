@@ -64,7 +64,10 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         # все оценки студента
         marks = Result.objects.select_related().filter(students=student.student_id)
         # все аттестации для данного направления (группы), исключая зачеты
-        atts = GroupSubject.objects.select_related('subjects').filter(groups=student.group, is_archived=False).filter(~Q(subjects__form_control__exact='Зачет'))
+        atts = GroupSubject.objects.select_related('subjects').filter(
+            groups=student.group, 
+            is_archived=False
+        ).filter(~Q(subjects__form_control__exact='Зачет'))
 
         # вычисление среднего балла по семестрам и суммарного
         rating_by_semester = {
@@ -81,7 +84,9 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         all_marks = []
         for i in range(1, 9):
             # все оценки за семестр
-            sem_marks_all = marks.select_related('subjects').filter(groupsubject__subjects__semester__semester=i).values('mark')
+            sem_marks_all = marks.select_related('subjects').filter(
+                groupsubject__subjects__semester__semester=i
+            ).values('mark')
             # берем только последнюю оценку и исключаем <ня> и <2>
             sem_marks = list(filter(lambda x: x not in ['ня', '2'], [i['mark'][-1] for i in sem_marks_all]))
             all_marks += sem_marks

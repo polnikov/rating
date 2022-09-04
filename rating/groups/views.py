@@ -57,6 +57,7 @@ class GroupCardsView(LoginRequiredMixin, ListView):
 
 ########################################################################################################################
 
+
 class GroupDetailListView(LoginRequiredMixin, TemplateView):
     '''Отображение студентов соответствующей группы и семестра и назначенных им дисциплин.'''
     template_name = 'groups/group_detail.html'
@@ -66,9 +67,17 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
         # текущая группа
         group = Group.objects.get(name=groupname)
         # студенты текущей группы
-        students = Student.objects.select_related('basis', 'group').filter(group__name=groupname, semester=semester, is_archived=False).order_by('last_name')
+        students = Student.objects.select_related('basis', 'group').filter(
+            group__name=groupname,
+            semester=semester,
+            is_archived=False
+        ).order_by('last_name')
         # дисциплины, назначенные текущей группе в соответствующем семестре
-        subjects = GroupSubject.objects.select_related('subjects').filter(groups__name=groupname, subjects__semester=semester, is_archived=False).order_by('subjects__form_control')
+        subjects = GroupSubject.objects.select_related('subjects').filter(
+            groups__name=groupname,
+            subjects__semester=semester,
+            is_archived=False
+        ).order_by('subjects__form_control')
         # текущий курс группы
         course = students[0].course if students else '<i class="icon red close"></i>'
         context = {
@@ -153,7 +162,7 @@ class GroupMarksApiView(LoginRequiredMixin, View):
 
 
 def _get_students_group_statistic_and_marks(groupname, semester, student=None):
-    '''Сформировать статистику и оценки студентов группы. При указании в <student> ID студента, будет запрошена 
+    '''Сформировать статистику и оценки студентов группы. При указании в <student> ID студента, будет запрошена
     статистика только указанного студента.
 
     return if student=None: `objects`

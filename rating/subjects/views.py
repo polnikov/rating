@@ -1,19 +1,20 @@
 import re
 from collections import Counter
 
+from dal import autocomplete
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
 from groups.models import Group
-from rating.settings import IMPORT_DELIMITER
-
 from students.models import Result, Semester
 from subjects.forms import (CathedraForm, FacultyForm, GroupSubjectForm,
                             SubjectForm)
 from subjects.models import (Cathedra, Faculty, GroupSubject, Subject,
                              SubjectLog)
+
+from rating.settings import IMPORT_DELIMITER
 
 
 class SubjectListView(LoginRequiredMixin, ListView):
@@ -21,13 +22,13 @@ class SubjectListView(LoginRequiredMixin, ListView):
     model = Subject
     template_name = 'subjects/subjects.html'
 
-    def get_context_data(self,*args, **kwargs):
-            context = super().get_context_data(*args,**kwargs)
-            subjects = Subject.objects.select_related('semester', 'cathedra').filter(is_archived=False)
-            context['subjects_list'] = subjects
-            context['empty_date'] = subjects.filter(att_date__exact=None).count()
-            context['empty_teacher'] = subjects.filter(teacher__exact='').count()
-            return context
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args,**kwargs)
+        subjects = Subject.objects.select_related('semester', 'cathedra').filter(is_archived=False)
+        context['subjects_list'] = subjects
+        context['empty_date'] = subjects.filter(att_date__exact=None).count()
+        context['empty_teacher'] = subjects.filter(teacher__exact='').count()
+        return context
 
 
 class SubjectCreateView(LoginRequiredMixin, CreateView):
@@ -414,8 +415,6 @@ class SubjectsDebtsListView(LoginRequiredMixin, ListView):
         return group_subjects
 
 ########################################################################################################################
-
-from dal import autocomplete
 
 class CathedraAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
