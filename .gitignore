@@ -11,6 +11,7 @@ staticfiles/
 .flake8
 .vscode
 launch.json
+setup.cfg
 
 ### Django.Python Stack ###
 # Byte-compiled / optimized / DLL files
