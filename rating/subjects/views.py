@@ -4,7 +4,7 @@ from collections import Counter
 from dal import autocomplete
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
 from groups.models import Group
@@ -317,7 +317,18 @@ class GroupSubjectCreateView(LoginRequiredMixin, CreateView):
     model = GroupSubject
     form_class = GroupSubjectForm
     template_name = 'subjects/groupsubject_add.html'
-    success_url = '/subjects/groupsubjects'
+    
+    def post(self, request, *args, **kwargs):
+        subject = request.POST['subjects'].replace('<option value=&quot;', '').split('&')[0]
+        group = request.POST['groups'].replace('<option value=&quot;', '').split('&')[0]
+        
+        form = GroupSubjectForm(data={'subjects': subject, 'groups': group})
+        if form.is_valid():
+            form.save()
+            return redirect('subjects:groupsubjects')
+
+        return super().post(request, *args, **kwargs)
+
 
 
 class GroupSubjectUpdateView(LoginRequiredMixin, UpdateView):
@@ -418,10 +429,3 @@ class SubjectsDebtsListView(LoginRequiredMixin, ListView):
         return group_subjects
 
 ########################################################################################################################
-
-class SubjectAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        qs = Subject.objects.all()
-        if self.q:
-            qs = qs.filter(name__icontains=self.q)
-        return qs

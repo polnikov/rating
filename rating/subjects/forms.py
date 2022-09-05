@@ -1,21 +1,19 @@
 import datetime
 import re
-from dal import autocomplete
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, ModelChoiceField
-from django.forms.widgets import DateInput, TextInput, Select
+from django.forms.widgets import DateInput, TextInput, Select, Input
 
 from subjects.models import Cathedra, Faculty, GroupSubject, Subject
 
 
 class SubjectForm(ModelForm):
     """Форма модели <Основа обучения>."""
-    cathedra = ModelChoiceField(queryset=Cathedra.objects.all())
     class Meta:
         model = Subject
         fields = [
             'name',
-            # 'cathedra',
+            'cathedra',
             'teacher',
             'form_control',
             'semester',
@@ -28,7 +26,6 @@ class SubjectForm(ModelForm):
                 attrs={'placeholder': '24.06.1999'},
                 format='%d.%m.%Y',
             ),
-            'cathedra': autocomplete.ModelSelect2(url='subjects/cathedra-autocomplete')
         }
 
     def clean_teacher(self):
@@ -91,6 +88,7 @@ class CathedraForm(ModelForm):
 
 class GroupSubjectForm(ModelForm):
     """Форма модели <Назначение дисциплины>."""
+    subjects = Input()
     class Meta:
         model = GroupSubject
         fields = [

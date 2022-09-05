@@ -12,13 +12,12 @@ urlpatterns = [
     path('<int:pk>', views.SubjectDetailView.as_view(), name='detail'),
     path('<int:pk>/delete', views.SubjectDeleteView.as_view(), name='delete'),
     path('<int:pk>/update', views.SubjectUpdateView.as_view(), name='update'),
-    path('cathedra-autocomplete/', views.CathedraAutocomplete.as_view(), name='cathedra-autocomplete'),
 
     # Subjects actions
     path('import', views.import_subjects, name='subjects-import'),
 
     # Subjects debts
-    path('debts', views.SubjectsDebtsListView.as_view(), name='subjects-debts'),
+    path('debts', views.SubjectsDebtsListView.as_view(), name='debts'),
 
     path('json', views.subjects_json, name='subjects_json'),
 

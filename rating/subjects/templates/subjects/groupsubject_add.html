@@ -11,7 +11,6 @@
 {% block content %}
 
 <div class="ui container" style="font-family: Hack; padding-top: 50px">
-    
 	<div class="ui segments">
         <div class="ui center aligned secondary segment">
             <h3 style="font-family: Hack">Добавить назначение</h3>
@@ -21,25 +20,62 @@
 		<div class="ui segment">
             <form action="{% url 'subjects:groupsubject-add' %}" method="post">
                 {% csrf_token %}
+                {% if form.errors %} {{ form.errors }} {% endif %}
                 <div class="ui large form">
                     <div class="required field">
-                        {% render_field form.subjects placeholder="Выбрать дисципилину" %}
+                        <label>Дисциплина</label>
+                        <div class="ui search selection dropdown" id="subjects">
+                            <input type="hidden" name="subjects">
+                            <i class="dropdown icon"></i>
+                            <div class="default text">Выбрать</div>
+                            <div class="menu">
+                                {% for s in form.subjects %}
+                                <div class="item">{{ s }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
+                    
                     <div class="required field">
-                        {% render_field form.groups placeholder="Выбрать группу" %}
+                        <label>Группа</label>
+                        <div class="ui search selection dropdown" id="groups">
+                            <input type="hidden" name="groups">
+                            <i class="dropdown icon"></i>
+                            <div class="default text">Выбрать</div>
+                            <div class="menu">
+                                {% for g in form.groups %}
+                                    <div class="item">{{ g }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-                <!-- Button's -->
-                <div class="ui right aligned secondary segment">
-                    <a href="{% url 'subjects:groupsubjects' %}">
-                        <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
-                    </a>
-                    <button type="submit" class="positive ui button" style="font-family: Hack"><i class="save icon"></i>Сохранить</button>
-                </div>
+            <!-- Button's -->
+            <div class="ui right aligned secondary segment">
+                <a href="{% url 'subjects:groupsubjects' %}">
+                    <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                </a>
+                <button type="submit" class="positive ui button" style="font-family: Hack"><i class="save icon"></i>Сохранить</button>
+            </div>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    $('#subjects')
+    .dropdown({
+        ignoreDiacritics: true,
+        sortSelect: true,
+        fullTextSearch:'exact'
+    });
+    $('#groups')
+    .dropdown({
+        ignoreDiacritics: true,
+        sortSelect: true,
+        fullTextSearch:'exact'
+    });
+</script>
 
 {% endblock %}
