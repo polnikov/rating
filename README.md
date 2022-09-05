@@ -17,4 +17,16 @@
 - создание основ обучения (Бюджет, Контракт и прочие)
 - создание семестров
 
+### **Основной стек:**
+- Python 3.10.6
+- Django 2.2.12
+- PostgreSQL
 
+### **Django package's:**
+- [django-autocomplete-light](https://github.com/yourlabs/django-autocomplete-light)
+- [django-better-admin-arrayfield](https://github.com/gradam/django-better-admin-arrayfield)
+- [django-currentuser](https://github.com/PaesslerAG/django-currentuser)
+- [django-dynamic-breadcrumbs](https://github.com/marcanuy/django-dynamic-breadcrumbs)
+- [django-import-export](https://github.com/django-import-export/django-import-export)
+- [django-semanticui-forms](https://github.com/michaelmob/django-semanticui-forms)
+- [django-stronghold](https://github.com/mgrouchy/django-stronghold)
