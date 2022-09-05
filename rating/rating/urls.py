@@ -20,6 +20,4 @@ urlpatterns += [
     path('students/', include('students.urls', namespace='students')),
     path('subjects/', include('subjects.urls', namespace='subjects')),
     path('debug/', include('debug_toolbar.urls')),
-
-    path('subjects/cathedra-autocomplete/', views.CathedraAutocomplete.as_view(), name='cathedra-autocomplete'),
 ]

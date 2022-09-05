@@ -1,7 +1,6 @@
 import re
 from collections import Counter
 
-from dal import autocomplete
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect

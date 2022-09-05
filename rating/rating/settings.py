@@ -37,8 +37,6 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'semanticuiforms',
     'django_better_admin_arrayfield',
-    'dal',
-    'dal_select2',
     'dynamic_breadcrumbs',
 ]
 

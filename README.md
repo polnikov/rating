@@ -23,7 +23,6 @@
 - PostgreSQL
 
 ### **Django package's:**
-- [django-autocomplete-light](https://github.com/yourlabs/django-autocomplete-light)
 - [django-better-admin-arrayfield](https://github.com/gradam/django-better-admin-arrayfield)
 - [django-currentuser](https://github.com/PaesslerAG/django-currentuser)
 - [django-dynamic-breadcrumbs](https://github.com/marcanuy/django-dynamic-breadcrumbs)
