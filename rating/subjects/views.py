@@ -139,6 +139,9 @@ def import_subjects(request):
                         errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
                         break
 
+                    if row[0].startswith('"'):
+                        row[0] = row[0].replace('"', "")
+
                     # проверка формата даты зачисления
                     if row[-1] != '':
                         pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
@@ -416,9 +419,9 @@ class SubjectsDebtsListView(LoginRequiredMixin, ListView):
 
 ########################################################################################################################
 
-class CathedraAutocomplete(autocomplete.Select2QuerySetView):
+class SubjectAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
-        qs = Cathedra.objects.all()
+        qs = Subject.objects.all()
         if self.q:
             qs = qs.filter(name__icontains=self.q)
         return qs
