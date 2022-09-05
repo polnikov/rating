@@ -84,7 +84,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         except ZeroDivisionError:
             per_bac_max_money = 0
         try:
-            per_bac_no_money = 100 - per_bac_min_money - per_bac_middle_money - per_bac_max_money
+            per_bac_no_money = round(100 - per_bac_min_money - per_bac_middle_money - per_bac_max_money, 2)
         except ZeroDivisionError:
             per_bac_no_money = 0
 
@@ -108,7 +108,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         except ZeroDivisionError:
             per_mag_max_money = 0
         try:
-            per_mag_no_money = 100 - per_mag_min_money - per_mag_middle_money - per_mag_max_money
+            per_mag_no_money = round(100 - per_mag_min_money - per_mag_middle_money - per_mag_max_money, 2)
         except ZeroDivisionError:
             per_mag_no_money = 0
 
