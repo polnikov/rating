@@ -143,3 +143,11 @@ function deleteTableData() {
         e.remove();
     })
 };
+
+// убрать нижний отступ сегмента с заголовком и кнопками
+function deletePaddingTopBottomForMenuSegment() {
+    let segments = document.getElementById("menu-segment");
+    segments.style.paddingTop = '0';
+    segments.style.paddingBottom = '0';
+ };
+ 
