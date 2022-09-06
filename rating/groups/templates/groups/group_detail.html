@@ -97,7 +97,7 @@
                </th>
                {% if subjects %}
                   {% for item in subjects %}
-                     <th name="subjects" class="center aligned">
+                     <th name="subjects" class="center aligned" style="width: 10px">
                         <span class="rotated-text left aligned"><a style="color: black" href="{{ item.subjects.get_absolute_url }}">
                               {{ item.subjects.name|truncatewords:10 }}
                         </a></span>
