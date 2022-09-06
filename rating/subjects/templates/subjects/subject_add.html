@@ -55,7 +55,7 @@
 
                     <div class="field">
                         <label>Кафедра</label>
-                        {{ form.cathedra }}
+                        {% render_field form.cathedra _no_label='True' placeholder='Выбрать' %}
                     </div>
 
                     <div class="field">
