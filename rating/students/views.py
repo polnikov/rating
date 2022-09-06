@@ -8,7 +8,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext as _
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  UpdateView)
+                                  UpdateView, View)
 from groups.models import Group
 from groups.views import _get_students_group_statistic_and_marks
 from students.forms import ResultForm, StudentForm
@@ -115,6 +115,102 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             'rating_by_semester': rating_by_semester
         }
         return render(request, 'students/student_detail.html', context=context)
+
+
+class StudentRatingTableView(LoginRequiredMixin, ListView):
+    """Отображение шапки таблицы среднего балла студентов и вывод семестров."""
+    def get(self, request):
+        semesters = Semester.objects.all()
+        return render(request, 'students/students_rating.html', context={'semesters': semesters})
+
+class StudentRatingApiView(LoginRequiredMixin, View):
+    """Расчет среднего балла студента."""
+    #! TODO: переписать через функцию
+    def get(self, request):
+        serialized_data = []
+        sem_start = request.GET.get('semStart', '')
+        sem_stop = request.GET.get('semStop', '')
+        if (not sem_start and not sem_stop) or (sem_start and not sem_stop) or (not sem_start and sem_stop) or (sem_start and sem_stop == '-'):
+            # средний балл за указанный семестр. по умолчанию - за 1ый
+            if sem_start:
+                start = sem_start
+            else:
+                start = 1
+
+            students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, semester__semester__gte=start)
+            
+            for student in students:
+                # все оценки студента в указанном семестре
+                marks = Result.objects.select_related().filter(students=student.student_id, groupsubject__subjects__semester__semester=start).values('mark')
+                # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
+                atts = GroupSubject.objects.select_related('subjects').filter(
+                    groups=student.group,
+                    subjects__semester__semester=start,
+                    is_archived=False
+                ).filter(~Q(subjects__form_control__exact='Зачет'))
+                # вычисление среднего балла за семестр
+                # берем только последнюю оценку и исключаем <ня> и <2>
+                marks = list(filter(lambda x: x not in ['ня', '2'], [i['mark'][-1] for i in marks]))
+                # количество аттестаций с оценками в семестре
+                num_atts = atts.count()
+                # количество каждой из оценок <3 | 4 | 5>
+                count_marks = dict(Counter(marks))
+                # определяем средний балл за семестр
+                try:
+                    rating = round(sum([int(k)*v for k, v in count_marks.items()]) / num_atts, 2)
+                except ZeroDivisionError:
+                    rating = 0
+
+                serialized_data.append({
+                    'studentId': student.student_id,
+                    'fullname': student.fullname,
+                    'group': student.group.name,
+                    'currentSemester': student.semester.semester,
+                    'basis': student.basis.name,
+                    'level': student.level,
+                    'rating': rating,
+                    'isIll': student.is_ill,
+                    'tag': student.tag,
+                })
+        else:
+            # средний балл за указанный период
+            start, stop = sem_start, sem_stop
+            students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, semester__semester__gte=start)
+            for student in students:
+                # все оценки студента за указанный период
+                marks = Result.objects.select_related().filter(students=student.student_id).filter(Q(groupsubject__subjects__semester__semester__gte=start) & Q(groupsubject__subjects__semester__semester__lte=stop)).values('mark')
+                # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
+                atts = GroupSubject.objects.select_related('subjects').filter(
+                    groups=student.group,
+                    is_archived=False
+                ).filter(Q(subjects__semester__semester__gte=start) & Q(subjects__semester__semester__lte=stop)
+                ).filter(~Q(subjects__form_control__exact='Зачет'))
+                # вычисление среднего балла за период
+                # берем только последнюю оценку и исключаем <ня> и <2>
+                marks = list(filter(lambda x: x not in ['ня', '2'], [i['mark'][-1] for i in marks]))
+                # количество аттестаций с оценками в семестре
+                num_atts = atts.count()
+                # количество каждой из оценок <3 | 4 | 5>
+                count_marks = dict(Counter(marks))
+                # определяем средний балл за период
+                try:
+                    rating = round(sum([int(k)*v for k, v in count_marks.items()]) / num_atts, 2)
+                except ZeroDivisionError:
+                    rating = 0
+
+                serialized_data.append({
+                    'studentId': student.student_id,
+                    'fullname': student.fullname,
+                    'group': student.group.name,
+                    'currentSemester': student.semester.semester,
+                    'basis': student.basis.name,
+                    'level': student.level,
+                    'rating': rating,
+                    'isIll': student.is_ill,
+                    'tag': student.tag,
+                })
+
+        return JsonResponse({'data': serialized_data})
 
 
 class StudentDeleteView(LoginRequiredMixin, DeleteView):
@@ -252,12 +348,10 @@ def import_students(request):
 
 @login_required
 def transfer_students(request):
-    '''
-    Перевести студентов на следующий семестр. В случае последнего семестра студент отправляется в <Архив> со сменой
+    '''Перевести студентов на следующий семестр. В случае последнего семестра студент отправляется в <Архив> со сменой
     статуса на <Выпускник>.
     '''
     students_for_transfer = request.POST.getlist('checkedStudents[]', False)
-    print('------>>>', students_for_transfer)
     students_id = list(map(int, students_for_transfer))
 
     for id in students_id:

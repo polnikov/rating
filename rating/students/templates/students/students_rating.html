@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load customfilters %}
+
+{% block title %}Студенты{% endblock %}
+
+{% block content %}
+
+{%csrf_token %}
+
+<div id="segments" class="ui basic segments">
+
+	<!-- Title & button -->
+	<div id="buttons-segment" class="ui basic segment">
+		<table class="ui very basic table">
+			<tbody>
+				<tr>
+					<td><h2 style="font-family: Hack">Средний балл студентов</h2></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+    <div class="ui basic segment">
+        <table class="ui very basic table">
+			<tbody>
+				<tr>
+                    <td class="left aligned"><div class="ui basic grey label"><i class="info red icon"></i> по умолчанию за 1ый семестр</div></td>
+                    <td class="right aligned collapsing"><div class="ui basic grey label">За период:</div></td>
+                    <td class="right aligned collapsing">
+                        <div id="semester-start" class="ui floating dropdown">
+                            <input type="hidden" name="semester-start">
+                            <i class="dropdown icon"></i>
+                            <div class="default text"></div>
+                            <div class="menu">
+                                {% for sem in semesters %}
+                                    <div class="item">{{ sem.semester }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="right aligned collapsing">
+                        <div id="semester-stop" class="ui floating dropdown">
+                            <input type="hidden" name="semester-stop">
+                            <i class="dropdown icon"></i>
+                            <div class="default text"></div>
+                            <div id="semester-stop-menu" class="menu">
+                                <div class="item">-</div>
+                                {% for sem in semesters %}
+                                    <div class="item">{{ sem.semester }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+    
+
+	<!-- Table -->
+	<div id="datatable-segment" class="ui basic segment">
+        <div class="ui segment">
+            <table id="students-rating" class="ui selectable celled striped table">
+
+                <thead>
+                    <tr class="center aligned">
+                        <th>ФИО</th>
+                        <th class="collapsing">Группа</th>
+                        <th class="collapsing">Текущий семестр<br>студента</th>
+                        <th class="collapsing">Основа обучения</th>
+                        <th class="collapsing">Уровень обучения</th>
+                        <th class="collapsing">Средний балл</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- Statistics and Marks -->
+                </tbody>
+
+            </table>
+        </div>
+	</div>
+</div>
+
+<script type="text/javascript" src="{% static 'js/script_students_rating.js' %}"></script>
+
+{% endblock %}

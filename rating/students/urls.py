@@ -17,10 +17,14 @@ urlpatterns = [
     path('transfer', views.transfer_students, name='transfer'),
 
     # Students debts
-    path('debts', views.StudentsDebtsListView.as_view(), name='students-debts'),
+    path('debts', views.StudentsDebtsListView.as_view(), name='debts'),
+
+    # Students rating
+    path('rating', views.StudentRatingTableView.as_view(), name='rating'),
+    path('json/rating', views.StudentRatingApiView.as_view(), name='students-rating'),
 
     # Students money
-    path('money', views.StudentsMoneyListView.as_view(), name='students-money'),
+    path('money', views.StudentsMoneyListView.as_view(), name='money'),
 
     path('json', views.students_json, name='json'),
 
