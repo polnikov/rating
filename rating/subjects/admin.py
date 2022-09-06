@@ -1,4 +1,3 @@
-from tkinter import S
 from django.contrib import admin
 from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
 from import_export import resources
