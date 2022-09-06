@@ -55,7 +55,15 @@
                         </tr>
                         <tr>
                             <td>Кафедра</td>
-                            <td>{{ subject.cathedra|default_if_none:"" }}</td>
+                                {% if subject.cathedra %}
+                                    <td>
+                                        {{ subject.cathedra|default_if_none:"" }}
+                                    </td>
+                                {% else %}
+                                    <td class="negative collapsing">
+                                        <i class="icon close"></i> Нет
+                                    </td>
+                                {% endif %}
                         </tr>
                         <tr>
                             <td>Преподаватель</td>
