@@ -3,7 +3,7 @@ $(document).ready(function() {
 
    const groupName = document.getElementById('groupname').textContent;
    const semester = document.getElementById('semester').textContent;
-   const url = "http://127.0.0.1:8000/groups/json/groupmarks"
+   const url = window.location.origin + "/groups/json/groupmarks"
 
    // запрос в БД на получение данных о студентах: оценки, задолженности, стипендия
    function getFromServer(groupName, semester) {
@@ -394,7 +394,7 @@ function transferStudents() {
 
    if(checkedStudents != 0) {
       $.ajax({
-         url: "http://127.0.0.1:8000/students/transfer",
+         url: window.location.origin + "/students/transfer",
          type: "POST",
          data: {
             checkedStudents: checkedStudents,
