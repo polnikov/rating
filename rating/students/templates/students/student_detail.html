@@ -100,7 +100,7 @@
                                     </td>
                                 {% else %}
                                     <td class="positive"><i class="icon checkmark"></i>
-                                        {{ student.get_status_display }} {% if student.tag %}<div class="ui small pink label">{{ student.tag }}</div>{% endif %}
+                                        {{ student.get_status_display }} {% if student.tag %}<div id="tag-label" class="ui small pink label">{{ student.tag }}</div>{% endif %}
                                     </td>
                                 {% endif %}
                             </tr>

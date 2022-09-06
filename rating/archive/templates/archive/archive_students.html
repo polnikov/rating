@@ -51,7 +51,7 @@
                         <td class="center aligned collapsing">
                               {{ student.get_status_display }}
                               {% if student.tag %}
-                                 <div class="ui small pink label">{{ student.tag }}</div>
+                                 <div id="tag-label" class="ui small pink label">{{ student.tag }}</div>
                               {% endif %}
                         </td>
                         <td>{{ student.comment|truncatechars:25 }}</td>

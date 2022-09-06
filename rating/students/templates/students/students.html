@@ -54,10 +54,13 @@
 						{% for student in students_list %}
 							<tr>
 								<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
-								<td class="collapsing">{% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %}{% if student.is_archived %}<i class="archive brown icon"></i>{% endif %}
+								<td class="collapsing">
+									{% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %}
+									{% if student.is_archived %}<i class="archive brown icon"></i>{% endif %}
 									<a href="{{ student.get_absolute_url }}">
 										{{ student.fullname }}
 									</a>
+									{% if student.tag %}<div id="tag-label" class="ui small pink label">{{ student.tag }}</div>{% endif %}
 								</td>
 								<td class="center aligned">{{ student.group }}</td>
 								<td class="center aligned">{{ student.semester.semester }}</td>
@@ -76,7 +79,7 @@
 									</td>
 								{% else %}
 									<td class="center aligned collapsing"><i class="icon checkmark"></i>
-										{{ student.get_status_display }} {% if student.tag %}<div class="ui small pink label">{{ student.tag }}</div>{% endif %}
+										{{ student.get_status_display }}
 									</td>
 								{% endif %}
 
