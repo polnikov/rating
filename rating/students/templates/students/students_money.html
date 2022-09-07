@@ -50,7 +50,10 @@
                            </a>
                         </td>
 								<td class="collapsing center aligned">{{ item.semester.semester }}</td>
-                        <td><a href="{{ item.get_absolute_url }}">{{ item.fullname }}</a></td>
+                        <td>
+                           <a href="{{ item.get_absolute_url }}">{{ item.fullname }}</a>
+                           {% if item.tag %}<div id="tag-label" class="ui small pink label">{{ item.tag }}</div>{% endif %}
+                        </td>
 
 								{% if item.money == 'нет' %}
 									<td class="collapsing center aligned negative">{{ item.money }}</td>

@@ -60,10 +60,11 @@
 											{{ item.groupsubject.groups }}
 										</a>
 									</td>
-                           <td class="collapsing">
+                           <td>
                               <a href="{{ item.students.get_absolute_url }}">
                                  {{ item.students.fullname }}
                               </a>
+                              {% if item.students.tag %}<div id="tag-label" class="ui small pink label">{{ item.students.tag }}</div>{% endif %}
                            </td>
                            <td>
                               {% if item.tag %}<i class="exclamation circle red icon"></i>{% endif %}
