@@ -19,52 +19,60 @@
       <!-- Form -->
    <div class="ui left aligned segment">
          <form id="form" action="{% url 'students:result-add' %}" method="post">
-               {% csrf_token %}
-               <div class="ui large form">
-                  <div class="required field">
-                     <label>Студент</label>
-                     <div class="ui search selection dropdown" id="students">
-                        <input type="hidden" name="students">
-                        <i class="dropdown icon"></i>
-                        <div class="default text">Выбрать</div>
-                        <div class="menu">
-                            {% for s in form.students %}
-                              <div class="item">{{ s }}</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                  </div>
-                  
-                  <div class="required field">
-                     <label>Дисциплина</label>
-                     <div class="ui search selection dropdown" id="groupsubjects">
-                        <input type="hidden" name="groupsubjects">
-                        <i class="dropdown icon"></i>
-                        <div class="default text">Выбрать</div>
-                        <div class="menu">
-                            {% for g in form.groupsubject %}
-                              <div class="item">{{ g }}</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                  </div>
+            {% csrf_token %}
+            <div class="ui large form">
 
-                  <div class="inline one wide required {% if form.mark.errors %} error {% endif %} field">
-                     <label>Оценки</label>
-                     {% render_field form.mark _no_label='True' _help='True' %}
-                  </div>
+               <table class="ui very basic table">
+                  <tbody>
+                     <tr>
+                        <td>
+                           <div class="required field">
+                              <label>Студент</label>
+                              <div class="ui search selection dropdown two column" id="students">
+                                 <input type="hidden" name="students">
+                                 <i class="dropdown icon"></i>
+                                 <div class="default text">Выбрать</div>
+                                 <div class="menu">
+                                       {% for s in form.students %}
+                                       <div class="item">{{ s }}</div>
+                                       {% endfor %}
+                                 </div>
+                              </div>
+                           </div>
+                           
+                           <div class="required field">
+                              <label>Дисциплина</label>
+                              <div class="ui search selection dropdown" id="groupsubjects">
+                                 <input type="hidden" name="groupsubjects">
+                                 <i class="dropdown icon"></i>
+                                 <div class="default text">Выбрать</div>
+                                 <div class="menu">
+                                       {% for g in form.groupsubject %}
+                                       <div class="item">{{ g }}</div>
+                                       {% endfor %}
+                                 </div>
+                              </div>
+                           </div>
+                        </td>
+                        <td class="two wide top center aligned">
+                           <div class="required {% if form.mark.errors %} error {% endif %} field">
+                              <label>Оценки</label>
+                              {% render_field form.mark _no_label='True' _help='True' %}
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
 
-                  <div class="ui hidden divider"></div>
-
-                  <div class="inline fields">
-                     <label>Тэг</label>
-                     {% for tag in form.tag %}
-                        <div class="field">
-                           <div class="ui basic label">{{ tag }}</div>
-                        </div>
-                     {% endfor %}
-                  </div>
+               <div class="inline fields">
+                  <label>Тэг</label>
+                  {% for tag in form.tag %}
+                     <div class="field">
+                        <div class="ui basic label">{{ tag }}</div>
+                     </div>
+                  {% endfor %}
                </div>
+            </div>
       </div>
 
       <!-- Button's -->
@@ -78,12 +86,22 @@
    </div>
 </div>
 
-<!-- Scripts -->
-<script type="text/javascript" src="{% static 'js\script.js' %}"></script>
-<script type="text/javascript">
-   changeFormsInputFont();
+</body>
+
+<script>
+   $('select.dropdown').dropdown();
+   
+   $(document).ready(function() {
+
+      // изменить шрифт в поле <input>
+      let formElements = document.forms.form.elements;
+      for (let i = 0; i < formElements.length; i++) {
+         if (formElements[i].localName == "input" && formElements[i].type == "text") {
+            formElements[i].style.fontFamily = "Hack"
+         }
+      };
+   });
 </script>
 
-</body>
 {% endblock %}
 

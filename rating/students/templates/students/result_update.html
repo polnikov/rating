@@ -21,21 +21,49 @@
          <form id="form" method="post">
                {% csrf_token %}
                <div class="ui large form">
-                  <div class="required field">
-                     <label>Студент</label>
-                     {% render_field form.students _no_label='True' placeholder='Выбрать...' _style='ChoiceField' %}
-                  </div>
-                  <div class="required field">
-                     <label>Дисциплина</label>
-                     {% render_field form.groupsubject _no_label='True' placeholder='Выбрать...' %}
-                  </div>
-                  <div class="required field" style="width: 150px">
-                     <label>Оценки</label>
-                     {% render_field form.mark _no_label='True' _help='True' %}
-                  </div>
 
-                  <div class="ui hidden divider"></div>
-
+                  <table class="ui very basic table">
+                     <tbody>
+                        <tr>
+                           <td>
+                              <div class="required field">
+                                 <label>Студент</label>
+                                 <div class="ui search selection dropdown two column" id="students">
+                                    <input type="hidden" name="students">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Выбрать</div>
+                                    <div class="menu">
+                                          {% for s in form.students %}
+                                          <div class="item">{{ s }}</div>
+                                          {% endfor %}
+                                    </div>
+                                 </div>
+                              </div>
+                              
+                              <div class="required field">
+                                 <label>Дисциплина</label>
+                                 <div class="ui search selection dropdown" id="groupsubjects">
+                                    <input type="hidden" name="groupsubjects">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Выбрать</div>
+                                    <div class="menu">
+                                          {% for g in form.groupsubject %}
+                                          <div class="item">{{ g }}</div>
+                                          {% endfor %}
+                                    </div>
+                                 </div>
+                              </div>
+                           </td>
+                           <td class="two wide top center aligned">
+                              <div class="required {% if form.mark.errors %} error {% endif %} field">
+                                 <label>Оценки</label>
+                                 {% render_field form.mark _no_label='True' _help='True' %}
+                              </div>
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+   
                   <div class="inline fields">
                      <label>Тэг</label>
                      {% for tag in form.tag %}
@@ -61,5 +89,20 @@
 </div>
 
 </body>
+
+<script>
+   $('select.dropdown').dropdown();
+   
+   $(document).ready(function() {
+
+      // изменить шрифт в поле <input>
+      let formElements = document.forms.form.elements;
+      for (let i = 0; i < formElements.length; i++) {
+         if (formElements[i].localName == "input" && formElements[i].type == "text") {
+            formElements[i].style.fontFamily = "Hack"
+         }
+      };
+   });
+</script>
 
 {% endblock %}
