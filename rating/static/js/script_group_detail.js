@@ -21,6 +21,7 @@ $(document).ready(function() {
       .done(function(response) {
          console.log('Запрос данных выполнен успешно');
 
+         // обновляем данные таблицы
          let startNodes = document.getElementsByName('student');  // узлы, после которых вставляем массив оценок
          let ind = 0;  // индекс, для перемещения по стартовым узлам
          response.data.forEach(e => {
@@ -56,6 +57,7 @@ $(document).ready(function() {
             startNodes[ind].insertAdjacentHTML('afterend', result.join(""));
             ind++;  // смещаем индекс
          });
+
          // подсветка ячеек со стипендией
          let moneyCells = document.querySelectorAll("#money");
          moneyCells.forEach(e => {
@@ -63,6 +65,7 @@ $(document).ready(function() {
                e.classList.add("negative");
             } else {e.classList.remove("negative")};
          });
+
          // подсветка задолженностей
          const greyLabel = [];
          greyLabel.push.apply(greyLabel, document.querySelectorAll("#att1"));
@@ -112,33 +115,37 @@ $(document).ready(function() {
       $(this).children().focus();
    });
 
-   // отслеживание клика вне поля <input>
-   $(document).on("blur", ".input-data", function() {
-      // определяем ячейку в которой активный <input>
-      let td = $(this).parent("td");
-      // удаляем <input>
-      $(this).remove();
-      // возвращаем старое значение в ячейку
-      td.html(window.oldValue);
-      // возвращаем ячейке класс редактирования
-      td.addClass("editable");
+   // отслеживание нажатия клавиши <escape>
+   $(document).keyup(function(e) {
+      if (e.key === "Escape") { // escape key maps to keycode '27'
+         // определяем ячейку в которой активный <input>
+         var td = document.querySelector(".input-data").parentElement;
+         // определяем сам <input>
+         var input = document.querySelector(".input-data");
+         input.remove();
+         td.textContent = window.oldValue;
+         td.classList.add("editable");
+      }
    });
 
    // отслеживание нажатия клавиши <enter>
    $(document).on("keypress", ".input-data", function(e) {
+      // определяем ячейку в которой активный <input>
+      var td = document.querySelector(".input-data").parentElement;
+      // определяем сам <input>
+      var input = document.querySelector(".input-data");
       let key = e.which;
-      if(key == 13) {
+      if(key == 13) { // escape key maps to keycode '13'
          window.newValue = $(this).val().trim();
-         let td = $(this).parent("td");
-         $(this).remove();
-         td.html(window.newValue);
-         td.addClass("editable");
+         input.remove();
+         td.textContent = window.newValue;
+         td.classList.add("editable");
 
          // извлечение данных из редактируемой ячейки
-         let resId = td[0].dataset.resultId,
-         studentId = td.data("student-id"),
-         groupSubId = td.data("group-subject-id"),
-         form = td.data("subject-form-control");
+         let resId = td.dataset.resultId,
+         studentId = td.dataset.studentId,
+         groupSubId = td.dataset.groupSubjectId,
+         form = td.dataset.subjectFormControl;
 
          if(!(resId == "-")) {
             // валидация вводимых оценок
@@ -147,7 +154,7 @@ $(document).ready(function() {
             if(validate) {
                sendToServer(resId, studentId, groupSubId, form, window.newValue, td);
             } else {
-               td.html(window.oldValue.trim());
+               td.textContent = window.oldValue.trim();
                // отправляется сообщение о неверном формате оценки и перезагружается страница для сброса введенного значения
                alert("Неверный формат оценки!");
             };
@@ -158,7 +165,7 @@ $(document).ready(function() {
             if(validate) {
                sendToServer(resId, studentId, groupSubId, form, window.newValue, td);
             } else {
-               td.html(window.oldValue.trim());
+               td.textContent = window.oldValue.trim();
                // отправляется сообщение о неверном формате оценки и перезагружается страница для сброса введенного значения
                alert("Неверный формат оценки!");
             };
@@ -184,7 +191,7 @@ $(document).ready(function() {
       })
       .done(function(response) {
          console.log('Успешное сохранение/обновление');
-         obj[0].dataset.resultId = response.newResId;
+         obj.dataset.resultId = response.newResId;
          const dataForUpdate = [response.money, response.att1, response.att2, response.att3,];
          document.querySelector(`#money[data-student-id="${studentId}"]`).textContent = dataForUpdate[0];
          document.querySelector(`#att1[data-student-id="${studentId}"]`).textContent = dataForUpdate[1];
@@ -220,9 +227,8 @@ $(document).ready(function() {
       })
       .fail(function() {
          console.log("Ошибка сохранения | обновления!");
-         obj.html(window.oldValue);
+         obj.textContent = window.oldValue;
          alert("Ошибка сохранения | обновления!");
-         //document.location.reload();
       });
    };
 
