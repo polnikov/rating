@@ -58,33 +58,3 @@ function shineLinks(id) {
       };
    };
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// добавить цвет для ячеек Сессия/Пересдача/Комиссия
-function addColorForAttCells(name) {
-   let att = document.getElementsByName(name);
-   att.forEach(element => {
-      if (element.children[0].textContent == "Сессия") {
-         element.style.background = '#fcfff5';
-      } else if (element.children[0].textContent == "Пересдача") {
-         element.style.background = '#fffaf3';
-      } else {
-         element.style.background = '#fff6f6';
-      };
-   });
-};
