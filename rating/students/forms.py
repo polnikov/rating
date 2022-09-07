@@ -3,7 +3,7 @@ import re
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.forms.widgets import DateInput, MultiWidget, RadioSelect, TextInput
+from django.forms.widgets import DateInput, MultiWidget, RadioSelect, TextInput, Input
 
 from students.models import Result, Student
 
@@ -67,6 +67,8 @@ class StudentForm(forms.ModelForm):
 
 class ResultForm(forms.ModelForm):
     """Форма модели <Оценка>"""
+    students = Input()
+    groupsubject = Input()
     class Meta:
         model = Result
         fields = [
@@ -85,12 +87,33 @@ class ResultForm(forms.ModelForm):
         form_control_numeric = ['Экзамен', 'Диффзачет', 'Курсовой проект', 'Курсовая работа']
         set_1 = ['ня', '2', '3', '4', '5']
         set_2 = ['ня', 'нз', 'зач']
-        mark = self.cleaned_data['mark']
+        set_3 = ['ня', 'нз', '2']
+        mark = self.cleaned_data['mark']  # список оценок
         subject_form_control = self.cleaned_data['groupsubject'].subjects.form_control
         mark_types = set_1 if subject_form_control in form_control_numeric else set_2
 
-        if len(mark) != 0 and not set(mark).issubset(mark_types):
+        if len(mark) == 0:
+            raise ValidationError('Оценка не может быть пустой')
+        # если оценка первая, проверяем соответствие форме контроля
+        elif len(mark) == 1 and mark[0] not in mark_types:
             raise ValidationError(f'Оценка не соответствует форме контроля. Возможные оценки: {" ".join(mark_types)}')
+        # если оценка вторая
+        elif len(mark) == 2:
+            # проверяем соответствие каждой оценки форме контроля
+            if not set(mark).issubset(mark_types):
+                raise ValidationError(f'Оценка не соответствует форме контроля. Возможные оценки: {" ".join(mark_types)}')
+            # проверяем, что первая оценка отрицательная
+            if mark[0] not in set_3:
+                raise ValidationError('При выставлении второй оценки, первая не может быть положительной')
+        # если оценка третья
+        elif len(mark) == 3:
+            # проверяем соответствие каждой оценки форме контроля
+            if not set(mark).issubset(mark_types):
+                raise ValidationError(f'Оценка не соответствует форме контроля. Возможные оценки: {" ".join(mark_types)}')
+            # проверяем, что первые две оценки отрицательные
+            if not set(mark[0:2]).issubset(set_3):
+                raise ValidationError('При выставлении третьей оценки, первые две не могут быть положительными')
+
         return mark
 
 ########################################################################################################################
