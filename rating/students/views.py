@@ -121,7 +121,9 @@ class StudentRatingTableView(LoginRequiredMixin, ListView):
     """Отображение шапки таблицы среднего балла студентов и вывод семестров."""
     def get(self, request):
         semesters = Semester.objects.all()
-        return render(request, 'students/students_rating.html', context={'semesters': semesters})
+        groups = Group.objects.filter(is_archived=False)
+        return render(request, 'students/students_rating.html', context={'semesters': semesters,
+                                                                         'groups': groups})
 
 class StudentRatingApiView(LoginRequiredMixin, View):
     """Расчет среднего балла студента."""
@@ -130,14 +132,17 @@ class StudentRatingApiView(LoginRequiredMixin, View):
         serialized_data = []
         sem_start = request.GET.get('semStart', '')
         sem_stop = request.GET.get('semStop', '')
+        groups = request.GET.getlist('groups[]', False)
         if (not sem_start and not sem_stop) or (sem_start and not sem_stop) or (not sem_start and sem_stop) or (sem_start and sem_stop == '-'):
             # средний балл за указанный семестр. по умолчанию - за 1ый
             if sem_start:
                 start = sem_start
             else:
                 start = 1
-
-            students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, semester__semester__gte=start)
+            if groups:
+                students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, group__name__in=groups, semester__semester__gte=start)
+            else:
+                students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, semester__semester__gte=start)
             
             for student in students:
                 # все оценки студента в указанном семестре
@@ -175,7 +180,10 @@ class StudentRatingApiView(LoginRequiredMixin, View):
         else:
             # средний балл за указанный период
             start, stop = sem_start, sem_stop
-            students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, semester__semester__gte=start)
+            if groups:
+                students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, group__name__in=groups, semester__semester__gte=start)
+            else:
+                students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, semester__semester__gte=start)
             for student in students:
                 # все оценки студента за указанный период
                 marks = Result.objects.select_related().filter(students=student.student_id).filter(Q(groupsubject__subjects__semester__semester__gte=start) & Q(groupsubject__subjects__semester__semester__lte=stop)).values('mark')
@@ -209,6 +217,8 @@ class StudentRatingApiView(LoginRequiredMixin, View):
                     'isIll': student.is_ill,
                     'tag': student.tag,
                 })
+
+        serialized_data = sorted(serialized_data, key=lambda d: d['rating'])
 
         return JsonResponse({'data': serialized_data})
 

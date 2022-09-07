@@ -2,79 +2,25 @@
 $(document).ready(function() {
     var semStart = document.querySelector("input[name='semester-start']").value;
     var semStop = document.querySelector("input[name='semester-stop']").value;
+    var groups = $("#groups :selected").map((_, e) => e.textContent).get();
 
     // ограничиваем возможность выбора конечного семестра без стартового
-    let stopValueList = document.querySelectorAll("#semester-stop-menu div");
-    // отключаем видимость семестров меньших стартового
-    stopValueList.forEach(e => {
-        if(semStart == "" & e.textContent != "-") {
-            e.style.display = 'none';
-        } else {
-            e.style.removeProperty('display');
-        };
-    });
-    
-    const url = window.location.origin + "/students/json/rating";
-
-    // запрос в БД на получение данных о среднем балле студентов за указанный семестр
-    function getDataFromServer(semStart, semStop) {
-        $.ajax({
-        url: url,
-        type: "GET",
-        dataType: "JSON",
-        contentType: "application/json",
-        data: {
-            semStart: semStart,
-            semStop: semStop,
-            csrfmiddlewaretoken: csrftoken,
-        },
-        })
-        .done(function(response) {
-            console.log('Запрос данных выполнен успешно');
-
-            // определяем тело таблицы для вставки строк
-            let tableBody =  document.querySelector("table[id='students-rating'] tbody");
-            response.data.forEach(e => {
-
-                // готовим массив строк
-                let isIll = e.isIll, tag = e.tag;
-                let result = [];
-                if(isIll & tag != 0) {
-                    var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><i class="heart broken red icon"></i> <a>${e.fullname}</a> <div class="ui tiny pink label">${e.tag}</div></td>`
-                } else if(isIll) {
-                    var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><i class="heart broken red icon"></i> <a>${e.fullname}</a></td>`
-                } else if(tag != 0) {
-                    var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><a>${e.fullname}</a> <div class="ui tiny pink label">${e.tag}</div></td>`
-                } else {
-                    var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><a>${e.fullname}</a></td>`
-                };
-                
-                result.push(
-                    `<tr>
-                        ${line1}
-                        <td class="collapsing center aligned">${e.group}</td>
-                        <td class="collapsing center aligned">${e.currentSemester}</td>
-                        <td name="has-negative" class="collapsing center aligned">${e.basis}</td>
-                        <td class="collapsing center aligned">${e.level}</td>
-                        <td class="collapsing center aligned">${e.rating}</td>
-                    </tr>`
-                );
-                // вставляем массив в таблицу
-                tableBody.insertAdjacentHTML('afterbegin', result.join(""));
-            });
-        })
-        .fail(function() {
-        alert("Данные недоступны!")
-        });
+    var stopSemesterDropdown = document.getElementById("semester-stop");
+    if(semStart != "") {
+        stopSemesterDropdown.classList.remove("disabled");
+    } else {
+        stopSemesterDropdown.classList.add("disabled");
     };
-    getDataFromServer(semStart, semStop);
+    // получаем первоначальные дефолтные данные
+    getDataFromServer(semStart, semStop, groups);
 
     // отслеживаем изменение стартового семестра
     $(document).on("change", "input[name='semester-start']", function() {
         // определяем стартовый семестр
-        let startValue = document.querySelector("input[name='semester-start']").value;
+        var startValue = document.querySelector("input[name='semester-start']").value;
 
-        // ограничиваем выбор конечного семестра во втором списке в зависимости от стартового семестра
+        // ограничиваем выбор конечного семестра в зависимости от стартового семестра
+        if(startValue != "") {stopSemesterDropdown.classList.remove("disabled");};
         let stopValueList = document.querySelectorAll("#semester-stop-menu div");
         // отключаем видимость семестров меньше стартового
         stopValueList.forEach(e => {
@@ -86,23 +32,33 @@ $(document).ready(function() {
         });
 
         // определяем конечный семестр
-        let stopValue = document.querySelector("input[name='semester-stop']").value;
-        // проверяем, что конечный семестр не выбран
-        if(!stopValue | stopValue == "-") {
-            deleteTableData();
-            getDataFromServer(startValue);
-        } else if(stopValue & stopValue) {
-            deleteTableData();
-            getDataFromServer(startValue, stopValue);
-        };
+        var stopValue = document.querySelector("input[name='semester-stop']").value;
+        // определяем выбранные группы
+        var groups = $("#groups :selected").map((_, e) => e.textContent).get();
+        deleteTableData();
+        getDataFromServer(startValue, stopValue, groups);
     });
 
     // отслеживаем изменение конечного семестра
     $(document).on("change", "input[name='semester-stop']", function() {
-        let startValue = document.querySelector("input[name='semester-start']").value;
-        let stopValue = document.querySelector("input[name='semester-stop']").value;
+        // определяем стартовый и конечный семестры
+        var startValue = document.querySelector("input[name='semester-start']").value;
+        var stopValue = document.querySelector("input[name='semester-stop']").value;
+        // определяем выбранные группы
+        var groups = $("#groups :selected").map((_, e) => e.textContent).get();
         deleteTableData();
-        getDataFromServer(startValue, stopValue);
+        getDataFromServer(startValue, stopValue, groups);
+    });
+
+    // отслеживаем изменение выбранных групп
+    $(document).on("change", ".ui.fluid.clearable.multiple.selection.dropdown", function() {
+        // определяем стартовый и конечный семестры
+        var startValue = document.querySelector("input[name='semester-start']").value;
+        var stopValue = document.querySelector("input[name='semester-stop']").value;
+        // определяем группы
+        var groups = $("#groups :selected").map((_, e) => e.textContent).get();
+        deleteTableData();
+        getDataFromServer(startValue, stopValue, groups);
     });
 });
 
@@ -125,7 +81,61 @@ function getCookie(name) {
     return cookieValue;
  };
  const csrftoken = getCookie('csrftoken');
- 
+
+// запрос в БД на получение данных о среднем балле студентов за указанный семестр
+function getDataFromServer(semStart, semStop, groups) {
+    const url = window.location.origin + "/students/json/rating";
+    $.ajax({
+    url: url,
+    type: "GET",
+    dataType: "JSON",
+    contentType: "application/json",
+    data: {
+        semStart: semStart,
+        semStop: semStop,
+        groups: groups,
+        csrfmiddlewaretoken: csrftoken,
+    },
+    })
+    .done(function(response) {
+        console.log('Запрос данных выполнен успешно');
+
+        // определяем тело таблицы для вставки строк
+        let tableBody =  document.querySelector("table[id='students-rating'] tbody");
+        response.data.forEach(e => {
+
+            // готовим массив строк
+            let isIll = e.isIll, tag = e.tag;
+            let result = [];
+            if(isIll & tag != 0) {
+                var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><i class="heart broken red icon"></i> <a>${e.fullname}</a> <div class="ui tiny pink label">${e.tag}</div></td>`
+            } else if(isIll) {
+                var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><i class="heart broken red icon"></i> <a>${e.fullname}</a></td>`
+            } else if(tag != 0) {
+                var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><a>${e.fullname}</a> <div class="ui tiny pink label">${e.tag}</div></td>`
+            } else {
+                var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><a>${e.fullname}</a></td>`
+            };
+            
+            result.push(
+                `<tr>
+                    ${line1}
+                    <td class="collapsing center aligned">${e.group}</td>
+                    <td class="collapsing center aligned">${e.currentSemester}</td>
+                    <td name="has-negative" class="collapsing center aligned">${e.basis}</td>
+                    <td class="collapsing center aligned">${e.level}</td>
+                    <td class="collapsing center aligned">${e.rating}</td>
+                </tr>`
+            );
+            // вставляем массив в таблицу
+            tableBody.insertAdjacentHTML('afterbegin', result.join(""));
+        });
+    })
+    .fail(function() {
+    alert("Данные недоступны!")
+    });
+};
+
 //  функция формирования ссылки на студента
 function getAbsoluteURL(id) {
     let baseURL = window.location.origin;
@@ -151,3 +161,4 @@ function deletePaddingTopBottomForMenuSegment() {
     segments.style.paddingBottom = '0';
  };
  
+

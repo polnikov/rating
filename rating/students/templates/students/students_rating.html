@@ -14,7 +14,7 @@
 
 <div id="segments" class="ui basic segments">
 
-	<!-- Title & button -->
+	<!-- Title -->
 	<div id="buttons-segment" class="ui basic segment">
 		<table class="ui very basic table">
 			<tbody>
@@ -25,13 +25,24 @@
 		</table>
 	</div>
 
+    <!-- Filter set -->
     <div id="menu-segment" class="ui basic segment">
         <table class="ui very basic table">
 			<tbody>
 				<tr>
-                    <td class="left aligned"><div class="ui basic grey label"><i class="info red icon"></i> по умолчанию за 1ый семестр</div></td>
+                    <td class="left aligned"><div class="ui basic grey label"><i class="info red icon"></i> по умолчанию за 1ый семестр для всех активных студентов</div></td>
+                    <!-- Groups -->
+                    <td class="right aligned collapsing"><div class="ui basic grey label">Группа:</div></td>
+                    <td class="right aligned" style="width: 400px">
+                        <select id="groups" class="ui fluid clearable multiple selection dropdown" multiple="">
+                            {% for g in groups %}
+                                <option value="{{ g.id }}">{{ g.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <!-- Semester period -->
                     <td class="right aligned collapsing"><div class="ui basic grey label">За период:</div></td>
-                    <td class="right aligned collapsing">
+                    <td class="center aligned" style="width: 100px">
                         <div id="semester-start" class="ui floating dropdown">
                             <input type="hidden" name="semester-start">
                             <i class="dropdown icon"></i>
@@ -43,7 +54,7 @@
                             </div>
                         </div>
                     </td>
-                    <td class="right aligned collapsing">
+                    <td class="center aligned" style="width: 100px">
                         <div id="semester-stop" class="ui floating dropdown">
                             <input type="hidden" name="semester-stop">
                             <i class="dropdown icon"></i>
@@ -78,7 +89,7 @@
                 </thead>
 
                 <tbody>
-                    <!-- Statistics and Marks -->
+                    <!-- Table data -->
                 </tbody>
 
             </table>
@@ -92,7 +103,6 @@
 <script type="text/javascript">
 /* on page ************************************************************************************************************/
 
-$('.ui.checkbox').checkbox();
 
 /* script *************************************************************************************************************/
 
