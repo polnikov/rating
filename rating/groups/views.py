@@ -77,7 +77,7 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
             groups__name=groupname,
             subjects__semester=semester,
             is_archived=False
-        ).order_by('subjects__form_control')
+        ).order_by('subjects__form_control', 'subjects__name')
         # текущий курс группы
         course = students[0].course if students else '<i class="icon red close"></i>'
         context = {
@@ -169,7 +169,7 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
     return if student: `list`
     '''
     # дисциплины, назначенные текущей группе в соответствующем семестре
-    subjects = GroupSubject.objects.select_related().filter(groups__name=groupname, subjects__semester=semester).order_by('subjects__form_control')
+    subjects = GroupSubject.objects.select_related().filter(groups__name=groupname, subjects__semester=semester).order_by('subjects__form_control', 'subjects__name')
 
     # добавляем порядковую нумерацию дисциплин
     for n, s in enumerate(subjects):
