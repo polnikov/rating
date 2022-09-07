@@ -18,7 +18,7 @@
 
         <!-- Form -->
 		<div class="ui segment">
-            <form action="{% url 'subjects:groupsubject-add' %}" method="post">
+            <form id="form" action="{% url 'subjects:groupsubject-add' %}" method="post">
                 {% csrf_token %}
                 {% if form.errors %} {{ form.errors }} {% endif %}
                 <div class="ui large form">
@@ -38,7 +38,7 @@
                     
                     <div class="required field">
                         <label>Группа</label>
-                        <div class="ui search selection dropdown" id="groups">
+                        <div class="ui search selection dropdown five column" id="groups">
                             <input type="hidden" name="groups">
                             <i class="dropdown icon"></i>
                             <div class="default text">Выбрать</div>
@@ -64,18 +64,18 @@
 </div>
 
 <script>
-    $('#subjects')
-    .dropdown({
-        ignoreDiacritics: true,
-        sortSelect: true,
-        fullTextSearch:'exact'
+    $('select.dropdown').dropdown();
+    
+    $(document).ready(function() {
+ 
+       // изменить шрифт в поле <input>
+       let formElements = document.forms.form.elements;
+       for (let i = 0; i < formElements.length; i++) {
+          if (formElements[i].localName == "input" && formElements[i].type == "text") {
+             formElements[i].style.fontFamily = "Hack"
+          }
+       };
     });
-    $('#groups')
-    .dropdown({
-        ignoreDiacritics: true,
-        sortSelect: true,
-        fullTextSearch:'exact'
-    });
-</script>
-
+ </script>
+ 
 {% endblock %}
