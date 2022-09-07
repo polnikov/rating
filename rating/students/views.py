@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import Http404, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView, View)
@@ -61,7 +61,9 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             history = 'Error'
 
         # все оценки студента
-        marks = Result.objects.select_related().filter(students=student.student_id)
+        marks = Result.objects.select_related().filter(
+            students=student.student_id).filter(
+            ~Q(groupsubject__subjects__form_control__exact='Зачет'))
         # все аттестации для данного направления (группы), исключая зачеты
         atts = GroupSubject.objects.select_related('subjects').filter(
             groups=student.group, 
@@ -140,13 +142,19 @@ class StudentRatingApiView(LoginRequiredMixin, View):
             else:
                 start = 1
             if groups:
-                students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, group__name__in=groups, semester__semester__gte=start)
+                students = Student.objects.select_related('group', 'semester', 'basis').filter(
+                    is_archived=False, group__name__in=groups, semester__semester__gte=start)
             else:
-                students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, semester__semester__gte=start)
-            
+                students = Student.objects.select_related(
+                    'group', 'semester', 'basis').filter(
+                    is_archived=False, semester__semester__gte=start)
+
             for student in students:
                 # все оценки студента в указанном семестре
-                marks = Result.objects.select_related().filter(students=student.student_id, groupsubject__subjects__semester__semester=start).values('mark')
+                marks = Result.objects.select_related().filter(
+                    students=student.student_id,
+                    groupsubject__subjects__semester__semester=start
+                ).filter(~Q(groupsubject__subjects__form_control__exact='Зачет')).values('mark')
                 # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
                 atts = GroupSubject.objects.select_related('subjects').filter(
                     groups=student.group,
@@ -181,12 +189,19 @@ class StudentRatingApiView(LoginRequiredMixin, View):
             # средний балл за указанный период
             start, stop = sem_start, sem_stop
             if groups:
-                students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, group__name__in=groups, semester__semester__gte=start)
+                students = Student.objects.select_related('group', 'semester', 'basis').filter(
+                    is_archived=False, group__name__in=groups, semester__semester__gte=start)
             else:
-                students = Student.objects.select_related('group', 'semester', 'basis').filter(is_archived=False, semester__semester__gte=start)
+                students = Student.objects.select_related(
+                    'group', 'semester', 'basis').filter(
+                    is_archived=False, semester__semester__gte=start)
             for student in students:
                 # все оценки студента за указанный период
-                marks = Result.objects.select_related().filter(students=student.student_id).filter(Q(groupsubject__subjects__semester__semester__gte=start) & Q(groupsubject__subjects__semester__semester__lte=stop)).values('mark')
+                marks = Result.objects.select_related().filter(
+                    students=student.student_id).filter(
+                    Q(groupsubject__subjects__semester__semester__gte=start) &
+                    Q(groupsubject__subjects__semester__semester__lte=stop)).filter(
+                    ~Q(groupsubject__subjects__form_control__exact='Зачет')).values('mark')
                 # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
                 atts = GroupSubject.objects.select_related('subjects').filter(
                     groups=student.group,
@@ -395,7 +410,24 @@ class ResultCreateView(LoginRequiredMixin, CreateView):
     model = Result
     form_class = ResultForm
     template_name = 'students/result_add.html'
-    success_url = '/students/results'
+
+    def post(self, request, *args, **kwargs):
+        student = request.POST['students'].replace('<option value=&quot;', '').split('&')[0]
+        groupsubject = request.POST['groupsubjects'].replace('<option value=&quot;', '').split('&')[0]
+        mark_0 = request.POST['mark_0']
+        mark_1 = request.POST['mark_1']
+        mark_2 = request.POST['mark_2']
+        
+        form = ResultForm(data={'students': student,
+                                'groupsubject': groupsubject,
+                                'mark_0': mark_0,
+                                'mark_1': mark_1,
+                                'mark_2': mark_2})
+        if form.is_valid():
+            form.save()
+            return redirect('students:results')
+
+        return super().post(request, *args, **kwargs)
 
 
 class ResultUpdateView(LoginRequiredMixin, UpdateView):
