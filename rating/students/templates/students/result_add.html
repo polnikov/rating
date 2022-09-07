@@ -23,13 +23,33 @@
                <div class="ui large form">
                   <div class="required field">
                      <label>Студент</label>
-                     {% render_field form.students _no_label='True' placeholder='Выбрать...' _style='ChoiceField' %}
+                     <div class="ui search selection dropdown" id="students">
+                        <input type="hidden" name="students">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">Выбрать</div>
+                        <div class="menu">
+                            {% for s in form.students %}
+                              <div class="item">{{ s }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
                   </div>
+                  
                   <div class="required field">
                      <label>Дисциплина</label>
-                     {% render_field form.groupsubject _no_label='True' placeholder='Выбрать...' %}
+                     <div class="ui search selection dropdown" id="groupsubjects">
+                        <input type="hidden" name="groupsubjects">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">Выбрать</div>
+                        <div class="menu">
+                            {% for g in form.groupsubject %}
+                              <div class="item">{{ g }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
                   </div>
-                  <div class="required field" style="width: 150px">
+
+                  <div class="inline one wide required {% if form.mark.errors %} error {% endif %} field">
                      <label>Оценки</label>
                      {% render_field form.mark _no_label='True' _help='True' %}
                   </div>
