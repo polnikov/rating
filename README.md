@@ -29,3 +29,6 @@
 - [django-import-export](https://github.com/django-import-export/django-import-export)
 - [django-semanticui-forms](https://github.com/michaelmob/django-semanticui-forms)
 - [django-stronghold](https://github.com/mgrouchy/django-stronghold)
+
+### **Project Model's Diagram**
+![Project Diagram](/docs/img/Project_Diagram.jpg)
