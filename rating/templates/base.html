@@ -34,7 +34,7 @@
     <div class="ui container">
         <div id="header" class="ui pointing inverted small top fixed menu" style="font-family: Hack">
             <!-- Left side header -->
-            <a class="item"><h4 style="font-family: Hack">Рейтинг успеваемости ФИЭиГХ</h4></a>
+            <a id="toggle" class="item"><h4 style="font-family: Hack">Рейтинг успеваемости ФИЭиГХ</h4></a>
             <!-- Right side header -->
             <div class="right menu">
                 <!-- Date & Time -->
@@ -58,9 +58,9 @@
 </header>
 
 <!-- Menu -->
-<input type="checkbox" id="nav-toggle" hidden>
+{% comment %} <input type="checkbox" id="nav-toggle" hidden> {% endcomment %}
 <nav class="nav">
-    <label for="nav-toggle" class="nav-toggle" onclick></label>
+    {% comment %} <label for="nav-toggle" class="nav-toggle" onclick></label> {% endcomment %}
     <ul>
         <li><a class="header" href="{% url 'dashboard:dashboard' %}"><i class="calculator icon"></i> Статистика</a>
         <li><a class="header" href="{% url 'groups:cards' %}"><i class="users icon"></i> Группы</a>
@@ -133,6 +133,26 @@
 
 <script>
 $('.ui.dropdown').dropdown();
+
+function closeMenu() {
+    let menu = document.querySelector("nav");
+    menu.style.left = "-320px";
+};
+
+$(".nav").hover(function(){}, closeMenu);
+
+$('#toggle').hover(
+    function(){
+        $('.nav').animate({
+            left: '0px'
+        }, 100);
+}, function(){
+    if($('.nav').css("left") == "0px") {
+        console.log($('.nav').css("left"));
+        setTimeout(closeMenu, 1000);
+    };
+});
+
 </script>
 
 </html>
