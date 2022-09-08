@@ -30,9 +30,9 @@
         <table class="ui very basic table">
 			<tbody>
 				<tr>
-                    <td class="left aligned"><div class="ui basic grey label"><i class="info red icon"></i> по умолчанию за 1ый семестр для всех активных студентов</div></td>
+                    <td class="left aligned"><div id="info" class="ui basic grey label"><i class="info red icon"></i>по умолчанию за 1ый семестр для всех активных студентов</div></td>
                     <!-- Groups -->
-                    <td class="right aligned collapsing"><div class="ui basic grey label">Группа:</div></td>
+                    <td class="right aligned collapsing"><div id="info" class="ui basic grey label">Группа:</div></td>
                     <td class="right aligned" style="width: 400px">
                         <select id="groups" class="ui fluid clearable multiple selection dropdown four column" multiple="">
                             {% for g in groups %}
@@ -41,12 +41,12 @@
                         </select>
                     </td>
                     <!-- Semester period -->
-                    <td class="right aligned collapsing"><div class="ui basic grey label">За период:</div></td>
+                    <td class="right aligned collapsing"><div id="info" class="ui basic grey label">За период:</div></td>
                     <td class="center aligned" style="width: 100px">
                         <div id="semester-start" class="ui floating dropdown">
                             <input type="hidden" name="semester-start">
                             <i class="dropdown icon"></i>
-                            <div class="default text"></div>
+                            <div class="default text"><i class="arrow alternate circle down large icon"></i></div>
                             <div class="menu">
                                 {% for sem in semesters %}
                                     <div class="item">{{ sem.semester }}</div>
@@ -58,7 +58,7 @@
                         <div id="semester-stop" class="ui floating dropdown">
                             <input type="hidden" name="semester-stop">
                             <i class="dropdown icon"></i>
-                            <div class="default text"></div>
+                            <div class="default text"><i class="arrow alternate circle down large icon"></i></div>
                             <div id="semester-stop-menu" class="menu">
                                 <div class="item">-</div>
                                 {% for sem in semesters %}
