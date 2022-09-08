@@ -15,7 +15,7 @@
 <div id="segments" class="ui basic segments">
 
 	<!-- Title -->
-	<div id="buttons-segment" class="ui basic segment">
+	<div name="segment" class="ui basic segment">
 		<table class="ui very basic table">
 			<tbody>
 				<tr>
@@ -26,7 +26,7 @@
 	</div>
 
     <!-- Filter set -->
-    <div id="menu-segment" class="ui basic segment">
+    <div name="segment" class="ui basic segment">
         <table class="ui very basic table">
 			<tbody>
 				<tr>
@@ -103,10 +103,15 @@
 <script type="text/javascript">
 /* on page ************************************************************************************************************/
 
+// убрать верхний отступ сегмента с таблицей
+function deletePaddingTopForDatatableSegment() {
+    let datatableSegment = document.getElementById("datatable-segment");
+    datatableSegment.style.paddingTop = '0';
+ };
 
 /* script *************************************************************************************************************/
 
-deletePaddingTopBottomForMenuSegment();
+deletePaddingTopBottomForSegments();
 
 </script>
 {% endblock %}
