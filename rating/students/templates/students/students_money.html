@@ -51,6 +51,7 @@
                         </td>
 								<td class="collapsing center aligned">{{ item.semester.semester }}</td>
                         <td>
+                           {% if item.is_ill %}<i class="heart broken red icon"></i>{% endif %}
                            <a href="{{ item.get_absolute_url }}">{{ item.fullname }}</a>
                            {% if item.tag %}<div id="tag-label" class="ui small pink label">{{ item.tag }}</div>{% endif %}
                         </td>
