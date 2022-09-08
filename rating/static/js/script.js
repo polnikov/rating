@@ -1,4 +1,4 @@
-/* <script type="text/javascript" src="{% static 'js\script.js' %}"></script> */
+/* <script type="text/javascript" src="{% static 'js/script.js' %}"></script> */
 
 // изменить шрифт в поле <input> в формах
 function changeFormsInputFont() {
