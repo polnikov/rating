@@ -129,50 +129,30 @@ class StudentRatingTableView(LoginRequiredMixin, ListView):
 
 class StudentRatingApiView(LoginRequiredMixin, View):
     """Расчет среднего балла студента."""
-    #! TODO: переписать через функцию
+
     def get(self, request):
         serialized_data = []
         sem_start = request.GET.get('semStart', '')
         sem_stop = request.GET.get('semStop', '')
         groups = request.GET.getlist('groups[]', False)
-        if (not sem_start and not sem_stop) or (sem_start and not sem_stop) or (not sem_start and sem_stop) or (sem_start and sem_stop == '-'):
-            # средний балл за указанный семестр. по умолчанию - за 1ый
-            if sem_start:
-                start = sem_start
-            else:
-                start = 1
-            if groups:
+        
+        if sem_start:
+            start = sem_start
+        else:
+            start = 1
+        
+        if groups:
                 students = Student.objects.select_related('group', 'semester', 'basis').filter(
                     is_archived=False, group__name__in=groups, semester__semester__gte=start)
-            else:
-                students = Student.objects.select_related(
-                    'group', 'semester', 'basis').filter(
-                    is_archived=False, semester__semester__gte=start)
+        else:
+            students = Student.objects.select_related(
+                'group', 'semester', 'basis').filter(
+                is_archived=False, semester__semester__gte=start)
 
+        if (not sem_start and not sem_stop) or (sem_start and not sem_stop) or (not sem_start and sem_stop) or (sem_start and sem_stop == '-'):
+            # средний балл за указанный семестр. по умолчанию - за 1ый
             for student in students:
-                # все оценки студента в указанном семестре
-                marks = Result.objects.select_related().filter(
-                    students=student.student_id,
-                    groupsubject__subjects__semester__semester=start
-                ).filter(~Q(groupsubject__subjects__form_control__exact='Зачет')).values('mark')
-                # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
-                atts = GroupSubject.objects.select_related('subjects').filter(
-                    groups=student.group,
-                    subjects__semester__semester=start,
-                    is_archived=False
-                ).filter(~Q(subjects__form_control__exact='Зачет'))
-                # вычисление среднего балла за семестр
-                # берем только последнюю оценку и исключаем <ня> и <2>
-                marks = list(filter(lambda x: x not in ['ня', '2'], [i['mark'][-1] for i in marks]))
-                # количество аттестаций с оценками в семестре
-                num_atts = atts.count()
-                # количество каждой из оценок <3 | 4 | 5>
-                count_marks = dict(Counter(marks))
-                # определяем средний балл за семестр
-                try:
-                    rating = round(sum([int(k)*v for k, v in count_marks.items()]) / num_atts, 2)
-                except ZeroDivisionError:
-                    rating = 0
+                rating = calculate_rating(student, start)
 
                 serialized_data.append({
                     'studentId': student.student_id,
@@ -188,38 +168,9 @@ class StudentRatingApiView(LoginRequiredMixin, View):
         else:
             # средний балл за указанный период
             start, stop = sem_start, sem_stop
-            if groups:
-                students = Student.objects.select_related('group', 'semester', 'basis').filter(
-                    is_archived=False, group__name__in=groups, semester__semester__gte=start)
-            else:
-                students = Student.objects.select_related(
-                    'group', 'semester', 'basis').filter(
-                    is_archived=False, semester__semester__gte=start)
+
             for student in students:
-                # все оценки студента за указанный период
-                marks = Result.objects.select_related().filter(
-                    students=student.student_id).filter(
-                    Q(groupsubject__subjects__semester__semester__gte=start) &
-                    Q(groupsubject__subjects__semester__semester__lte=stop)).filter(
-                    ~Q(groupsubject__subjects__form_control__exact='Зачет')).values('mark')
-                # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
-                atts = GroupSubject.objects.select_related('subjects').filter(
-                    groups=student.group,
-                    is_archived=False
-                ).filter(Q(subjects__semester__semester__gte=start) & Q(subjects__semester__semester__lte=stop)
-                ).filter(~Q(subjects__form_control__exact='Зачет'))
-                # вычисление среднего балла за период
-                # берем только последнюю оценку и исключаем <ня> и <2>
-                marks = list(filter(lambda x: x not in ['ня', '2'], [i['mark'][-1] for i in marks]))
-                # количество аттестаций с оценками в семестре
-                num_atts = atts.count()
-                # количество каждой из оценок <3 | 4 | 5>
-                count_marks = dict(Counter(marks))
-                # определяем средний балл за период
-                try:
-                    rating = round(sum([int(k)*v for k, v in count_marks.items()]) / num_atts, 2)
-                except ZeroDivisionError:
-                    rating = 0
+                rating = calculate_rating(student, start, stop)
 
                 serialized_data.append({
                     'studentId': student.student_id,
@@ -483,3 +434,48 @@ class StudentsDebtsListView(LoginRequiredMixin, ListView):
             st.att3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
 
         return students
+
+########################################################################################################################
+
+def calculate_rating(student, start, stop=False):
+    '''Рассчитать средний балл студента за семестр или период.'''
+    if start and stop:
+        # все оценки студента за указанный период
+        marks = Result.objects.select_related().filter(
+            students=student.student_id).filter(
+            Q(groupsubject__subjects__semester__semester__gte=start) &
+            Q(groupsubject__subjects__semester__semester__lte=stop)).filter(
+            ~Q(groupsubject__subjects__form_control__exact='Зачет')).values('mark')
+        # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
+        atts = GroupSubject.objects.select_related('subjects').filter(
+            groups=student.group,
+            is_archived=False
+        ).filter(Q(subjects__semester__semester__gte=start) & Q(subjects__semester__semester__lte=stop)
+        ).filter(~Q(subjects__form_control__exact='Зачет'))
+    elif start and not stop:
+        # все оценки студента в указанном семестре
+        marks = Result.objects.select_related().filter(
+            students=student.student_id,
+            groupsubject__subjects__semester__semester=start
+        ).filter(~Q(groupsubject__subjects__form_control__exact='Зачет')).values('mark')
+        # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
+        atts = GroupSubject.objects.select_related('subjects').filter(
+            groups=student.group,
+            subjects__semester__semester=start,
+            is_archived=False
+        ).filter(~Q(subjects__form_control__exact='Зачет'))
+        
+    # вычисление среднего балла за семестр или период
+    # берем только последнюю оценку и исключаем <ня> и <2>
+    marks = list(filter(lambda x: x not in ['ня', '2'], [i['mark'][-1] for i in marks]))
+    # количество аттестаций с оценками в семестре или за период
+    num_atts = atts.count()
+    # количество каждой из оценок <3 | 4 | 5>
+    count_marks = dict(Counter(marks))
+    try:
+        rating = round(sum([int(k)*v for k, v in count_marks.items()]) / num_atts, 2)
+    except ZeroDivisionError:
+        rating = 0
+    
+    return rating
+
