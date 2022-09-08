@@ -15,7 +15,7 @@
 <div id="segments" class="ui basic segments">
 
 	<!-- Title -->
-	<div name="segment" class="ui basic segment">
+	<div id="title-segment" class="ui basic segment">
 		<table class="ui very basic table">
 			<tbody>
 				<tr>
@@ -26,7 +26,7 @@
 	</div>
 
     <!-- Filter set -->
-    <div name="segment" class="ui basic segment">
+    <div id="filter-segment" class="ui basic segment">
         <table class="ui very basic table">
 			<tbody>
 				<tr>
@@ -111,7 +111,8 @@ function deletePaddingTopForDatatableSegment() {
 
 /* script *************************************************************************************************************/
 
-deletePaddingTopBottomForSegments();
+deletePaddingTopBottomForFilterSegment();
+deletePaddingTopBottomForTitleSegment();
 
 </script>
 {% endblock %}

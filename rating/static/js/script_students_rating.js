@@ -154,13 +154,16 @@ function deleteTableData() {
     })
 };
 
-// убрать нижний отступ сегмента с заголовком и фильтрами
-function deletePaddingTopBottomForSegments() {
-    let segments = document.getElementsByName("segment");
-    segments.forEach(e => {
-        e.style.paddingTop = '0';
-        e.style.paddingBottom = '0';
-    });
+// убрать верхний и нижний отступы сегмента с фильтрами
+function deletePaddingTopBottomForFilterSegment() {
+    let segment = document.getElementById("filter-segment");
+    segment.style.paddingTop = '0';
+    segment.style.paddingBottom = '0';
  };
  
+ // убрать нижний отступ сегмента с заголовком
+ function deletePaddingTopBottomForTitleSegment() {
+    let segment = document.getElementById("title-segment");
+    segment.style.paddingBottom = '0';
+};
 
