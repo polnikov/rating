@@ -108,7 +108,7 @@ function getDataFromServer(semStart, semStop, groups) {
             let isIll = e.isIll, tag = e.tag;
             let result = [];
             if(isIll & tag != 0) {
-                var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><i class="heart broken red icon"></i> <a>${e.fullname}</a> <div class="ui tiny pink label">${e.tag}</div></td>`
+                var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><i class="heart broken red icon"></i> <a>${e.fullname}</a> <div id="tag-label" class="ui tiny pink label">${e.tag}</div></td>`
             } else if(isIll) {
                 var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><i class="heart broken red icon"></i> <a>${e.fullname}</a></td>`
             } else if(tag != 0) {
