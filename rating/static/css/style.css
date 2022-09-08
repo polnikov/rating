@@ -126,16 +126,6 @@
    font-size: 1.1em;
    display: inline-block;
 }
-
-/* Когда флажок установлен, открывается панель*/
-/* [id='nav-toggle']:checked ~ .nav {
-   left: 0;
-   box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
-   -moz-box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
-   -webkit-box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
-   overflow-y: auto;
-} */
-
 /* формируем меню */
 .nav > ul {
    width: 230px;
@@ -202,4 +192,3 @@
    -webkit-transition: width .5s ease;
    transition: width .5s ease;
 }
-
