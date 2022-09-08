@@ -132,23 +132,23 @@
 <script>
 $('.ui.dropdown').dropdown();
 
+// функция закрытия меню
 function closeMenu() {
     let menu = document.querySelector("nav");
     menu.style.left = "-320px";
 };
 
+// закрытие меню, если курсор ушел с меню
 $(".nav").hover(function(){}, closeMenu);
 
+// открытие меню при наведении курсора на название приложения
 $('#toggle').hover(
     function(){
         $('.nav').animate({
             left: '0px'
         }, 100);
-}, function(){
-    if($('.nav').css("left") == "0px") {
-        setTimeout(closeMenu, 1000);
-    };
-});
+    }, function(){}
+);
 
 </script>
 
