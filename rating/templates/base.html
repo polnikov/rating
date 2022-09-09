@@ -30,15 +30,16 @@
 
 <!-- Header -->
 <header>
-    <!-- Header -->
     <div class="ui container">
         <div id="header" class="ui pointing inverted small top fixed menu" style="font-family: Hack">
+
             <!-- Left side header -->
             <a id="toggle" class="item"><h4 style="font-family: Hack">Рейтинг успеваемости ФИЭиГХ</h4></a>
+
             <!-- Right side header -->
             <div class="right menu">
-                <!-- Date & Time -->
-                <div class="item"><i class="calendar day icon"></i>{% now "l d E Y" %}</div>
+                <!-- Job time info -->
+                <div id="job-time" class="item"></div>
                 <!-- Search -->
                 <div class="item">
                     <div class="ui icon input">
@@ -129,7 +130,7 @@
 <!-- Custom Scripts -->
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
 
-<script>
+<script type="text/javascript">
 $('.ui.dropdown').dropdown();
 
 // функция закрытия меню
@@ -149,6 +150,9 @@ $('#toggle').hover(
         }, 100);
     }, function(){}
 );
+
+jobTimeInfo();
+setInterval("jobTimeInfo()", 60000);
 
 </script>
 
