@@ -84,8 +84,7 @@ function jobTimeInfo() {
    var el = document.getElementById("job-time");
 
    // текущие дата и время
-   // let date = new Date();
-   const date = new Date('September 8, 2022 14:45:00');
+   let date = new Date();
    let currentYear = date.getFullYear();
    let currentMonth = date.getMonth();
    let currentMonthDay = date.getDate();
