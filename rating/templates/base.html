@@ -75,7 +75,7 @@
 
         <li><div class="header"><i class="thumbtack blue icon"></i> Оценки</div>
             <li><a class="item" href="{% url 'students:results' %}"><i class="chevron right icon"></i>Студенты</a>
-            <li><a class="item" href="{% url 'students:rating' %}"><i class="chevron right icon"></i>Средний балл</a>
+            <li><a class="item" href="{% url 'students:rating' %}"><i class="star yellow icon"></i>Средний балл</a>
 
         <div class="ui horizontal red divider">
 
@@ -88,13 +88,8 @@
             <li><a class="item" href="{% url 'subjects:faculties' %}"><i class="plus green icon"></i>Факультеты</a>
 
         <div class="ui horizontal red divider">
-
-        <li><div class="header"><i class="archive brown icon"></i> Архив</div>
-            <li><a class="item" href="{% url 'archive:students' %}"><i class="chevron right icon"></i><span>Студенты</span></a>
-            <li><a class="item" href="{% url 'archive:marks' %}"><i class="chevron right icon"></i><span>Оценки</span></a>
-            <li><a class="item" href="{% url 'archive:subjects' %}"><i class="chevron right icon"></i><span>Дисциплины</span></a>
-            <li><a class="item" href="{% url 'archive:groupsubjects' %}"><i class="chevron right icon"></i><span>Назначения дисциплин</span></a>
-            <li><a class="item" href="{% url 'archive:groups' %}"><i class="chevron right icon"></i><span>Группы</span></a>
+        
+        <li><a class="header" href="{% url 'archive:archive' %}"><i class="archive brown icon"></i> Архив</a>
     </ul>
 </nav>
 
