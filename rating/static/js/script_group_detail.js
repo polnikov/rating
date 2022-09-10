@@ -400,7 +400,7 @@ function transferStudents() {
 
    if(checkedStudents != 0) {
       $.ajax({
-         url: window.location.origin + "/students/transfer",
+         url: window.location.origin + "/students/transfer/",
          type: "POST",
          data: {
             checkedStudents: checkedStudents,

@@ -84,7 +84,7 @@ function getCookie(name) {
 
 // запрос в БД на получение данных о среднем балле студентов за указанный семестр
 function getDataFromServer(semStart, semStop, groups) {
-    const url = window.location.origin + "/students/json/rating";
+    const url = window.location.origin + "/students/json/rating/";
     $.ajax({
     url: url,
     type: "GET",
