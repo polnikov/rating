@@ -32,86 +32,169 @@
 		</table>
 	</div>
 
-	<!-- Table -->
-	<div id="datatable-segment" class="ui basic segment">
-		{% if result_list %}
-			<div class="ui segment">
-            <table id="marks" class="ui selectable celled striped table">
+   <!-- Tabs -->
+   <div id="tabs-segment" class="ui basic segment">
 
-               <thead>
-                  <tr class="center aligned">
-                     <th id="semester" class="collapsing">Семестр</th>
-                     <th class="collapsing">Группа</th>
-                     <th>Студент</th>
-                     <th>Дисциплина</th>
-                     <th>Форма контроля</th>
-                     <th>Дата аттестации</th>
-                     <th name="mark" class="collapsing">Оценка</th>
-							<th class="collapsing">Удалить</th>
-                  </tr>
-               </thead>
+      <!-- Tabs title's -->
+      <div class="ui top attached tabular menu" style="font-family: Hack">
+          <a class="item active" data-tab="first">Все оценки</a>
+          <a class="item" data-tab="second"><i class="exclamation circle red icon"></i>По служебным запискам</a>
+      </div>
 
-               <tbody>
-                  {% for item in result_list %}
-                     <tr style="padding-right: 0">
-                           <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
-                           <td class="collapsing center aligned">
-										<a href="{% url 'groups:detail' groupname=item.groupsubject.groups semester=item.groupsubject.subjects.semester.semester %}">
-											{{ item.groupsubject.groups }}
-										</a>
-									</td>
-                           <td>
-                              <a href="{{ item.students.get_absolute_url }}">
-                                 {{ item.students.fullname }}
-                              </a>
-                              {% if item.students.tag %}<div id="tag-label" class="ui small pink label">{{ item.students.tag }}</div>{% endif %}
-                           </td>
-                           <td>
-                              {% if item.tag %}<i class="exclamation circle red icon"></i>{% endif %}
-                              <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
-                                 {{ item.groupsubject.subjects.name|truncatechars:80 }}
-                              </a>
-                           </td>
-                           <td class="collapsing">{{ item.groupsubject.subjects.form_control }}</td>
-
-
-                           {% if item.groupsubject.subjects.att_date %}
+      <!-- Tab 1 -->
+      <!-- All marks -->
+      <div class="ui bottom attached tab segment active" data-tab="first">
+         <!-- Table -->
+         <div id="datatable-segment" class="ui basic segment">
+            {% if result_list %}
+               <table id="marks" class="ui selectable celled table">
+   
+                  <thead>
+                     <tr class="center aligned">
+                        <th id="semester" class="collapsing">Семестр</th>
+                        <th class="collapsing">Группа</th>
+                        <th>Студент</th>
+                        <th>Дисциплина</th>
+                        <th>Форма контроля</th>
+                        <th>Дата аттестации</th>
+                        <th name="mark" class="collapsing">Оценка</th>
+                        <th class="collapsing">Удалить</th>
+                     </tr>
+                  </thead>
+   
+                  <tbody>
+                     {% for item in result_list %}
+                        <tr style="padding-right: 0">
+                              <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
                               <td class="collapsing center aligned">
-                                 {{ item.groupsubject.subjects.att_date|date:"d M Y" }}
+                                 <a href="{% url 'groups:detail' groupname=item.groupsubject.groups semester=item.groupsubject.subjects.semester.semester %}">
+                                    {{ item.groupsubject.groups }}
+                                 </a>
+                              </td>
+                              <td>
+                                 <a href="{{ item.students.get_absolute_url }}">
+                                    {{ item.students.fullname }}
+                                 </a>
+                                 {% if item.students.tag %}<div id="tag-label" class="ui small pink label">{{ item.students.tag }}</div>{% endif %}
+                              </td>
+                              <td>
+                                 {% if item.tag %}<i class="exclamation circle red icon"></i>{% endif %}
+                                 <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
+                                    {{ item.groupsubject.subjects.name|truncatechars:80 }}
+                                 </a>
+                              </td>
+                              <td class="collapsing">{{ item.groupsubject.subjects.form_control }}</td>
+   
+   
+                              {% if item.groupsubject.subjects.att_date %}
+                                 <td class="collapsing center aligned">
+                                    {{ item.groupsubject.subjects.att_date|date:"d M Y" }}
+                                 </td>
+                              {% else %}
+                                 <td class="negative collapsing center aligned"><i class="icon close"></i>
+                                    {{ item.groupsubject.subjects.empty_att_date }}
+                                 </td>
+                              {% endif %}
+   
+                              <td class="collapsing center aligned">
+                                 <a href="{% url 'students:result_update' item.id %}">
+                                    <div class="ui equal width grid collapsing center aligned">
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
+                                    </div>
+                                 </a>
+                              </td>
+   
+                              <td class="center aligned collapsing">
+                                 <a href="{% url 'students:result_delete' item.id %}">
+                                    <button id="trash-button" class="circular ui red tiny icon button">
+                                       <i class="trash alternate outline icon"></i>
+                                    </button>
+                                 </a>
+                              </td>
+   
+                        </tr>
+                     {% endfor %}
+                  </tbody>
+   
+               </table>
+            {% else %}
+               {% include 'empty_records.html' %}
+            {% endif %}
+         </div>
+      </div>
+
+      <!-- Tab 2 -->
+      <!-- Marks by request -->
+      <div class="ui bottom attached tab segment" data-tab="second">
+         <div id="datatable-segment" class="ui basic segment">
+            {% if results_by_request %}
+               <table id="request-marks" class="ui selectable celled table">
+   
+                  <thead>
+                     <tr class="center aligned">
+                        <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+                        <th class="collapsing">Преподаватель</th>
+                        <th>
+                           Название
+                           <div id="count-label" class="ui left pointing grey tiny label">{{ results_by_request.count }}</div>
+                        </th>
+                        <th class="collapsing" style="width: 50px">Форма контроля</th>
+                        <th class="collapsing center aligned">Кафедра</th>
+                        <th class="collapsing">Группа</th>
+                        <th class="collapsing">Семестр</th>
+                        <th class="collapsing">Дата аттестации {% if empty_date %}<div id="count-label" class="ui left pointing red tiny label">
+                           {{ empty_date }}</div>{% endif %}
+                        </th>
+                     </tr>
+                  </thead>
+   
+                  <tbody>
+                     {% for result in results_by_request %}
+                        <tr>
+                           <td class="collapsing center aligned">{{ forloop.counter }}</td>
+                           {% if result.groupsubject.subjects.teacher %}
+                              <td class="collapsing center aligned">{{ result.groupsubject.subjects.teacher }}</td>
+                           {% else %}
+                              <td class="negative collapsing center aligned"><i class="icon close"></i>
+                                 {{ result.groupsubject.subjects.empty_teacher }}
+                              </td>
+                           {% endif %}
+                           <td class="collapsing">
+                              <a href="{{ result.groupsubject.subjects.get_absolute_url }}">{{ result.groupsubject.subjects.name|truncatechars:30 }}</a>
+                           </td>
+                           <td class="collapsing">{{ result.groupsubject.subjects.form_control }}</td>
+                           {% if result.groupsubject.subjects.cathedra.short_name %}
+                           <td class="collapsing center aligned">
+                              {{ result.groupsubject.subjects.cathedra.short_name }}
+                           </td>
+                           {% else %}
+                              <td class="negative collapsing center aligned">
+                                 <i class="icon close"></i> Нет
+                              </td>
+                           {% endif %}
+                           <td class="collapsing center aligned">{{ result.groupsubject.groups }}</td>
+                           <td class="collapsing center aligned">{{ result.groupsubject.subjects.semester.semester }}</td>
+                           {% if result.groupsubject.subjects.att_date %}
+                              <td class="collapsing center aligned">
+                                 {{ result.groupsubject.subjects.empty_att_date|date:"D d M Y" }}
                               </td>
                            {% else %}
                               <td class="negative collapsing center aligned"><i class="icon close"></i>
-                                 {{ item.groupsubject.subjects.empty_att_date }}
+                                 {{ result.groupsubject.subjects.empty_att_date }}
                               </td>
                            {% endif %}
-
-									<td class="collapsing center aligned">
-                              <a href="{% url 'students:result_update' item.id %}">
-                                 <div class="ui equal width grid collapsing center aligned">
-                                    <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
-                                    <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
-                                    <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
-                                 </div>
-                              </a>
-                           </td>
-
-									<td class="center aligned collapsing">
-										<a href="{% url 'students:result_delete' item.id %}">
-											<button id="trash-button" class="circular ui red tiny icon button">
-												<i class="trash alternate outline icon"></i>
-											</button>
-										</a>
-									</td>
-
-                     </tr>
-                  {% endfor %}
-               </tbody>
-
-            </table>
+                         </tr>
+                     {% endfor %}
+                  </tbody>
+   
+               </table>
+            {% else %}
+               {% include 'empty_records.html' %}
+            {% endif %}
          </div>
-      {% else %}
-			{% include 'empty_records.html' %}
-		{% endif %}
+      </div>
    </div>
 </div>
 
@@ -122,6 +205,9 @@
 <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
 
 <script>
+// tabs
+$('.menu .item').tab();
+
 // убрать нижний отступ сегмента с заголовком и кнопками
 let segments = document.getElementById("segments");
 segments.style.paddingBottom = '0';
@@ -193,6 +279,67 @@ $(document).ready(function() {
       table.columns().search('').draw();
    });
    changeDatatableInputFont();
+});
+
+// DataTable
+$(document).ready(function() {
+	let firstRow = $('#request-marks thead tr')[0];
+	let secondRow = firstRow.cloneNode(true);
+	firstRow.after(secondRow);
+
+	let filterColumns = $('#request-marks thead tr')[0].children;
+	for (let i = 0; i < filterColumns.length; i++) {
+		let inputWidth = filterColumns[i].offsetWidth - 15;
+		if(i != 0) {
+			filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 150px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
+		} else {filterColumns[i].innerHTML = ""};
+	};
+
+	document.querySelector('#request-marks').style.width = "100%";
+	// DataTable
+	var table = $('#request-marks').DataTable({
+		language: {
+			lengthMenu: '_MENU_ записей на страницу',
+			zeroRecords: 'Записей нет...',
+			info: 'Всего записей: _MAX_',
+			infoEmpty: '',
+			infoFiltered: 'Найдено: _TOTAL_',
+			search: '',
+			searchPlaceholder: 'поиск',
+			paginate: {
+            first:    '«',
+            previous: '‹',
+            next:     '›',
+            last:     '»'
+         }
+		},
+		lengthMenu: [
+         [20, 50, -1],
+         [20, 50, 'Все']
+      ],
+      pageLength: 20,
+      columnDefs: [
+         { searchable: false, targets: 0 }
+      ],
+	});
+
+	// Filter event handler
+	$(table.table().container()).on('keyup', 'thead input', function() {table
+		.column($(this).data('index'))
+		.search(this.value)
+		.draw();
+	});
+
+	// Очистка фильтров двойным кликом выше head
+   $(document).on("dblclick",  ".ui.stackable.grid", function() {
+      let inputs = document.getElementsByName("filter");
+      inputs.forEach(e => {
+         e.value = "";
+      });
+      table.search('');
+      table.columns().search('').draw();
+   });
+	changeDatatableInputFont();
 });
 
 deletePaddingTopBottomForTitleBlock();

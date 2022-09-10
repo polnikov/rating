@@ -352,7 +352,16 @@ class ResultListView(LoginRequiredMixin, ListView):
     """Отобразить все оценки."""
     model = Result
     template_name = 'students/results.html'
-    queryset = Result.objects.select_related().filter(students__is_archived=False)
+    
+    def get_context_data(self,*args, **kwargs):
+        context = super().get_context_data(*args,**kwargs)
+        results = Result.objects.select_related().filter(students__is_archived=False).order_by(
+            '-groupsubject__subjects__att_date')
+        context['result_list'] = results
+        results_by_request = Result.objects.select_related().filter(students__is_archived=False, tag='СЗ').order_by(
+            'groupsubject__subjects__teacher')
+        context['results_by_request'] = results_by_request
+        return context
 
 
 class ResultCreateView(LoginRequiredMixin, CreateView):
