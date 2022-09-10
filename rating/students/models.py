@@ -140,8 +140,9 @@ class Student(CommonArchivedModel, CommonTimestampModel):
     def save(self, *args, **kwargs):
         # Проверяем, существует ли объект
         if Student.objects.filter(student_id=self.pk).exists():
+            #: Отправляем информацию по изменениям в модель <StudentLog>
             if self.pk is not None:
-                # Меняем модель
+                # берем текущий объект
                 old_object = Student.objects.get(pk=self.pk)
                 # получаем все поля модели
                 field_names = [field.name for field in Student._meta.fields]
@@ -168,6 +169,11 @@ class Student(CommonArchivedModel, CommonTimestampModel):
             except Exception as student_log_ex:
                 print(f'Не удалось записать изменения по студентам:')
                 print('[!] ---> Ошибка:', student_log_ex)
+
+            #: Если студент получает статус <Отчислен> или <Выпускник> - отправляем его в архив
+            if self.status in ['Отчислен', 'Выпускник']:
+                self.is_archived = True
+
         super(Student, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
