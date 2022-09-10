@@ -57,7 +57,6 @@ class GroupCardsView(LoginRequiredMixin, ListView):
 
 ########################################################################################################################
 
-
 class GroupDetailListView(LoginRequiredMixin, TemplateView):
     '''Отображение студентов соответствующей группы и семестра и назначенных им дисциплин.'''
     template_name = 'groups/group_detail.html'
@@ -385,9 +384,3 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
             m.att3 = '' if not cnt3 else cnt3
 
         return students
-
-
-
-
-
-
