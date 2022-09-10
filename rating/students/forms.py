@@ -76,6 +76,7 @@ class ResultForm(forms.ModelForm):
             'students',
             'mark',
             'tag',
+            'is_archived',
         ]
         widgets = {
             'mark': MultiWidget(widgets=[TextInput, TextInput, TextInput]),
