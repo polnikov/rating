@@ -28,30 +28,12 @@
                            <td>
                               <div class="required field">
                                  <label>Студент</label>
-                                 <div class="ui search selection dropdown two column" id="students">
-                                    <input type="hidden" name="students">
-                                    <i class="dropdown icon"></i>
-                                    <div class="default text">Выбрать</div>
-                                    <div class="menu">
-                                          {% for s in form.students %}
-                                          <div class="item">{{ s }}</div>
-                                          {% endfor %}
-                                    </div>
-                                 </div>
+                                 {% render_field form.students _no_label='True' placeholder='Выбрать...' _style='ChoiceField' %}
                               </div>
                               
                               <div class="required field">
                                  <label>Дисциплина</label>
-                                 <div class="ui search selection dropdown" id="groupsubjects">
-                                    <input type="hidden" name="groupsubjects">
-                                    <i class="dropdown icon"></i>
-                                    <div class="default text">Выбрать</div>
-                                    <div class="menu">
-                                          {% for g in form.groupsubject %}
-                                          <div class="item">{{ g }}</div>
-                                          {% endfor %}
-                                    </div>
-                                 </div>
+                                 {% render_field form.groupsubject _no_label='True' placeholder='Выбрать...' %}
                               </div>
                            </td>
                            <td class="two wide top center aligned">
