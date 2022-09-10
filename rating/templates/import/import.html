@@ -28,13 +28,13 @@
             <div class="extra content center aligned">
                <!-- Button's -->
                <a
-                  {% if request.path == '/students/import' %}
+                  {% if request.path == '/students/import/' %}
                      href="{% url 'students:students' %}"
-                  {% elif request.path == '/subjects/import' %}
+                  {% elif request.path == '/subjects/import/' %}
                      href="{% url 'subjects:subjects' %}"
-                  {% elif request.path == '/subjects/cathedras/import' %}
+                  {% elif request.path == '/subjects/cathedras/import/' %}
                      href="{% url 'subjects:cathedras' %}"
-                  {% elif request.path == '/subjects/groupsubjects/import' %}
+                  {% elif request.path == '/subjects/groupsubjects/import/' %}
                      href="{% url 'subjects:groupsubjects' %}"
                   {% endif %}>
                   <button class="ui button center aligned" type="button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
@@ -71,13 +71,13 @@
          </div>
       </div>
 
-      {% if request.path == '/students/import' %}
+      {% if request.path == '/students/import/' %}
          {% include "import/import_help_students.html" %}
-      {% elif request.path == '/subjects/import' %}
+      {% elif request.path == '/subjects/import/' %}
          {% include "import/import_help_subjects.html" %}
-      {% elif request.path == '/subjects/cathedras/import' %}
+      {% elif request.path == '/subjects/cathedras/import/' %}
          {% include "import/import_help_cathedras.html" %}
-      {% elif request.path == '/subjects/groupsubjects/import' %}
+      {% elif request.path == '/subjects/groupsubjects/import/' %}
          {% include "import/import_help_groupsubjects.html" %}
       {% endif %}
 

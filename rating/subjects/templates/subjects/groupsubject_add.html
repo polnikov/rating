@@ -18,7 +18,7 @@
 
         <!-- Form -->
 		<div class="ui segment">
-            <form id="form" action="{% url 'subjects:groupsubject-add' %}" method="post">
+            <form id="form" action="{% url 'subjects:groupsubject_add' %}" method="post">
                 {% csrf_token %}
                 {% if form.errors %} {{ form.errors }} {% endif %}
                 <div class="ui large form">

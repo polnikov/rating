@@ -17,7 +17,7 @@
 
         <!-- Form -->
         <div class="ui left aligned segment">
-            <form id="form" action="{% url 'subjects:faculty-update' form.instance.id %}" method="POST">
+            <form id="form" action="{% url 'subjects:faculty_update' form.instance.id %}" method="POST">
                 {% csrf_token %}
                 <div class="ui large form">
                     <div class="required field">

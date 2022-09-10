@@ -143,13 +143,20 @@ function closeMenu() {
 $(".nav").hover(function(){}, closeMenu);
 
 // открытие меню при наведении курсора на название приложения
-$('#toggle').hover(
+{% comment %} $('#toggle').hover(
     function(){
         $('.nav').animate({
             left: '0px'
         }, 100);
     }, function(){}
-);
+); {% endcomment %}
+
+$('#toggle').click(
+    function(){
+        $('.nav').animate({
+            left: '0px'
+        }, 100);
+    });
 
 jobTimeInfo();
 setInterval("jobTimeInfo()", 60000);

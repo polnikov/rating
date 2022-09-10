@@ -12,5 +12,5 @@ urlpatterns = [
     path('groups/', views.ArchiveGroupsView.as_view(), name='groups'),
 
     # API
-    path('api/all', apiviews.ArchiveApiView.as_view(), name='api_archive'),
+    path('api/all/', apiviews.ArchiveApiView.as_view(), name='api_archive'),
 ]
