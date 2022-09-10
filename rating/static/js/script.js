@@ -115,6 +115,10 @@ function jobTimeInfo() {
    let lesson6Start = new Date(`${months[currentMonth]} ${currentMonthDay}, ${currentYear}, 18:30:00`);
    let lesson6Stop = new Date(`${months[currentMonth]} ${currentMonthDay}, ${currentYear}, 20:00:00`);
 
+   // 7 пара
+   let lesson7Start = new Date(`${months[currentMonth]} ${currentMonthDay}, ${currentYear}, 20:15:00`);
+   let lesson7Stop = new Date(`${months[currentMonth]} ${currentMonthDay}, ${currentYear}, 21:45:00`);
+
    // учебные месяц и день недели
    if(workMonths.includes(currentMonth) & workDays.includes(currentWeekDay)) {
 
@@ -159,24 +163,31 @@ function jobTimeInfo() {
             getJobInfo(date, lesson4Stop, "4");
 
          // перерыв после 4 пары
-         } else if(lesson3Stop <= date & date < lesson4Start) {
-            getJobInfo(date, lesson4Start, "4 и 5");
+         } else if(lesson4Stop <= date & date < lesson5Start) {
+            getJobInfo(date, lesson5Start, "4 и 5");
 
          // идёт 5 пара
          } else if(lesson5Start <= date & date < lesson5Stop) {
             getJobInfo(date, lesson5Stop, "4");
 
          // перерыв после 5 пары
-         } else if(lesson4Stop <= date & date < lesson5Start) {
-            getJobInfo(date, lesson5Start, "5 и 6");
+         } else if(lesson5Stop <= date & date < lesson6Start) {
+            getJobInfo(date, lesson6Start, "5 и 6");
 
          // идёт 6 пара
          } else if(lesson6Start <= date & date < lesson6Stop) {
             getJobInfo(date, lesson6Stop, "6");
+            
+         // перерыв после 6 пары
+         } else if(lesson6Stop <= date & date < lesson7Start) {
+            getJobInfo(date, lesson7Start, "6 и 7");
+            
+         // идёт 7 пара
+         } else if(lesson7Start <= date & date < lesson7Stop) {
+            getJobInfo(date, lesson7Stop, "7");
          };
-         
       };
-   }
+   };
 };
 
 // определяет шаблон строки
