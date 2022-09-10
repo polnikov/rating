@@ -1,7 +1,6 @@
 import re
 from collections import Counter
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import Http404, JsonResponse
@@ -322,7 +321,6 @@ def import_students(request):
     return render(request, 'import/import.html', context)
 
 
-@login_required
 def transfer_students(request):
     '''Перевести студентов на следующий семестр. В случае последнего семестра студент отправляется в <Архив> со сменой
     статуса на <Выпускник>.
