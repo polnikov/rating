@@ -1,3 +1,4 @@
+from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.db.models.fields import IntegerField
 from django.urls import reverse
@@ -204,6 +205,17 @@ class Student(CommonArchivedModel, CommonTimestampModel):
                 return '3'
             case 7 | 8:
                 return '4'
+
+    @property
+    def graduate_year(self):
+        """Возвращает год выпуска студента."""
+        if self.status == 'Выпускник':
+            match self.level:
+                case 'Бакалавриат':
+                    return self.start_date + relativedelta(years=4)
+                case 'Магистратура':
+                    return self.start_date + relativedelta(years=2)
+
 
     def get_data(self):
         return {
