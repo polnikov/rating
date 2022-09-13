@@ -31,70 +31,128 @@
 		</table>
 	</div>
 
-	<!-- Table -->
-	<div id="datatable-segment" class="ui basic segment">
-		{% if students_list %}
-			<div class="ui segment">
-				<table id="students" class="ui selectable celled table">
+    <!-- Tabs -->
+    <div id="tabs-segment" class="ui basic segment">
 
-					<thead>
-						<tr class="center aligned">
-							<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
-							<th>ФИО
-								<div id="count-label" class="ui left pointing grey tiny label">{{ num_students }}</div></th>
-							<th class="collapsing">Группа</th>
-							<th class="collapsing">Семестр</th>
-							<th class="collapsing">Статус</th>
-							<th class="collapsing">Гражданство</th>
-							<th class="collapsing">Примечание</th>
-						</tr>
-					</thead>
+        <!-- Tabs title's -->
+        <div class="ui top attached tabular menu" style="font-family: Hack">
+            <a class="item active" data-tab="first"><i class="icon green checkmark"></i>Активные</a>
+            <a class="item" data-tab="second"><i class="graduation cap icon"></i>Выпускники</a>
+        </div>
 
-					<tbody>
-						{% for student in students_list %}
-							<tr>
-								<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
-								<td class="collapsing">
-									{% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %}
-									{% if student.is_archived %}<i class="archive brown icon"></i>{% endif %}
-									<a href="{{ student.get_absolute_url }}">
-										{{ student.fullname }}
-									</a>
-									{% if student.tag %}<div id="tag-label" class="ui small pink label">{{ student.tag }}</div>{% endif %}
-								</td>
-								<td class="center aligned">{{ student.group }}</td>
-								<td class="center aligned">{{ student.semester.semester }}</td>
+        <!-- Tab 1 -->
+        <!-- All students -->
+        <div class="ui bottom attached tab segment active" data-tab="first">
+			<!-- Table -->
+			<div id="datatable-segment" class="ui basic segment">
+				{% if students_list %}
+					<table id="students" class="ui selectable celled table">
 
-								{% if student.get_status_display == 'Отчислен' %}
-								<td class="center aligned negative collapsing"><i class="icon close"></i>
-									{{ student.get_status_display }}
-								</td>
-								{% elif student.get_status_display == 'Академический отпуск' %}
-									<td class="center aligned warning collapsing"><i class="icon hourglass half"></i>
-										{{ student.get_status_display }}
-									</td>
-								{% elif student.get_status_display == 'Выпускник' %}
-									<td class="center aligned grey collapsing"><i class="icon rocket"></i>
-										{{ student.get_status_display }}
-									</td>
-								{% else %}
-									<td class="center aligned collapsing"><i class="icon checkmark"></i>
-										{{ student.get_status_display }}
-									</td>
-								{% endif %}
-
-								<td class="center aligned">{{ student.citizenship }}</td>
-
-								<td>{{ student.comment|truncatechars:25 }}</td>
+						<thead>
+							<tr class="center aligned">
+								<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
+								<th>ФИО
+									<div id="count-label" class="ui left pointing grey tiny label">{{ num_students }}</div></th>
+								<th class="collapsing">Группа</th>
+								<th class="collapsing">Семестр</th>
+								<th class="collapsing">Статус</th>
+								<th class="collapsing">Гражданство</th>
+								<th class="collapsing">Примечание</th>
 							</tr>
-						{% endfor %}
-					</tbody>
+						</thead>
 
-				</table>
+						<tbody>
+							{% for student in students_list %}
+								<tr>
+									<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
+									<td class="collapsing">
+										{% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %}
+										{% if student.is_archived %}<i class="archive brown icon"></i>{% endif %}
+										<a href="{{ student.get_absolute_url }}">
+											{{ student.fullname }}
+										</a>
+										{% if student.tag %}<div id="tag-label" class="ui small pink label">{{ student.tag }}</div>{% endif %}
+									</td>
+									<td class="center aligned collapsing">{{ student.group }}</td>
+									<td class="center aligned collapsing">{{ student.semester.semester }}</td>
+
+									{% if student.get_status_display == 'Отчислен' %}
+									<td class="center aligned negative collapsing"><i class="icon close"></i>
+										{{ student.get_status_display }}
+									</td>
+									{% elif student.get_status_display == 'Академический отпуск' %}
+										<td class="center aligned warning collapsing"><i class="icon hourglass half"></i>
+											{{ student.get_status_display }}
+										</td>
+									{% elif student.get_status_display == 'Выпускник' %}
+										<td class="center aligned grey collapsing"><i class="icon rocket"></i>
+											{{ student.get_status_display }}
+										</td>
+									{% else %}
+										<td class="center aligned collapsing"><i class="icon checkmark"></i>
+											{{ student.get_status_display }}
+										</td>
+									{% endif %}
+
+									<td class="center aligned">{{ student.citizenship }}</td>
+
+									<td>{{ student.comment|truncatechars:25 }}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+
+					</table>
+				{% else %}
+					{% include 'empty_records.html' %}
+				{% endif %}
 			</div>
-		{% else %}
-			{% include 'empty_records.html' %}
-		{% endif %}
+		</div>
+
+        <!-- Tab 2 -->
+        <!-- Graduates -->
+        <div class="ui bottom attached tab segment" data-tab="second">
+			<!-- Table -->
+			<div id="datatable-segment" class="ui basic segment">
+				{% if graduates %}
+					<table id="graduates" class="ui selectable celled table">
+
+						<thead>
+							<tr class="center aligned">
+								<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
+								<th>ФИО
+									<div id="count-label" class="ui left pointing grey tiny label">{{ graduates.count }}</div></th>
+								<th class="collapsing">Группа</th>
+								<th class="collapsing">Семестр</th>
+								<th class="collapsing">Год выпуска</th>
+								<th class="collapsing">Примечание</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							{% for student in graduates %}
+								<tr>
+									<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
+									<td class="collapsing">
+										<a href="{{ student.get_absolute_url }}">{{ student.fullname }}</a>
+										{% if student.tag %}
+											<div id="tag-label" class="ui small pink label">{{ student.tag }}</div>
+										{% endif %}
+									</td>
+									<td class="center aligned">{{ student.group }}</td>
+									<td class="center aligned">{{ student.semester.semester }}</td>
+
+									<td class="center aligned">{{ student.graduate_year|date:"Y" }}</td>
+									<td>{{ student.comment|truncatechars:25 }}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+
+					</table>
+				{% else %}
+					{% include 'empty_records.html' %}
+				{% endif %}
+			</div>
+		</div>
 	</div>
 </div>
 
@@ -105,6 +163,8 @@
 <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
 
 <script type="text/javascript">
+// tabs
+$('.menu .item').tab();
 
 // DataTable
 $(document).ready(function() {
@@ -116,13 +176,73 @@ $(document).ready(function() {
 	for (let i = 0; i < filterColumns.length; i++) {
 		let inputWidth = filterColumns[i].offsetWidth - 15;
 		if(i != 0) {
-			filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
+			filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 250px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
 		} else {filterColumns[i].innerHTML = ""};
 	};
 
 	document.querySelector('#students').style.width = "100%";
 	// DataTable
 	var table = $('#students').DataTable({
+		language: {
+			lengthMenu: '_MENU_ записей на страницу',
+			zeroRecords: 'Записей нет...',
+			info: 'Всего записей: _MAX_',
+			infoEmpty: '',
+			infoFiltered: 'Найдено: _TOTAL_',
+			search: '',
+			searchPlaceholder: 'поиск',
+			paginate: {
+            first:    '«',
+            previous: '‹',
+            next:     '›',
+            last:     '»'
+         }
+		},
+		lengthMenu: [
+         [20, 50, -1],
+         [20, 50, 'Все']
+      ],
+      pageLength: 20,
+      columnDefs: [
+         { searchable: false, targets: 0 }
+      ],
+	});
+
+	// Filter event handler
+	$(table.table().container()).on('keyup', 'thead input', function() {table
+		.column($(this).data('index'))
+		.search(this.value)
+		.draw();
+	});
+
+	// Очистка фильтров двойным кликом выше head
+   $(document).on("dblclick",  ".ui.stackable.grid", function() {
+      let inputs = document.getElementsByName("filter");
+      inputs.forEach(e => {
+         e.value = "";
+      });
+      table.search('');
+      table.columns().search('').draw();
+   });
+	changeDatatableInputFont();
+});
+
+$(document).ready(function() {
+	let firstRow = $('#graduates thead tr')[0];
+	let secondRow = firstRow.cloneNode(true);
+	firstRow.after(secondRow);
+
+	let filterColumns = $('#graduates thead tr')[0].children;
+	for (let i = 0; i < filterColumns.length; i++) {
+		let inputWidth = filterColumns[i].offsetWidth - 15;
+		if(i != 0) {
+			filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 250px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
+		} else {filterColumns[i].innerHTML = ""};
+	};
+
+	document.querySelector('#graduates').style.width = "100%";
+	// DataTable
+	var table = $('#graduates').DataTable({
 		language: {
 			lengthMenu: '_MENU_ записей на страницу',
 			zeroRecords: 'Записей нет...',
