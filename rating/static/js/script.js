@@ -42,8 +42,10 @@ function deletePaddingTopBottomForTitleBlock() {
 
 // убрать верхний отступ сегмента с таблицей
 function deletePaddingTopForDatatableSegment() {
-   let datatableSegment = document.getElementById("datatable-segment");
-   datatableSegment.style.paddingTop = '0';
+   let datatableSegments = document.querySelectorAll("[id='datatable-segment']");
+   datatableSegments.forEach(e => {
+      e.style.paddingTop = '0';
+   });
 };
 
 // подсветка текущего раздела меню
@@ -187,7 +189,7 @@ function jobTimeInfo() {
             getJobInfo(date, lesson7Stop, "7");
          };
       };
-   };
+   } else {el.innerHTML = noLessons;};
 };
 
 // определяет шаблон строки
