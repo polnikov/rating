@@ -26,6 +26,9 @@ body > .grid {
 .column {
     max-width: 400px;
 }
+#login {
+    box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+}
 </style>
 
 <script>
@@ -72,7 +75,7 @@ $(document)
 
             <form action="{% url 'login' %}" method="post" class="ui large form">
                 {% csrf_token %}
-                <div class="ui raised segment">
+                <div id="login" class="ui segment">
                     <div class="field">
                         <div class="ui left icon input">
                             <i class="user icon"></i>
