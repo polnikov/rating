@@ -59,7 +59,6 @@ class StudentAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'status',
         'tag',
         'level',
-        # SemesterFilter,
         'basis',
         'citizenship',
     )
@@ -85,9 +84,6 @@ class StudentAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'comment',
     ]
     list_editable = [
-        'semester',
-        'comment',
-        'status',
         'is_archived',
     ]
     ordering = [
@@ -116,13 +112,37 @@ class StudentLog(admin.ModelAdmin):
 
 ########################################################################################################################
 
+class ResultResource(resources.ModelResource):
+
+    class Meta:
+        model = Result
+        fields = (
+            'groupsubject__subjects__name',
+            'groupsubject__subjects__form_control',
+            'groupsubject__subjects__teacher',
+            'groupsubject__subjects__att_date',
+            'students__last_name',
+            'students__first_name',
+            'students__second_name',
+            'groupsubject__groups__name',
+            'groupsubject__subjects__semester',
+            'mark',
+            'tag',
+            'is_archived',
+        )
+        export_order = fields
+        skip_unchanged = True
+        report_skipped = False
+
+
 @admin.register(Result)
-class ResultAdmin(admin.ModelAdmin, DynamicArrayMixin):
+class ResultAdmin(ImportExportActionModelAdmin, admin.ModelAdmin, DynamicArrayMixin):
+    resource_class = ResultResource
     list_display = [
         'id',
+        'get_student_name',
         'get_student_group',
         'get_student_semester',
-        'get_student_name',
         'get_subject_name',
         'mark',
         'tag',
@@ -135,7 +155,9 @@ class ResultAdmin(admin.ModelAdmin, DynamicArrayMixin):
         'tag',
         'is_archived',
     ]
+    # search_fields = ['students__fullname',]
     list_filter = (
+        'groupsubject__groups__name',
         'tag',
         'mark',
     )
