@@ -18,6 +18,7 @@ INTERNAL_IPS = ["127.0.0.1",]
 
 INSTALLED_APPS = [
     'django.contrib.auth',
+    'admin_volt.apps.AdminVoltConfig',  # volt
     'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

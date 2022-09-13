@@ -8,6 +8,7 @@ cssbeautifier==1.14.4
 defusedxml==0.7.1
 diff-match-patch==20200713
 Django==3.2.12
+django-admin-volt==0.0.5
 django-better-admin-arrayfield==1.4.2
 django-currentuser==0.5.3
 django-debug-toolbar==3.5.0
