@@ -33,4 +33,5 @@ urlpatterns = [
     path('results/add/', views.ResultCreateView.as_view(), name='result_add'),
     path('results/<int:pk>/delete/', views.ResultDeleteView.as_view(), name='result_delete'),
     path('results/<int:pk>/update/', views.ResultUpdateView.as_view(), name='result_update'),
+    path('results/import/', views.import_results, name='results_import'),
 ]
