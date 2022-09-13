@@ -77,6 +77,7 @@
 #group-info-label,
 #group-label,
 #back-button,
+#download-button,
 #update-button,
 #transfer-button,
 #transfer,
@@ -88,12 +89,16 @@
 #tag-label,
 #widget,
 #info,
+[name="point"],
 #edit-button {
    box-shadow: 0 8px 28px rgba(0,0,0,0.25), 0 8px 8px rgba(0,0,0,0.22);
 }
 
+#import {
+   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+}
+
 /* light shadow */
-[name="point"],
 #groups-in-subject,
 #semester-label {
    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;

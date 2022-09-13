@@ -1,24 +1,25 @@
-{% extends 'base.html' %}
+<div class="ui container">
 
-{% block title %}Импорт 
-   {% if request.path == '/students/import/' %}
-      студентов
-   {% elif request.path == '/subjects/import/' %}
-      дисциплин
-   {% elif request.path == '/subjects/cathedras/import/' %}
-      кафедр
-   {% elif request.path == '/subjects/groupsubjects/import/' %}
-      назначений
-   {% endif %}
-{% endblock %}
+   <div class="ui secondary segment">
+      <div class="ui grid">
+         <div class="six wide column">
+      </div>
+   </div>
+</div>
 
-{% block content %}
 
-<div class="ui container" style="padding-top: 20px">
+
+
+
+
+
+
+
+
    <div class="ui grid center aligned">
 
       <div class="ui cards">
-         <div class="ui raised card" style="width: 400px">
+         <div id="import" class="ui card" style="width: 400px">
 
             <div class="content">
                <div class="ui icon header center aligned">
@@ -95,8 +96,4 @@
 
    </div>
 </div>
-
-{% endblock %}
-
-
 

@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Импорт оценок{% endblock %}
 
 {% block content %}
@@ -7,8 +9,7 @@
 <div class="ui container" style="padding-top: 20px">
    <div class="ui grid center aligned">
 
-      <div class="ui cards">
-         <div class="ui raised card" style="width: 400px">
+         <div id="import" class="ui card" style="margin-top: 100px; margin-bottom: 50px; width: 400px">
 
             <div class="content">
                <div class="ui icon header center aligned">
@@ -58,12 +59,8 @@
             {% endif %}
 
          </div>
-      </div>
 
    </div>
 </div>
 
 {% endblock %}
-
-
-

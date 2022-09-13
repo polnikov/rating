@@ -254,7 +254,7 @@ def import_students(request):
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}
-            return render(request, 'import/import.html', context)
+            return render(request, 'import/import_students.html', context)
 
         try:
             for n, line in enumerate(import_file):
@@ -324,7 +324,7 @@ def import_students(request):
         'errors': errors,
         'success': success,
     }
-    return render(request, 'import/import.html', context)
+    return render(request, 'import/import_students.html', context)
 
 
 def transfer_students(request):

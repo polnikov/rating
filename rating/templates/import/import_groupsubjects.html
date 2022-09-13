@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Импорт назначений{% endblock %}
+
+{% block content %}
+
+<div class="ui container" style="margin-top: 100px; margin-bottom: 50px; width: 800px">
+   <div id="import" class="ui segment center aligned">
+
+      <div class="ui container center aligned"><h3 style="font-family: Hack">Памятка по загрузке <div class="ui black large circular label">назначений</div> из CSV файла</h3></div>
+
+      <table class="ui celled small table center aligned">
+         <thead>
+            <tr>
+               <th>Дисциплина</th>
+               <th>Форма контроля</th>
+               <th>Семестр</th>
+               <th>Группа</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td><div name="point" class="ui red circular small label">1</div></td>
+               <td><div name="point" class="ui red circular small label">2</div></td>
+               <td><div name="point" class="ui red circular small label">3</div></td>
+               <td><div name="point" class="ui red circular small label">4</div></td>
+            </tr>
+            <tr>
+               <td colspan="6" class="left aligned"><strong>Разделитель <;>. Заполнение данными начинать с 2ой строки.</strong></td>
+            </tr>
+         </tbody>
+      </table>
+
+      <table class="ui very basic small table">
+         <tbody>
+            <tr>
+               <td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label"></div></td>
+               <td>Дисциплина, которая уже внесена</td>
+            </tr>
+            <tr>
+               <td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">2</div></td>
+               <td>Экзамен | Зачет | Диффзачет | Курсовой проект | Курсовая работа</td>
+            </tr>
+            <tr>
+               <td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">3</div></td>
+               <td>Номер семестра, в котором указанная дисциплина подлежит аттестации</td>
+            </tr>
+            <tr>
+               <td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">4</div></td>
+               <td>Группа, которой необходимо пройти аттестацию в указанном семестре по дисциплине</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <div class="ui basic segment center aligned">
+         <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="ui grid">
+               <div class="eight wide column middle left aligned">
+                  <input name="import_file" type="file" style="width: 400px">
+               </div>
+               <div class="eight wide column right aligned">
+                  <!-- Button's -->
+                  <a
+                  {% if request.path == '/students/import/' %}
+                     href="{% url 'students:students' %}"
+                  {% elif request.path == '/subjects/import/' %}
+                     href="{% url 'subjects:subjects' %}"
+                  {% elif request.path == '/subjects/cathedras/import/' %}
+                     href="{% url 'subjects:cathedras' %}"
+                  {% elif request.path == '/subjects/groupsubjects/import/' %}
+                     href="{% url 'subjects:groupsubjects' %}"
+                  {% endif %}>
+                  <button id="back-button" class="ui button center aligned" type="button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                  </a>
+                  <button id="download-button" class="ui primary button center aligned" type="submit" style="font-family: Hack"><i class="icon download"></i>Загрузить</button>
+               </div>
+            </div>
+         </form>
+      </div>
+
+      {% if file_validation == False %}
+         <i class="times red icon"></i><font color="red">Отсутствует файл, или неверный формат!</font>
+      {% elif date_validation == False %}
+         <i class="times red icon"></i><font color="red">Неверный формат даты зачисления!</font>
+      {% elif errors %}
+         <i class="times red icon"></i><font color="red">Следующие данные не были импортированы:</font>
+         <div class="ui list left aligned">
+            {% for error in errors %}
+               <div class="item">
+                  <i class="bug red icon"></i>{{ error }}
+               </div>
+            {% endfor %}
+         </div>
+      {% elif success %}
+         <i class="check green icon"></i><font color="green">Все данные были успешно импортированы!</font>
+      {% endif %}
+
+   </div>
+</div>
+
+{% endblock %}
