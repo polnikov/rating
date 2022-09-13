@@ -11,6 +11,7 @@ class SubjectResource(resources.ModelResource):
         fields = (
             'name',
             'form_control',
+            'zet',
             'semester',
             'teacher',
             'cathedra__name',
@@ -29,6 +30,7 @@ class SubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'name',
         'is_archived',
         'form_control',
+        'zet',
         'semester',
         'teacher',
         'cathedra',
@@ -49,7 +51,7 @@ class SubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     )
     fields = [
         ('name', 'cathedra', 'teacher'),
-        ('form_control', 'semester'),
+        ('form_control', 'semester', 'zet'),
         'att_date',
         'comment',
         'is_archived',

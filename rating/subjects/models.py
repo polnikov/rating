@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django_currentuser.db.models import CurrentUserField
+
 from rating.abstracts import CommonArchivedModel, CommonTimestampModel
 
 
@@ -42,6 +43,14 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
         verbose_name='Преподаватель',
         help_text='Фамилия И.О.',
         max_length=150,
+        blank=True,
+        default='',
+        unique=False,
+    )
+    zet = models.CharField(
+        verbose_name='ЗЕТ',
+        help_text='72 (2)',
+        max_length=15,
         blank=True,
         default='',
         unique=False,
@@ -136,6 +145,14 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
             return 'Нет'
         else:
             return self.cathedra
+
+    @property
+    def empty_zet(self):
+        """Вернуть <Нет>, если ЗЕТ отсутствуют."""
+        if not self.zet:
+            return 'Нет'
+        else:
+            return self.zet
 
 
 class SubjectLog(models.Model):

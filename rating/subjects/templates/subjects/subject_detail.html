@@ -114,6 +114,18 @@
                         {% endif %}
                     </tr>
                     <tr>
+                        <td>ЗЕТ</td>
+                        {% if subject.zet %}
+                            <td>
+                                {{ subject.zet }}
+                            </td>
+                        {% else %}
+                            <td class="negative collapsing">
+                                <i class="icon close"></i> {{ subject.empty_zet }}
+                            </td>
+                        {% endif %}
+                    </tr>
+                    <tr>
                         <td>Примечание</td>
                         <td>{{ subject.comment }}</td>
                     </tr>

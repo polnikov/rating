@@ -56,7 +56,6 @@ class SubjectDetailView(LoginRequiredMixin, DetailView):
         except:
             history = 'Error'
 
-
         context = {
             'subject': subject,
             'history': history,
@@ -110,7 +109,7 @@ def import_subjects(request):
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}
-            return render(request, 'import/import.html', context)
+            return render(request, 'import/import_subjects.html', context)
 
         try:
             for n, line in enumerate(import_file):
@@ -155,6 +154,7 @@ def import_subjects(request):
                             defaults={
                                 'name': row[0],
                                 'form_control': row[1],
+                                'zet': row[6],
                                 'semester': semester,
                                 'teacher': row[3],
                                 'cathedra_id': cathedra,
@@ -187,7 +187,7 @@ def import_subjects(request):
         'errors': errors,
         'success': success,
     }
-    return render(request, 'import/import.html', context)
+    return render(request, 'import/import_subjects.html', context)
 
 ########################################################################################################################
 
@@ -234,7 +234,7 @@ def import_cathedras(request):
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}
-            return render(request, 'import/import.html', context)
+            return render(request, 'import/import_cathedras.html', context)
 
         try:
             for n, line in enumerate(import_file):
@@ -270,7 +270,7 @@ def import_cathedras(request):
         'errors': errors,
         'success': success,
     }
-    return render(request, 'import/import.html', context)
+    return render(request, 'import/import_cathedras.html', context)
 
 ########################################################################################################################
 
@@ -358,7 +358,7 @@ def import_groupsubjects(request):
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}
-            return render(request, 'import/import.html', context)
+            return render(request, 'import/import_groupsubjects.html', context)
 
         try:
             for n, line in enumerate(import_file):
@@ -394,7 +394,7 @@ def import_groupsubjects(request):
         'errors': errors,
         'success': success,
     }
-    return render(request, 'import/import.html', context)
+    return render(request, 'import/import_groupsubjects.html', context)
 
 ########################################################################################################################
 

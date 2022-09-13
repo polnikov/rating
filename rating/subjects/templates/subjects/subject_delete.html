@@ -30,11 +30,9 @@
                         <tr>
                             <td class="three wide">Группы</td>
                             <td>
-                                <div class="ui grey labels">
-                                    {% for group in groups %}
-                                        <a class="ui label">{{ group }}</a>
-                                    {% endfor %}
-                                </div>
+                                {% for group in groups %}
+                                    <div class="ui label">{{ group }}</div>
+                                {% endfor %}
                             </td>
                         </tr>
                         <tr>
@@ -44,13 +42,9 @@
                         <tr>
                             <td>Факультет</td>
                             {% if subject.cathedra.faculty.short_name and subject.cathedra.faculty.name is not None %}
-                                <td>
-                                    {{ subject.cathedra.faculty.name }}
-                                </td>
+                                <td>{{ subject.cathedra.faculty.name }}</td>
                             {% else %}
-                                <td class="negative collapsing">
-                                    <i class="icon close"></i> Нет
-                                </td>
+                                <td class="negative collapsing"><i class="icon close"></i> Нет</td>
                             {% endif %}
                         </tr>
                         <tr>
@@ -60,32 +54,31 @@
                                         {{ subject.cathedra|default_if_none:"" }}
                                     </td>
                                 {% else %}
-                                    <td class="negative collapsing">
-                                        <i class="icon close"></i> Нет
-                                    </td>
+                                    <td class="negative collapsing"><i class="icon close"></i> Нет</td>
                                 {% endif %}
                         </tr>
                         <tr>
                             <td>Преподаватель</td>
                             {% if subject.teacher %}
-                                <td class="positive"><i class="icon checkmark"></i>
-                                    {{ subject.teacher }}
-                                </td>
+                                <td class="positive"><i class="icon checkmark"></i>{{ subject.teacher }}</td>
                             {% else %}
-                                <td class="negative"><i class="icon close"></i>
-                                    {{ subject.empty_teacher }}
-                                </td>
+                                <td class="negative"><i class="icon close"></i>{{ subject.empty_teacher }}</td>
                             {% endif %}
                         </tr>
                         <tr>
                             <td>Дата аттестации</td>
                             {% if subject.att_date %}
-                                <td>{{ subject.att_date|date:"l" }},
-                                {{ subject.empty_att_date }}</td>
+                                <td>{{ subject.att_date|date:"l" }}, {{ subject.empty_att_date }}</td>
                             {% else %}
-                                <td class="negative"><i class="icon close"></i>
-                                    {{ subject.empty_att_date }}
-                                </td>
+                                <td class="negative"><i class="icon close"></i>{{ subject.empty_att_date }}</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>ЗЕТ</td>
+                            {% if subject.zet %}
+                                <td>{{ subject.zet }}</td>
+                            {% else %}
+                                <td class="negative"><i class="icon close"></i>{{ subject.empty_zet }}</td>
                             {% endif %}
                         </tr>
                         <tr>

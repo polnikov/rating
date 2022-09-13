@@ -16,6 +16,7 @@ class SubjectForm(ModelForm):
             'cathedra',
             'teacher',
             'form_control',
+            'zet',
             'semester',
             'att_date',
             'comment',

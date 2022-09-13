@@ -53,9 +53,15 @@
                         </div>
                     </div>
 
-                    <div class="field">
-                        <label>Кафедра</label>
-                        {% render_field form.cathedra _no_label='True' placeholder='Выбрать' %}
+                    <div class="two fields">
+                        <div class="fourteen wide field">
+                            <label>Кафедра</label>
+                            {% render_field form.cathedra _no_label='True' placeholder='Выбрать' %}
+                        </div>
+                        <div class="two wide field">
+                            <label>ЗЕТ</label>
+                            {% render_field form.zet _no_label='True' placeholder='72 (2)' %}
+                        </div>
                     </div>
 
                     <div class="field">
