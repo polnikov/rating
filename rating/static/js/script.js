@@ -203,10 +203,10 @@ function getJobInfo(date, lessonTime, num) {
       el.innerHTML = `<div class="ui violet small label">Идёт <div class="ui black circular small label">${num}</div> пара. 
                      Осталось <div class="ui black circular small label">${waitMinutes}</div> мин.</div>`;
    } else if(num.length == 5){
-      el.innerHTML = `<div class="ui violet small label">Перерыв межу <div class="ui black circular small label">${num}</div> парами. 
+      el.innerHTML = `<div class="ui violet small label">Перерыв между <div class="ui black circular small label">${num}</div> парами. 
                      Осталось <div class="ui black circular small label">${waitMinutes}</div> мин.</div>`;
    } else {
-      el.innerHTML = `<i class="utensils green icon"></i><div class="ui violet small label">Перерыв межу <div class="ui black circular small label">3 и 4</div> парами. 
+      el.innerHTML = `<i class="utensils green icon"></i><div class="ui violet small label">Перерыв между <div class="ui black circular small label">3 и 4</div> парами. 
                      Осталось <div class="ui black circular small label">${waitMinutes}</div> мин.</div>`;
    };
 };
