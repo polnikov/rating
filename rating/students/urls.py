@@ -28,6 +28,9 @@ urlpatterns = [
 
     path('json/', views.students_json, name='json'),
 
+    # Searching
+    path('search/', views.search_results, name='search'),
+
     # Results
     path('results/', views.ResultListView.as_view(), name='results'),
     path('results/add/', views.ResultCreateView.as_view(), name='result_add'),

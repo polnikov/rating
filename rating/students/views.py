@@ -3,14 +3,17 @@ import re
 from collections import Counter
 from datetime import datetime
 
-import xlrd
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  UpdateView, View)
+from django.views.generic import (
+    CreateView, DeleteView, DetailView, ListView, UpdateView, View
+)
+
+import xlrd
 from groups.models import Group
 from groups.views import _get_students_group_statistic_and_marks
 from students.forms import ResultForm, StudentForm
@@ -354,6 +357,7 @@ def transfer_students(request):
 
 ########################################################################################################################
 
+
 class ResultListView(LoginRequiredMixin, ListView):
     """Отобразить все оценки."""
     model = Result
@@ -406,7 +410,6 @@ class ResultDeleteView(LoginRequiredMixin, DeleteView):
     model = Result
     template_name = 'students/result_delete.html'
     success_url = '/students/results'
-
 
 
 def import_results(request):
@@ -615,6 +618,7 @@ def import_results(request):
 
 ########################################################################################################################
 
+
 class StudentsMoneyListView(LoginRequiredMixin, ListView):
     """Отобразить студентов с указанием стипендии."""
     model = Student
@@ -622,6 +626,7 @@ class StudentsMoneyListView(LoginRequiredMixin, ListView):
     queryset = Student.objects.select_related('basis', 'group', 'semester').filter(is_archived=False)
 
 ########################################################################################################################
+
 
 class StudentsDebtsListView(LoginRequiredMixin, ListView):
     """Отобразить задолженности всех студентов."""
@@ -655,6 +660,7 @@ class StudentsDebtsListView(LoginRequiredMixin, ListView):
         return students
 
 ########################################################################################################################
+
 
 def calculate_rating(student, start, stop=False):
     '''Рассчитать средний балл студента за семестр или период.'''
@@ -697,4 +703,30 @@ def calculate_rating(student, start, stop=False):
         rating = 0
     
     return rating
+
+########################################################################################################################
+
+
+def search_results(request):
+    if request.method == 'GET':
+        search = request.GET.get('search')
+        search_query = SearchQuery(search)
+        
+        search_vector_stu = SearchVector('student_id', 'last_name', 'first_name', 'second_name')
+        result_students = Student.objects.annotate(
+            search=search_vector_stu, rank=SearchRank(search_vector_stu, search_query)
+            ).filter(search=search_query).order_by("-rank")
+
+        search_vector_sub = SearchVector('name', 'teacher', 'cathedra')
+        result_subjects = Subject.objects.annotate(
+            search=search_vector_sub, rank=SearchRank(search_vector_sub, search_query)
+            ).filter(search=search_query).order_by("-rank")
+
+        context = {
+            'search': search,
+            'students': result_students,
+            'subjects': result_subjects,
+        }
+
+    return render(request,'search_results.html', context=context)
 

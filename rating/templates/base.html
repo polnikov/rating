@@ -42,10 +42,13 @@
                 <div id="job-time" class="item"></div>
                 <!-- Search -->
                 <div class="item">
-                    <div class="ui icon input">
-                        <input type="text" placeholder="Поиск..." style="font-family: Hack">
-                        <i class="search link icon"></i>
-                    </div>
+                    <form action="{% url 'students:search' %}" method="GET">
+                        {% csrf_token %}
+                        <div class="ui inverted transparent icon small input">
+                            <input name="search" type="search" placeholder="Поиск..." style="font-family: Hack">
+                            <i class="search link icon"></i>
+                        </div>
+                    </form>
                 </div>
                 <!-- Logged username -->
                 {% if user.is_authenticated %}
@@ -61,8 +64,8 @@
 <!-- Menu -->
 <nav class="nav">
     <ul>
-        <li><a class="header" href="{% url 'dashboard:dashboard' %}"><i class="calculator icon"></i> Статистика</a>
         <li><a class="header" href="{% url 'groups:cards' %}"><i class="users icon"></i> Группы</a>
+        <li><a class="header" href="{% url 'dashboard:dashboard' %}"><i class="calculator icon"></i> Статистика</a>
         <li><a class="header" href="{% url 'students:money' %}"><i class="hand holding usd icon"></i> Стипендия</a>
 
         <div class="ui horizontal red divider">
