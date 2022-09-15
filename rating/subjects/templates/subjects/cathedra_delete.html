@@ -23,16 +23,16 @@
                             <tr>
                                 <td class="collapsing"><h4 style="font-family: Hack">Вы уверены, что хотите удалить кафедру:</h4></td>
                                 <td class="left aligned">
-                                    <div class="ui large label">
+                                    <div class="ui large circular label">
                                         {{ cathedra.name }} | {{ cathedra.short_name }}
                                     </div>
                                 </td>
                             </tr>
                             {% if cathedra.faculty.short_name %}
                                 <tr>
-                                    <td class="collapsing"><h4>Факультет:</h4></td>
+                                    <td class="collapsing"><h4 style="font-family: Hack">Факультет:</h4></td>
                                     <td class="left aligned">
-                                        <div class="ui large label">
+                                        <div class="ui large circular label">
                                             {{ cathedra.faculty|default_if_none:"" }}
                                         </div>
                                     </td>
@@ -49,9 +49,9 @@
                             <td></td>
                             <td class="right aligned">
                                 <a href="{% url 'subjects:cathedras' %}">
-                                    <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                                    <button type="button" class="ui circular button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
                                 </a>
-                                <button type="submit" class="ui red button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button>
+                                <button type="submit" class="ui red circular button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button>
                             </td>
                         </tr>
                     </tbody>

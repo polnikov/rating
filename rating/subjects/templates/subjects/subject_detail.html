@@ -17,11 +17,11 @@
                     <td><h3 style="font-family: Hack">{% if subject.is_archived %}<i class="archive brown icon"></i>{% endif %}{{ subject.name|truncatechars:70 }}</h3></td>
                     <td class="right aligned">
                         <a href="{% url 'subjects:delete' subject.id %}">
-                            <button id="trash-button" type="button" class="ui red small button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button></a>
+                            <button id="trash-button" type="button" class="ui red small circular button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button></a>
                         <a href="{% url 'subjects:subjects' %}">
-                            <button id="back-button" class="ui grey small button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
+                            <button id="back-button" class="ui grey small circular button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
                         <a href="{% url 'subjects:update' subject.id %}">
-                            <button id="update-button" type="submit" class="positive ui small button" style="font-family: Hack"><i class="sync alternate icon"></i>Обновить</button></a>
+                            <button id="update-button" type="submit" class="positive ui small circular button" style="font-family: Hack"><i class="sync alternate icon"></i>Обновить</button></a>
                     </td>
                 </tr>
             </tbody>

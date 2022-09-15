@@ -80,7 +80,7 @@
                         <label>Статус</label>
                         {% for status in form.status %}
                             <div class="field">
-                                <div class="ui basic label">{{ status }}</div>
+                                <div class="ui basic circular label">{{ status }}</div>
                             </div>
                         {% endfor %}
                     </div>
@@ -91,7 +91,7 @@
                         <label>Тэг</label>
                         {% for tag in form.tag %}
                             <div class="field">
-                                <div class="ui basic label">{{ tag }}</div>
+                                <div class="ui basic circular label">{{ tag }}</div>
                             </div>
                         {% endfor %}
                     </div>
@@ -102,7 +102,7 @@
                         <label>Стипендия</label>
                         {% for money in form.money %}
                             <div class="field">
-                                <div class="ui basic label">{{ money }}</div>
+                                <div class="ui basic circular label">{{ money }}</div>
                             </div>
                         {% endfor %}
                     </div>
@@ -124,10 +124,10 @@
             <!-- Button's -->
             <div class="ui right aligned secondary segment">
                 <a href="{% url 'students:detail' student.student_id %}">
-                    <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                    <button type="button" class="ui circular button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
                 </a>
                 <a href="{% url 'students:detail' student.student_id %}">
-                    <button type="submit" class="positive ui button" style="font-family: Hack"><i class="sync alternate icon"></i>Обновить</button>
+                    <button type="submit" class="positive ui circular button" style="font-family: Hack"><i class="sync alternate icon"></i>Обновить</button>
                 </a>
             </div>
         </form>

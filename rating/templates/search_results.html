@@ -9,49 +9,55 @@
 <div class="ui container center aligned">
     {% if search %}
         <div class="ui equal width grid">
-            <div class="row"><h3 style="font-family: Hack">Результаты поиска по запросу: <div class="ui black large label">{{ search }}</div></h3></div>
             <div class="row">
-                <div class="column left aligned">
-                    <!-- Students -->
-                    {% if students %}
-                        {% for student in students %}
-                            <div class="ui middle aligned selection list">
-                                <div class="item">
-                                    <div class="content">
-                                        <div class="header" style="font-family: Hack">
-                                            <i class="user graduate icon"></i> <a href="{{ student.get_absolute_url }}">{{ student.fullname }}</a> 
-                                            <div class="ui basic label">
-                                                {{ student.group }}-{{ student.course }}
+                <h3 style="font-family: Hack">Результаты поиска по запросу: <div class="ui black large circular label">{{ search }}</div></h3>
+            </div>
+            <div class="row">
+                <div class="column left aligned" style="padding-left: 0px">
+                    <div name="search-segment" class="ui segment">
+                        <!-- Students -->
+                        {% if students %}
+                            {% for student in students %}
+                                <div class="ui middle aligned selection list">
+                                    <div class="item">
+                                        <div class="content">
+                                            <div class="header" style="font-family: Hack">
+                                                <i class="user graduate icon"></i> <a href="{{ student.get_absolute_url }}">{{ student.fullname }}</a> 
+                                                <div class="ui basic circular label">
+                                                    {{ student.group }}-{{ student.course }}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        Совпадений по студентам не найдено
-                    {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            Совпадений по студентам не найдено
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="column left aligned">
-                    <!-- Subjects -->
-                    {% if subjects %}
-                        {% for subject in subjects %}
-                            <div class="ui middle aligned selection list">
-                                <div class="item">
-                                    <div class="content">
-                                        <div class="header" style="font-family: Hack">
-                                            <i class="book icon"></i> <a href="{{ subject.get_absolute_url }}">{{ subject.name }}</a> 
-                                            <div class="ui basic label">
-                                                {{ subject.semester }} семестр | {{ subject.empty_teacher }} | {{ subject.cathedra.short_name }}
+                <div class="column left aligned" style="padding-right: 0px">
+                    <div name="search-segment" class="ui segment">
+                        <!-- Subjects -->
+                        {% if subjects %}
+                            {% for subject in subjects %}
+                                <div class="ui middle aligned selection list">
+                                    <div class="item">
+                                        <div class="content">
+                                            <div class="header" style="font-family: Hack">
+                                                <i class="book icon"></i> <a href="{{ subject.get_absolute_url }}">{{ subject.name }}</a> 
+                                                <div class="ui basic circular label">
+                                                    {{ subject.semester }} семестр | {{ subject.empty_teacher }} | {{ subject.cathedra.short_name }}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        Совпадений по дисциплинам не найдено
-                    {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            Совпадений по дисциплинам не найдено
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

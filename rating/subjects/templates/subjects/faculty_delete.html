@@ -23,7 +23,7 @@
                                 <tr>
                                     <td class="collapsing"><h4 style="font-family: Hack">Вы уверены, что хотите удалить факультет:</h4></td>
                                     <td class="left aligned">
-                                        <div class="ui large label">
+                                        <div class="ui large circular label">
                                             {{ faculty.name }} ({{ faculty.short_name }})
                                         </div>
                                     </td>
@@ -39,9 +39,9 @@
                                 <td></td>
                                 <td class="right aligned">
                                     <a href="{% url 'subjects:faculties' %}">
-                                        <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                                        <button type="button" class="ui circular button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
                                     </a>
-                                    <button type="submit" class="ui red button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button>
+                                    <button type="submit" class="ui red circular button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button>
                                 </td>
                             </tr>
                         </tbody>

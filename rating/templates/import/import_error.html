@@ -24,7 +24,7 @@
             {% elif request.path == '/subjects/groupsubjects/import/' %}
                href="{% url 'subjects:groupsubjects' %}"
             {% endif %}>
-            <button type="button" class="ui button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+            <button type="button" class="ui circular button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
          </a>
          <a
          {% if request.path == '/students/import/' %}
@@ -36,7 +36,7 @@
          {% elif request.path == '/subjects/groupsubjects/import/' %}
             href="{% url 'subjects:groupsubjects_import' %}"
          {% endif %}>
-            <button class="ui blue button" style="font-family: Hack">Еще раз<i class="right arrow icon"></i></button>
+            <button class="ui blue circular button" style="font-family: Hack">Еще раз<i class="right arrow icon"></i></button>
          </a>
       </div>
    </div>

@@ -30,13 +30,13 @@
                </div>
             </td>
             <td id="back-button-cell" class="top aligned" colspan="2">
-               <button id="transfer" class="ui green small button" style="font-family: Hack; ; display: none" onclick="transferStudents()"><i class="level up alternate icon"></i>Перевести</button>
-               <button id="cancel-button" class="ui red small button" style="font-family: Hack; display: none" onclick="closeCheckboxColumn()"><i class="times circle icon"></i></i>Отмена</button>
-               <button id="transfer-button" class="ui violet small button" style="font-family: Hack" onclick="openCheckboxColumn()"><i class="level up alternate icon"></i>Перевод</button>
+               <button id="transfer" class="ui green small circular button" style="font-family: Hack; ; display: none" onclick="transferStudents()"><i class="level up alternate icon"></i>Перевести</button>
+               <button id="cancel-button" class="ui red small circular button" style="font-family: Hack; display: none" onclick="closeCheckboxColumn()"><i class="times circle icon"></i></i>Отмена</button>
+               <button id="transfer-button" class="ui violet small circular button" style="font-family: Hack" onclick="openCheckboxColumn()"><i class="level up alternate icon"></i>Перевод</button>
                <a href="{% url 'students:results_import' %}">
-                  <button id="import-button" class="ui orange small button" style="font-family: Hack"><i class="icon download"></i>Импорт ведомости</button></a>
+                  <button id="import-button" class="ui orange small circular button" style="font-family: Hack"><i class="icon download"></i>Импорт ведомости</button></a>
                <a href="{% url 'groups:cards' %}">
-                  <button id="back-button" class="ui grey small button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
+                  <button id="back-button" class="ui grey small circular button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
             </td>
          </tr>
       </tbody>
@@ -46,7 +46,7 @@
       <tbody>
          <tr>
             <td>
-               <div id="info" class="ui grey basic large label">
+               <div id="info" class="ui grey basic large circular label">
                   Курс
                   <div class="detail">
                      {% autoescape off %}
@@ -56,13 +56,13 @@
                </div>
             </td>
             <td>
-               <div id="info" class="ui grey basic large label">
+               <div id="info" class="ui grey basic large circular label">
                   Семестр
                   <div id="semester" class="detail">{{ semester }}</div>
                </div>
             </td>
             <td>
-               <div id="info" class="ui grey basic large label">
+               <div id="info" class="ui grey basic large circular label">
                   Численность
                   <div class="detail">{{ students.count }}</div>
                </div>
