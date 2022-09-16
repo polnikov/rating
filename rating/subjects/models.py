@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django_currentuser.db.models import CurrentUserField
 
-from rating.abstracts import CommonArchivedModel, CommonTimestampModel
+from rating.abstracts import CommonArchivedModel, CommonTimestampModel, CommonModelLog
 
 
 class Subject(CommonArchivedModel, CommonTimestampModel):
@@ -155,31 +155,8 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
             return self.zet
 
 
-class SubjectLog(models.Model):
+class SubjectLog(CommonModelLog):
     """Модель <Логирование изменений по дисциплинам>."""
-    user = CurrentUserField(
-        verbose_name='Автор',
-    )
-    field = models.CharField(
-        verbose_name='Свойство',
-        max_length=25
-    )
-    old_value = models.TextField(
-        verbose_name='Было',
-        max_length=255,
-        null=True,
-    )
-    new_value = models.TextField(
-        verbose_name='Стало',
-        max_length=255,
-    )
-    timestamp = models.DateTimeField(
-        verbose_name='Дата и время изменения',
-        auto_now=True
-    )
-    record_id = models.IntegerField(
-        verbose_name='id записи',
-    )
 
     class Meta:
         verbose_name = 'Изменения в дисциплинах'

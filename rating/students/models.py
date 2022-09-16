@@ -7,7 +7,7 @@ from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from django_better_admin_arrayfield.models.fields import ArrayField
 from django_currentuser.db.models import CurrentUserField
 
-from rating.abstracts import CommonArchivedModel, CommonTimestampModel
+from rating.abstracts import CommonArchivedModel, CommonTimestampModel, CommonModelLog
 
 
 class Student(CommonArchivedModel, CommonTimestampModel):
@@ -236,30 +236,8 @@ class Student(CommonArchivedModel, CommonTimestampModel):
         }
 
 
-class StudentLog(models.Model):
+class StudentLog(CommonModelLog):
     """Модель <Логирование изменений по студентам>."""
-    user = CurrentUserField(
-        verbose_name='Автор',
-    )
-    field = models.CharField(
-        verbose_name='Свойство',
-        max_length=25
-    )
-    old_value = models.TextField(
-        verbose_name='Было',
-        max_length=255,
-    )
-    new_value = models.TextField(
-        verbose_name='Стало',
-        max_length=255,
-    )
-    timestamp = models.DateTimeField(
-        verbose_name='Дата и время изменения',
-        auto_now=True
-    )
-    record_id = IntegerField(
-        verbose_name='id записи',
-    )
 
     class Meta:
         verbose_name = 'Изменения по студентам'
