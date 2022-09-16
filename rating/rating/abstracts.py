@@ -53,3 +53,6 @@ class CommonModelLog(models.Model):
    record_id = models.IntegerField(
       verbose_name='id записи',
    )
+
+   class Meta:
+      abstract = True
