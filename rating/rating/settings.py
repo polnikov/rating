@@ -10,11 +10,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
-INTERNAL_IPS = ["127.0.0.1",]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'fiegh-rating.ru', '188.225.79.76']
 
 INSTALLED_APPS = [
     'django.contrib.auth',
