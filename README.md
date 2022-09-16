@@ -22,7 +22,7 @@
 
 ### **Основной стек:**
 - Python 3.10.6
-- Django 2.2.12
+- Django 3.2.15
 - PostgreSQL
 
 ### **Django package's:**
