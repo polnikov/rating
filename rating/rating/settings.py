@@ -16,6 +16,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'fiegh-rating.ru', '188.225.79.76']
 
 SESSION_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
+CSRF_COOKIE_SECURE = True
 
 INSTALLED_APPS = [
     'django.contrib.auth',
