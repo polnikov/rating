@@ -14,6 +14,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'fiegh-rating.ru', '188.225.79.76']
 
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'admin_volt.apps.AdminVoltConfig',  # volt
@@ -91,11 +94,11 @@ WSGI_APPLICATION = 'rating.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DATABASES_NAME'),
-        'USER': os.getenv('DATABASES_USER'),
-        'PASSWORD': os.getenv('DATABASES_PASSWORD'),
-        'HOST': os.getenv('DATABASES_HOST'),
-        'PORT': os.getenv('DATABASES_PORT'),
+        'NAME': os.getenv('DATABASES_NAME_PROD'),
+        'USER': os.getenv('DATABASES_USER_PROD'),
+        'PASSWORD': os.getenv('DATABASES_PASSWORD_PROD'),
+        'HOST': os.getenv('DATABASES_HOST_PROD'),
+        'PORT': os.getenv('DATABASES_PORT_PROD'),
     }
 }
 
