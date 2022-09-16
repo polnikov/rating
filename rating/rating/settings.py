@@ -91,11 +91,11 @@ WSGI_APPLICATION = 'rating.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DATABASES_NAME'),
-        'USER': os.getenv('DATABASES_USER'),
-        'PASSWORD': os.getenv('DATABASES_PASSWORD'),
-        'HOST': os.getenv('DATABASES_HOST'),
-        'PORT': os.getenv('DATABASES_PORT'),
+        'NAME': os.getenv('DATABASES_NAME_LOC'),
+        'USER': os.getenv('DATABASES_USER_LOC'),
+        'PASSWORD': os.getenv('DATABASES_PASSWORD_LOC'),
+        'HOST': os.getenv('DATABASES_HOST_LOC'),
+        'PORT': os.getenv('DATABASES_PORT_LOC'),
     }
 }
 
