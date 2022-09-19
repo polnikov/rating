@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'fiegh-rating.ru', '188.225.79.76']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.1030155-co95955.tmweb.ru', '1030155-co95955.tmweb.ru', '188.225.79.76']
 
 SESSION_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
