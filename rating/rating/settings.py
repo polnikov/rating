@@ -12,15 +12,18 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.1030155-co95955.tmweb.ru', '1030155-co95955.tmweb.ru', '188.225.79.76']
+ALLOWED_HOSTS = ['www.fiegh-raiting.ru', 'fiegh-raiting.ru', '188.225.79.76', 'localhost']
 
-SESSION_COOKIE_SECURE = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
 SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = ['www.fiegh-raiting.ru', 'fiegh-raiting.ru', '188.225.79.76']
 
 INSTALLED_APPS = [
     'django.contrib.auth',
-    'admin_volt.apps.AdminVoltConfig',  # volt
     'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -37,7 +40,6 @@ INSTALLED_APPS = [
     # add apps
     'stronghold',
     'import_export',
-    'debug_toolbar',
     'semanticuiforms',
     'django_better_admin_arrayfield',
     'dynamic_breadcrumbs',
@@ -60,7 +62,6 @@ MIDDLEWARE = [
     # add
     'stronghold.middleware.LoginRequiredMiddleware',
     'django_currentuser.middleware.ThreadLocalUserMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'rating.urls'
@@ -138,13 +139,11 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, '/media')
 
-STATIC_URL = '/static/'
+STATIC_URL = '/staticfiles/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = '/home/code/rating/staticfiles'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
