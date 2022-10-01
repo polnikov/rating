@@ -1,0 +1,25 @@
+name: Deploying changes
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploying changes
+        uses: appleboy/ssh-action@master
+        env:
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          envs: DJANGO_SECRET_KEY
+          script: |
+            export DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
+            sh deploying_changes.sh
+            ls -la
