@@ -9,6 +9,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    environment: Deploy changes
     steps:
       - name: Deploying changes
         uses: appleboy/ssh-action@master
