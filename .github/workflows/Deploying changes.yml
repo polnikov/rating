@@ -11,6 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: Deploy changes
     steps:
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.KEY }}
+
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
       - name: Deploying changes
         uses: appleboy/ssh-action@master
         env:
