@@ -25,9 +25,6 @@ jobs:
         env:
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
           envs: DJANGO_SECRET_KEY
           script: |
             export DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
