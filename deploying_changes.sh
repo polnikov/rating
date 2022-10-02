@@ -10,6 +10,8 @@ echo "Git pull..."
 git pull
 
 cd /home/code
+echo "Target folder: $(pwd)"
+
 # check & activate env
 if [[ -d "env" ]]; then
     echo 'Venv exists...'
@@ -20,6 +22,8 @@ else
 fi
 
 cd /home/code/rating
+echo "Target folder: $(pwd)"
+
 sed -i "/psycopg2==2.9.3/d" requirements.txt
 
 # install requirements
@@ -28,6 +32,7 @@ pip install -r requirements.txt
 
 # cd to root project
 cd /home/code/rating/rating
+echo "Target folder: $(pwd)"
 
 # makemigrations and migrate
 echo "Make migrations and migrate..."
@@ -38,9 +43,12 @@ python manage.py migrate
 echo "Collect staticfiles..."
 manage.py collectstatic --noinput
 
+echo "Deactivate venv..."
 deactivate
 
 # restart gunicorn and reload nginx
 echo "Restart Gunicorn & NGINX..."
 sudo systemctl restart gunicorn
 sudo systemctl reload nginx
+
+echo "Finish!"
