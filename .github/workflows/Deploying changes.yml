@@ -11,15 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: Deploy changes
     steps:
-      - name: Deploying changes
-        uses: appleboy/ssh-action@master
-        env:
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      - name: Deploying changes by ssh
+        uses: garygrossgarten/github-action-ssh@release
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-            export DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
-            sh deploying_changes.sh
-            ls -la
+          privateKey: ${{ secrets.KEY}}
+          command: ls -a
