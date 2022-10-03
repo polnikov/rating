@@ -19,6 +19,8 @@ if [ -d /home/code/env ]; then
     if [ $? -ne 0 ]; then
         echo "[----------!!!] VENV don't activated!"
         exit 1
+    else
+        echo "[++++++++++++] VENV activated"
     fi
 
 else
@@ -39,9 +41,12 @@ pip install -r requirements.txt
 cd /home/code/rating/rating
 echo "[-------------] Target folder: $(pwd)"
 
-# makemigrations and migrate
-echo "[-------------] Make migrations and migrate..."
+# makemigrations
+echo "[-------------] Make migrations..."
 python manage.py makemigrations
+
+# migrate
+echo "[-------------] Migrate..."
 python manage.py migrate
 
 # collectstatic
