@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: Deploy changes
     steps:
-      - name: Deploying changes
+      - name: deploying changes
         uses: appleboy/ssh-action@master
         env:
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
