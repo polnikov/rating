@@ -1,6 +1,7 @@
 ## Рейтинг успеваемости студентов университета
 
 [![CodeQL](https://github.com/polnikov/rating/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/polnikov/rating/actions/workflows/codeql-analysis.yml)
+[![Deploying changes](https://github.com/polnikov/rating/actions/workflows/Deploying%20changes.yml/badge.svg?event=push)](https://github.com/polnikov/rating/actions/workflows/Deploying%20changes.yml)
 
 Рейтинг сформирован на базе учебной траектории студентов [СПбГАСУ](https://spbgasu.ru).
 
