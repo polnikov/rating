@@ -21,4 +21,4 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             export DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
-            source /home/code/deploying_changes.sh
+            source /home/code/rating/deploying_changes.sh
