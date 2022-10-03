@@ -18,7 +18,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.KEY }}
+          key: ${{ secrets.KEY }}
           script: |
             export DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
             sh deploying_changes.sh
