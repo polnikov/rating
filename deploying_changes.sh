@@ -14,10 +14,15 @@ echo "[-------------] Target folder: $(pwd)"
 
 # check & activate env
 if [ -d /home/code/env ]; then
-    echo '[-------------] Venv exists!'
+    echo '[-------------] VENV exists!'
     . ./env/bin/activate
+    if [ $? -ne 0 ]; then
+        echo "[----------!!!] VENV don't activated!"
+        exit 1
+    fi
+
 else
-    echo '[-------------] Creating Venv...'
+    echo '[-------------] Creating VENV...'
     python3 -m venv env
 fi
 
@@ -49,6 +54,15 @@ deactivate
 # restart gunicorn and reload nginx
 echo "[-------------] Restart Gunicorn & NGINX..."
 sudo systemctl restart gunicorn
+if [ $? -ne 0 ]; then
+    echo "[-------------] Gunicorn successfull restarted!"
+    exit 1
+fi
 sudo systemctl reload nginx
+if [ $? -ne 0 ]; then
+    echo "[-------------] NGINX successfull reloaded!"
+    exit 1
+fi
+
 
 echo "[-------------] Finish!"

@@ -22,4 +22,3 @@ jobs:
           script: |
             export DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
             source /home/code/deploying_changes.sh
-            ls -la
