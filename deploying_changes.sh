@@ -46,7 +46,7 @@ python manage.py migrate
 
 # collectstatic
 echo "[-------------] Collect staticfiles..."
-manage.py collectstatic --noinput
+python manage.py collectstatic --noinput
 
 echo "[-------------] Deactivate venv..."
 deactivate
