@@ -385,12 +385,14 @@ class ResultCreateView(LoginRequiredMixin, CreateView):
         mark_0 = request.POST['mark_0']
         mark_1 = request.POST['mark_1']
         mark_2 = request.POST['mark_2']
+        tag = request.POST['tag']
         
         form = ResultForm(data={'students': student,
                                 'groupsubject': groupsubject,
                                 'mark_0': mark_0,
                                 'mark_1': mark_1,
-                                'mark_2': mark_2})
+                                'mark_2': mark_2,
+                                'tag': tag})
         if form.is_valid():
             form.save()
             return redirect('students:results')

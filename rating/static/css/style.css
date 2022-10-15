@@ -93,9 +93,13 @@
    box-shadow: 0 8px 28px rgba(0,0,0,0.25), 0 8px 8px rgba(0,0,0,0.22);
 }
 
-#import,
 #group-cards {
    box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+}
+
+#import,
+#help {
+   box-shadow: 0px 0px 100px 50px rgba(0,0,0,0.10);
 }
 
 /* light shadow */
@@ -105,6 +109,12 @@
 }
 #footer {
    box-shadow: 0 5px 20px 0px rgba(0, 0, 0, .5);
+}
+
+#toggle {
+   color: rgba(255, 255, 255, 0.816);
+   background: #1a1a1a;
+   text-shadow: 0 0 15px rgba(255,255,255,.5), 0 0 10px rgba(255,255,255,.5);
 }
 
 /* боковое меню *******************************************************************************************************/
