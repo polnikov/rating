@@ -1,27 +1,28 @@
-## Рейтинг успеваемости студентов университета
+## University Student Achievement Ranking
 
 [![CodeQL](https://github.com/polnikov/rating/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/polnikov/rating/actions/workflows/codeql-analysis.yml)
 [![Deploying changes](https://github.com/polnikov/rating/actions/workflows/Deploying%20changes.yml/badge.svg?event=push)](https://github.com/polnikov/rating/actions/workflows/Deploying%20changes.yml)
 
-Рейтинг сформирован на базе учебной траектории студентов [СПбГАСУ](https://spbgasu.ru).
+The rating is based on the educational trajectory of students [SPSUACE](https://spbgasu.ru).
 
-### **Основной функционал:**
-- создание факультетов, кафедр, учебных групп
-- создание студента и его основных учебных реквизитов
-- создание дисциплины с её характеристиками (форма контроля, преподаватель и прочие)
-- назначение группам дисциплин в каждом из семестров в соответствии с учебным планом
-- статистика по контингенту (численность, стипендия и прочие)
-- перевод студентов по курсам
-- формирование списка студентов для назначения стипендии по результатам учебного семестра
-- формирование списков академических задолженностей (по студентам и дисциплинам)
-- вычисление среднего балла студента по семестрам и общего
-- импорт данных из CSV файла (кафедры, студенты, дисциплины, назначения дисциплин, ведомости из 1с с оценками)
+### **Main functions:**
+- creation of faculties, cathedras, study groups
+- creation of the student and his basic training props
+- creation of a discipline with its characteristics (form of control, teacher, etc.)
+- assignment of disciplines to groups in each of the semesters in accordance with the curriculum
+- statistics on the contingent (number, stipend, etc.)
+- transfer of students in courses
+- formation of a list of students for the appointment of scholarships based on the results of the academic semester
+- formation of lists of academic debts (by students and disciplines)
+- calculation of the student's average score by semester and general
+- import of data from a CSV file (cathedras, students, disciplines, assignments of disciplines, statements from 1c with grades)
 
-### **Предварительные настройки через панель администратора:**
-- создание основ обучения (Бюджет, Контракт и прочие)
-- создание семестров
 
-### **Основной стек:**
+### **Presets via admin site:**
+- creation of training foundations (budget, contract, etc.)
+- creation of semesters
+
+### **Main stack:**
 - Python 3.10.6
 - Django 3.2.15
 - PostgreSQL
