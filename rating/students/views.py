@@ -270,7 +270,7 @@ def import_students(request):
                     else:
                         basis = row[4].capitalize()
                     is_basis = Basis.objects.filter(name=basis).exists()
-                    group = row[7].upper()
+                    group = row[7]
                     is_group = Group.objects.filter(name=group).exists()
                     is_semester = Semester.objects.filter(id=row[8]).exists()
                     citizenship = row[5].capitalize()
