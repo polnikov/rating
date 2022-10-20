@@ -270,7 +270,8 @@ def import_students(request):
                     else:
                         basis = row[4].capitalize()
                     is_basis = Basis.objects.filter(name=basis).exists()
-                    group = row[7].upper()
+                    group = row[7]
+                    print(Group.objects.filter(name=group))
                     is_group = Group.objects.filter(name=group).exists()
                     is_semester = Semester.objects.filter(id=row[8]).exists()
                     citizenship = row[5].capitalize()
@@ -279,6 +280,7 @@ def import_students(request):
                     is_level = level in list(map(lambda x: x[0], Student._meta.get_field('level').choices))
                     status = row[10].capitalize()
                     is_status = status in list(map(lambda x: x[0], Student._meta.get_field('status').choices))
+                    print(is_basis, is_group, is_semester, is_citizenship, is_level, is_status)
                     if all([is_basis, is_group, is_semester, is_citizenship, is_level, is_status]):
                         basis = Basis.objects.get(name=basis).id
                         group = Group.objects.get(name=group).id
@@ -700,7 +702,7 @@ def calculate_rating(student, start, stop=False):
     # количество каждой из оценок <3 | 4 | 5>
     count_marks = dict(Counter(marks))
     try:
-        rating = round(sum([int(k)*v for k, v in count_marks.items()]) / num_atts, 2)
+        rating = round(sum([int(k) * v for k, v in count_marks.items()]) / num_atts, 2)
     except ZeroDivisionError:
         rating = 0
     
@@ -730,5 +732,5 @@ def search_results(request):
             'subjects': result_subjects,
         }
 
-    return render(request,'search_results.html', context=context)
+    return render(request, 'search_results.html', context=context)
 
