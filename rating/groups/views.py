@@ -16,7 +16,7 @@ class GroupListView(LoginRequiredMixin, ListView):
     """Отобразить все группы."""
     model = Group
     template_name = 'groups/groups.html'
-    ordering = ['level']
+    ordering = ['level', 'code', 'name']
 
     def get_queryset(self):
         return Group.objects.filter(is_archived=False).values('id', 'name', 'direction', 'profile', 'level', 'code')
