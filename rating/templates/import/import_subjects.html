@@ -105,9 +105,9 @@
          <i class="times red icon"></i><font color="red">Неверный формат даты зачисления!</font>
       {% elif errors %}
          <i class="times red icon"></i><font color="red">Следующие данные не были импортированы:</font>
-         <div class="ui list left aligned">
+         <div class="ui list">
             {% for error in errors %}
-               <div class="item">
+               <div class="item" align="left">
                   <i class="bug red icon"></i>{{ error }}
                </div>
             {% endfor %}
