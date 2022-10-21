@@ -50,7 +50,7 @@ class GroupCardsView(LoginRequiredMixin, ListView):
     """Отобразить карточки групп."""
     model = Group
     template_name = 'groups/group_cards.html'
-    ordering = ['code']
+    ordering = ['code', 'name']
 
     def get_queryset(self):
         return Group.objects.filter(is_archived=False).values('id', 'name', 'direction', 'profile', 'level', 'code')
