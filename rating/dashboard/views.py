@@ -122,9 +122,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         # добавляем дату выхода в АО в академическом отпуске
         for st in delay_students:
-            delay_start_date = StudentLog.objects.get(record_id=st.student_id, field='Текущий статус').timestamp
-            st.delay_start_date = delay_start_date
-            st.delay_end_date = delay_start_date + relativedelta(months=12)
+            try:
+                delay_start_date = StudentLog.objects.get(record_id=st.student_id, field='Текущий статус').timestamp
+                st.delay_start_date = delay_start_date
+                st.delay_end_date = delay_start_date + relativedelta(months=12)
+            except StudentLog.DoesNotExist:
+                pass
 
         # количественный блок
         context['num_students'] = num_students
