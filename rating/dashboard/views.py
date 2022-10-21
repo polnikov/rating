@@ -115,7 +115,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # список болеющих студентов
         sick_students = []
         for st in active_students:
-            if 'болеет' in st.comment.lower():
+            if st.comment and 'болеет' in st.comment.lower():
                 sick_date = StudentLog.objects.get(record_id=st.student_id, field='Примечание').timestamp
                 st.sick_date = sick_date
                 sick_students.append(st)
