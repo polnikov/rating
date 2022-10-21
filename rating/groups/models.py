@@ -42,6 +42,7 @@ class Group(CommonTimestampModel, CommonArchivedModel):
         ordering = [
             'level',
             'code',
+            'name',
         ]
 
     def __str__(self):
