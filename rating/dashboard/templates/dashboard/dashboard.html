@@ -224,7 +224,7 @@
                <tbody>
                   {% for st in delay_students %}
                      <tr>
-                        <td class="center aligned" style="width: 80px">
+                        <td class="center aligned" style="width: 100px">
                            <a href="{% url 'groups:detail' groupname=st.group.name semester=st.semester.semester %}">
                               {{ st.group.name }}-{{ st.semester.semester }}
                            </a>
@@ -247,7 +247,7 @@
                <tbody>
                   {% for st in sick_students %}
                      <tr>
-                        <td class="center aligned" style="width: 80px">
+                        <td class="center aligned" style="width: 100px">
                            <a href="{% url 'groups:detail' groupname=st.group.name semester=st.semester.semester %}">
                               {{ st.group.name }}-{{ st.semester.semester }}
                            </a>
