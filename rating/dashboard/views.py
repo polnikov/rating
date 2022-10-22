@@ -1,9 +1,11 @@
-from dateutil.relativedelta import relativedelta
+import re
+from datetime import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.views.generic import TemplateView
 
+from dateutil.relativedelta import relativedelta
 from students.models import Student, StudentLog
 
 
@@ -120,11 +122,17 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 st.sick_date = sick_date
                 sick_students.append(st)
 
-        # добавляем дату выхода в АО в академическом отпуске
+        # добавляем дату выхода из АО
         for st in delay_students:
-            delay_start_date = StudentLog.objects.get(record_id=st.student_id, field='Текущий статус').timestamp
-            st.delay_start_date = delay_start_date
-            st.delay_end_date = delay_start_date + relativedelta(months=12)
+            # извлекаем дату ухода в АО из комментария
+            pattern = r'АО:([0-9]{2})\.([0-9]{2})\.([0-9]{4})'  # АО:DD.MM.YYYY
+            try:
+                comment = st.comment
+                delay_start_date_string = re.search(pattern, comment).group(0).split(':')[-1]
+                st.delay_start_date = datetime.strptime(delay_start_date_string, '%d.%m.%Y').date()
+                st.delay_end_date = st.delay_start_date + relativedelta(months=12)
+            except AttributeError:
+                st.msg = 'no'
 
         # количественный блок
         context['num_students'] = num_students
