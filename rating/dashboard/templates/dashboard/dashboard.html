@@ -259,7 +259,13 @@
                            </a>
                         </td>
                         <td class="collapsing left aligned"><a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a></td>
-                        <td class="right aligned">{{ st.sick_date|timesince }}</td>
+                        <td class="right aligned">
+                           {% if not st.msg %}
+                              {{ st.sick_date|timesince }}
+                           {% else %}
+                              <i class="times red large icon"></i>
+                           {% endif %}
+                        </td>
                      </tr>
                   {% endfor %}
                </tbody>
