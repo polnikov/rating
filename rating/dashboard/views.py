@@ -127,6 +127,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                     sick_students.append(st)
                 except AttributeError:
                     st.msg = 'no'
+                    if 'болеет' in st.comment.lower():
+                        sick_students.append(st)
 
         # добавляем дату выхода из АО
         for st in delay_students:
