@@ -192,20 +192,20 @@ $(document).ready(function() {
 			search: '',
 			searchPlaceholder: 'поиск',
 			paginate: {
-            first:    '«',
-            previous: '‹',
-            next:     '›',
-            last:     '»'
-         }
+				first:    '«',
+				previous: '‹',
+				next:     '›',
+				last:     '»'
+			}
 		},
 		lengthMenu: [
-         [20, 50, -1],
-         [20, 50, 'Все']
-      ],
-      pageLength: 20,
-      columnDefs: [
-         { searchable: false, targets: 0 }
-      ],
+			[20, 50, -1],
+			[20, 50, 'Все']
+		],
+		pageLength: 20,
+		columnDefs: [
+			{ searchable: false, targets: 0 }
+		],
 	});
 
 	// Filter event handler
@@ -217,13 +217,13 @@ $(document).ready(function() {
 
 	// Очистка фильтров двойным кликом выше head
    $(document).on("dblclick",  ".ui.stackable.grid", function() {
-      let inputs = document.getElementsByName("filter");
-      inputs.forEach(e => {
-         e.value = "";
-      });
-      table.search('');
-      table.columns().search('').draw();
-   });
+		let inputs = document.getElementsByName("filter");
+		inputs.forEach(e => {
+			e.value = "";
+		});
+		table.search('');
+		table.columns().search('').draw();
+	});
 	changeDatatableInputFont();
 });
 
@@ -252,20 +252,20 @@ $(document).ready(function() {
 			search: '',
 			searchPlaceholder: 'поиск',
 			paginate: {
-            first:    '«',
-            previous: '‹',
-            next:     '›',
-            last:     '»'
-         }
+				first:    '«',
+				previous: '‹',
+				next:     '›',
+				last:     '»'
+			}
 		},
 		lengthMenu: [
-         [20, 50, -1],
-         [20, 50, 'Все']
-      ],
-      pageLength: 20,
-      columnDefs: [
-         { searchable: false, targets: 0 }
-      ],
+			[20, 50, -1],
+			[20, 50, 'Все']
+		],
+		pageLength: 20,
+		columnDefs: [
+			{ searchable: false, targets: 0 }
+		],
 	});
 
 	// Filter event handler
@@ -276,14 +276,14 @@ $(document).ready(function() {
 	});
 
 	// Очистка фильтров двойным кликом выше head
-   $(document).on("dblclick",  ".ui.stackable.grid", function() {
-      let inputs = document.getElementsByName("filter");
-      inputs.forEach(e => {
-         e.value = "";
-      });
-      table.search('');
-      table.columns().search('').draw();
-   });
+	$(document).on("dblclick",  ".ui.stackable.grid", function() {
+		let inputs = document.getElementsByName("filter");
+		inputs.forEach(e => {
+			e.value = "";
+		});
+		table.search('');
+		table.columns().search('').draw();
+	});
 	changeDatatableInputFont();
 });
 
