@@ -44,74 +44,82 @@
         <!-- Tab 1 -->
         <!-- Details -->
         <div class="ui bottom attached tab segment active" data-tab="first">
-            <div class="ui equal width grid">
-                <div class="column">
-                    <table class="ui definition table" style="width: 700px">
-                        <tbody>
-                            <tr>
-                                <td style="width: 200px">Зачетная книжка</td>
-                                <td>{{ student.student_id }}</td>
-                            </tr>
-                            <tr>
-                                <td>Гражданство</td>
-                                <td>{{ student.get_citizenship_display }}</td>
-                            </tr>
-                            <tr>
-                                <td>Основа обучения</td>
-                                <td>{{ student.basis }}</td>
-                            </tr>
-                            <tr>
-                                <td>Уровень обучения</td>
-                                <td>{{ student.get_level_display }}</td>
-                            </tr>
-                            <tr>
-                                <td>Группа</td>
-                                <td>
-                                    <a href="{% url 'groups:detail' groupname=student.group semester=student.semester.semester %}" class="ui grey basic label">
-                                        {{ student.group }}
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Семестр</td>
-                                <td>{{ student.semester.semester }}</td>
-                            </tr>
-                            <tr>
-                                <td>Дата зачисления</td>
-                                <td>{{ student.start_date|date:"l" }}, {{ student.start_date }}</td>
-                            </tr>
-                            <tr>
-                                <td>Стипендия</td>
-                                <td>{{ student.money }}</td>
-                            </tr>
-                            <tr>
-                                <td>Статус</td>
-                                {% if student.get_status_display == 'Отчислен' %}
-                                    <td class="negative"><i class="icon close"></i>
-                                        {{ student.get_status_display }}
+            <div class="ui basic segment">
+                <div class="ui equal width grid">
+                    <div class="column">
+                        <table class="ui definition table" style="width: 700px">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 200px">Зачетная книжка</td>
+                                    <td>{{ student.student_id }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Гражданство</td>
+                                    <td>{{ student.get_citizenship_display }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Основа обучения</td>
+                                    <td>{{ student.basis }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Уровень обучения</td>
+                                    <td>{{ student.get_level_display }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Группа</td>
+                                    <td>
+                                        <a href="{% url 'groups:detail' groupname=student.group semester=student.semester.semester %}" class="ui grey basic label">
+                                            {{ student.group }}
+                                        </a>
                                     </td>
-                                {% elif student.get_status_display == 'Академический отпуск' %}
-                                    <td class="warning"><i class="icon hourglass half"></i>
-                                        {{ student.get_status_display }}
-                                    </td>
-                                {% elif student.get_status_display == 'Выпускник' %}
-                                    <td class="positive"><i class="icon rocket"></i>
-                                        {{ student.get_status_display }}
-                                    </td>
-                                {% else %}
-                                    <td class="positive"><i class="icon checkmark"></i>
-                                        {{ student.get_status_display }} {% if student.tag %}<div id="tag-label" class="ui small pink label">{{ student.tag }}</div>{% endif %}
-                                    </td>
-                                {% endif %}
-                            </tr>
-                            <tr>
-                                <td>Примечание</td>
-                                <td>{{ student.comment|truncatechars:100 }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                </tr>
+                                <tr>
+                                    <td>Семестр</td>
+                                    <td>{{ student.semester.semester }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Дата зачисления</td>
+                                    <td>{{ student.start_date|date:"l" }}, {{ student.start_date }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Стипендия</td>
+                                    <td>{{ student.money }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Статус</td>
+                                    {% if student.get_status_display == 'Отчислен' %}
+                                        <td class="negative"><i class="icon close"></i>
+                                            {{ student.get_status_display }}
+                                        </td>
+                                    {% elif student.get_status_display == 'Академический отпуск' %}
+                                        <td class="warning"><i class="icon hourglass half"></i>
+                                            {{ student.get_status_display }}
+                                        </td>
+                                    {% elif student.get_status_display == 'Выпускник' %}
+                                        <td class="positive"><i class="icon rocket"></i>
+                                            {{ student.get_status_display }}
+                                        </td>
+                                    {% else %}
+                                        <td class="positive"><i class="icon checkmark"></i>
+                                            {{ student.get_status_display }} {% if student.tag %}<div id="tag-label" class="ui small pink label">{{ student.tag }}</div>{% endif %}
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                                <tr>
+                                    <td>Примечание</td>
+                                    <td>{{ student.comment|truncatechars:100 }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Statistics -->
+                    <div class="column">
+                        <h4 style="font-family: Hack">Статистика</h4>
+                        В разработке...
+                    </div>
                 </div>
-                <div class="column">
+                <!-- Ranking -->
+                <div class="ui basic segment left aligned" style="padding-left: 0px; padding-right: 0px">
                     <h4 style="font-family: Hack">Средний балл</h4>
                     <table class="ui compact celled fixed table center aligned">
                         <thead>
