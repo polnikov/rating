@@ -326,7 +326,7 @@
                         <div class="item">Теперь, рядом с ФИО студента везде будет отображаться метка <i class="heart broken red icon"></i></div>
                         <div class="item">Чтобы убрать метку - удалите слово из примечания</div>
                         <div class="item">После того, как студент отмечен болеющим - в меню <a class="ui tiny label"><i class="calculator icon"></i>Статистика</a> он появится в таблице <a class="ui tiny label">Болеют</a></div>
-                        <div class="item">Напротив каждого болеющего будет указан период времени, начиная от даты, когда отметка была добавлена</div>
+                        <div class="item">Чтобы напротив каждого болеющего указать время болезни - нужно в комментариях студента изменить запись на: <a class="ui tiny label">Болеет:ДД.ММ.ГГГГ</a></div>
                     </div>
                     <br>
                     <div class="ui visible warning message">
@@ -334,8 +334,9 @@
                             <div class="header" style="font-family: Hack">
                                 Внимание!
                             </div>
-                            Слово <a class="ui circular tiny label">болеет</a> можно указывать независимо от регистра, а также в составе любого другого текста. Например:<br>
-                            Болеет с 15.02.22 по 22.02.22
+                            <div class="item">Слово <a class="ui circular tiny label">болеет</a> можно указывать независимо от регистра, а также в составе любого другого текста. Например:<br>
+                                Болеет с 15.02.22 по 22.02.22</div>
+                            <div class="item">Запись <a class="ui tiny label">Болеет:ДД.ММ.ГГГГ</a> указывается без пробелов</div>
                         </div>
                     </div>
                 </div>
@@ -503,6 +504,52 @@
                 <div class="item"><div name="point" class="ui red circular small label">1</div> Дата и время создания карточки</div>
                 <div class="item"><div name="point" class="ui red circular small label">2</div> Дата и время обновления карточки</div>
                 <div class="item"><div name="point" class="ui red circular small label">3</div> Сделанные изменения</div>
+            </div>
+        </div>
+
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как отметить, что студент ушел в академический отпуск и контролировать это?
+        </div>
+        <div class="content">
+            <div class="accordion">
+                <div class="title" style="font-family: Hack">
+                    <i class="dropdown icon"></i>
+                    Пояснения
+                </div>
+                <div class="content">
+                    <div id="bulleted-list" class="ui bulleted list">
+                        <div class="item">Открываете карточку студента - из группы или из категории меню <a class="ui tiny label"><i class="chevron right icon"></i>Студенты</a></div>
+                        <div class="item">Нажимаете кнопку <a class="ui circular tiny green label"><i class="sync alternate icon"></i>Обновить</a></div>
+                        <div class="item">Изменяете статуст студента на "Академический отпуск" и в поле <a class="ui circular tiny label">Примечание</a> вписываете запись: <a class="ui tiny label">АО:ДД.ММ.ГГГГ</a></div>
+                        <div class="item">Сохраняете изменения</div>
+                        <div class="item">После того - в меню <a class="ui tiny label"><i class="calculator icon"></i>Статистика</a> он появится в таблице студентов, находящихся в академическом отпуске, где будет указано оставшееся время до выхода из АО, от указанной даты</div>
+                    </div>
+                    <br>
+                    <div class="ui visible warning message">
+                        <div class="content">
+                            <div class="header" style="font-family: Hack">
+                                Внимание!
+                            </div>
+                            <div class="item">Срок АО для отсчета времени = 12 месяцам</div>
+                            <div class="item">Запись <a class="ui tiny label">АО:ДД.ММ.ГГГГ</a> указывается без пробелов</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion">
+                <div class="title" style="font-family: Hack">
+                    <i class="dropdown icon"></i>
+                    Видео
+                </div>
+                <div class="content">
+                    <center>
+                        <video width="1200" height="700" controls="controls" preload="preload">
+                            <source src="{% static 'video/12_set_delay_student.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        </video>
+                    </center>
+                </div>
             </div>
         </div>
 
