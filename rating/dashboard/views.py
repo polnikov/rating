@@ -117,18 +117,24 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # список болеющих студентов
         sick_students = []
         for st in active_students:
+            # извлекаем дату начала болезни из комментария
+            pattern_sick = r'Болеет:([0-9]{2})\.([0-9]{2})\.([0-9]{4})'  # Болеет:DD.MM.YYYY
             if 'болеет' in st.comment.lower():
-                sick_date = StudentLog.objects.get(record_id=st.student_id, field='Примечание').timestamp
-                st.sick_date = sick_date
-                sick_students.append(st)
+                try:
+                    comment = st.comment
+                    sick_date_string = re.search(pattern_sick, comment).group(0).split(':')[-1]
+                    st.sick_date = datetime.strptime(sick_date_string, '%d.%m.%Y').date()
+                    sick_students.append(st)
+                except AttributeError:
+                    st.msg = 'no'
 
         # добавляем дату выхода из АО
         for st in delay_students:
             # извлекаем дату ухода в АО из комментария
-            pattern = r'АО:([0-9]{2})\.([0-9]{2})\.([0-9]{4})'  # АО:DD.MM.YYYY
+            pattern_delay = r'АО:([0-9]{2})\.([0-9]{2})\.([0-9]{4})'  # АО:DD.MM.YYYY
             try:
                 comment = st.comment
-                delay_start_date_string = re.search(pattern, comment).group(0).split(':')[-1]
+                delay_start_date_string = re.search(pattern_delay, comment).group(0).split(':')[-1]
                 st.delay_start_date = datetime.strptime(delay_start_date_string, '%d.%m.%Y').date()
                 st.delay_end_date = st.delay_start_date + relativedelta(months=12)
             except AttributeError:
