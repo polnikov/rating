@@ -128,7 +128,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 st.delay_end_date = delay_start_date + relativedelta(months=12)
             except StudentLog.DoesNotExist:
                 st.delay_start_date = st.created_date
-                st.delay_end_date = delay_start_date + relativedelta(months=12)
+                st.delay_end_date = st.delay_start_date + relativedelta(months=12)
 
         # количественный блок
         context['num_students'] = num_students
