@@ -271,7 +271,6 @@ def import_students(request):
                         basis = row[4].capitalize()
                     is_basis = Basis.objects.filter(name=basis).exists()
                     group = row[7]
-                    print(Group.objects.filter(name=group))
                     is_group = Group.objects.filter(name=group).exists()
                     is_semester = Semester.objects.filter(id=row[8]).exists()
                     citizenship = row[5].capitalize()
@@ -280,8 +279,10 @@ def import_students(request):
                     is_level = level in list(map(lambda x: x[0], Student._meta.get_field('level').choices))
                     status = row[10].capitalize()
                     is_status = status in list(map(lambda x: x[0], Student._meta.get_field('status').choices))
-                    print(is_basis, is_group, is_semester, is_citizenship, is_level, is_status)
-                    if all([is_basis, is_group, is_semester, is_citizenship, is_level, is_status]):
+                    tag = row[11]
+                    is_tag = tag in list(map(lambda x: x[0], Student._meta.get_field('tag').choices))
+
+                    if all([is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag]):
                         basis = Basis.objects.get(name=basis).id
                         group = Group.objects.get(name=group).id
                         semester = Semester.objects.get(id=row[8]).id
@@ -313,7 +314,7 @@ def import_students(request):
                             'start_date': start_date,
                             'status': status,
                             'tag': row[11],
-                            'money': row[12],
+                            'money': tag,
                         },
                     )
                     if not created:
