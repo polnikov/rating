@@ -79,7 +79,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         ).filter(~Q(subjects__form_control__exact='Зачет'))
 
         # вычисление среднего балла по семестрам и суммарного
-        rating_by_semester = {
+        rating_by_semester_bac = {
             1: 0,
             2: 0,
             3: 0,
@@ -89,9 +89,22 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             7: 0,
             8: 0,
         }
+        rating_by_semester_mag = {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+        }
         all_num_marks = []
         all_marks = []
-        for i in range(1, 9):
+        if student.level == 'Бакалавриат':
+            semesters = range(1, 9)
+            rating_by_semester = rating_by_semester_bac
+        elif student.level == 'Магистратура':
+            semesters = range(1, 5)
+            rating_by_semester = rating_by_semester_mag
+
+        for i in semesters:
             # все оценки за семестр
             sem_marks_all = marks.select_related('subjects').filter(
                 groupsubject__subjects__semester__semester=i
