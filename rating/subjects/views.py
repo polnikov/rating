@@ -145,7 +145,7 @@ def import_subjects(request):
                         pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
                         if not re.match(pattern, row[5]):
                             date_validation = False
-                            print('[!] ---> Неверный формат даты зачисления.')
+                            print('[!] ---> Неверный формат даты аттестации.')
                             break
                         else:
                             # преобразование даты к формату поля модели
