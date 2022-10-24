@@ -5,6 +5,13 @@ echo '[-------------] Start deploying changes...'
 cd /home/code/rating
 echo "[-------------] Target folder: $(pwd)"
 
+echo "[-------------] Local changes: $(git status)"
+
+# discharge local changes
+echo "[-------------] Git clean local changes..."
+git clean -f
+echo "[-------------] Local changes after clean: $(git status)"
+
 # pull the changes
 echo "[-------------] Git pull..."
 git pull
