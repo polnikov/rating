@@ -230,7 +230,7 @@
                            </a>
                         </td>
                         <td class="collapsing left aligned"><a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a></td>
-                        <td class="right aligned">
+                        <td class="right aligned" style="width: 250px">
                            {% if not st.msg %}
                               {{ st.delay_end_date|timeuntil }}
                            {% else %}
@@ -259,7 +259,7 @@
                            </a>
                         </td>
                         <td class="collapsing left aligned"><a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a></td>
-                        <td class="right aligned">
+                        <td class="right aligned" style="width: 250px">
                            {% if not st.msg %}
                               {{ st.sick_date|timesince }}
                            {% else %}
