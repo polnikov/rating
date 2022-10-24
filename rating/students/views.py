@@ -280,7 +280,7 @@ def import_students(request):
                     status = row[10].capitalize()
                     is_status = status in list(map(lambda x: x[0], Student._meta.get_field('status').choices))
                     tag = row[11]
-                    is_tag = tag in list(map(lambda x: x[0], Student._meta.get_field('tag').choices))
+                    is_tag = tag in list(map(lambda x: x[0], Student._meta.get_field('tag').choices)) + ['']
 
                     if all([is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag]):
                         basis = Basis.objects.get(name=basis).id
