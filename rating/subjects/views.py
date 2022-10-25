@@ -163,7 +163,7 @@ def import_subjects(request):
 
                             defaults={
                                 'name': row[0],
-                                'form_control': row[1],
+                                'form_control': form_control,
                                 'zet': zet,
                                 'semester': semester,
                                 'teacher': row[3],
@@ -173,7 +173,7 @@ def import_subjects(request):
                     else:
                         defaults={
                             'name': row[0],
-                            'form_control': row[1],
+                            'form_control': form_control,
                             'zet': zet,
                             'semester': semester,
                             'teacher': row[3],
@@ -181,7 +181,7 @@ def import_subjects(request):
                         }
                     obj, created = Subject.objects.get_or_create(
                         name=row[0],
-                        form_control=row[1],
+                        form_control=form_control,
                         semester=row[2],
                         defaults=defaults,
                     )
