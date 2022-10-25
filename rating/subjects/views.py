@@ -121,14 +121,15 @@ def import_subjects(request):
                     is_semester = Semester.objects.filter(id=row[2]).exists()
                     
                     # проверка формата ЗЕТ
-                    pattern = r'^([0-9]{2,3})\s\(([0-9]{1,2})\)'  # 72 (2)
+                    pattern = r'([0-9]{2,3})\s\(([0-9]{1,2})\)'  # 72 (2)
                     if row[6] == '':
                         zet = ''
-                    elif not re.match(pattern, row[6]):
-                        errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
-                        break
                     else:
-                        zet = row[6]
+                        try:
+                            zet = re.search(pattern, row[6]).group(0)
+                        except AttributeError:
+                            errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
+                            break
 
                     if not is_cathedra:
                         cathedra = ''
@@ -148,7 +149,7 @@ def import_subjects(request):
                         break
 
                     if row[0].startswith('"'):
-                        row[0] = row[0].replace('"', "")
+                        subject_name = row[0].replace('"', "")
 
                     # проверка формата даты зачисления
                     if row[5] != '':
@@ -162,7 +163,7 @@ def import_subjects(request):
                             att_date ='-'.join(row[5].split('.')[::-1])
 
                             defaults={
-                                'name': row[0],
+                                'name': subject_name,
                                 'form_control': form_control,
                                 'zet': zet,
                                 'semester': semester,
@@ -172,7 +173,7 @@ def import_subjects(request):
                             }
                     else:
                         defaults={
-                            'name': row[0],
+                            'name': subject_name,
                             'form_control': form_control,
                             'zet': zet,
                             'semester': semester,
@@ -180,13 +181,13 @@ def import_subjects(request):
                             'cathedra_id': cathedra,
                         }
                     obj, created = Subject.objects.get_or_create(
-                        name=row[0],
+                        name=subject_name,
                         form_control=form_control,
-                        semester=row[2],
+                        semester=semester,
                         defaults=defaults,
                     )
                     if not created:
-                        errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
+                        errors.append(f'[{n+1}] {subject_name} {row[1]} {row[2]} семестр')
             if not errors: success = True
 
         except Exception as subjects_import_error:
