@@ -54,6 +54,19 @@ class SubjectForm(ModelForm):
         else:
             return date
 
+    def clean_zet(self):
+        """Проверить формат ЗЕТ."""
+        zet = self.cleaned_data['zet']
+        pattern = r'^([0-9]{2,3})\s\(([0-9]{1,2})\)'  # 72 (2)
+
+        if not zet:
+            return zet
+        elif not re.match(pattern, zet):
+            raise ValidationError('Неверный формат ЗЕТ')
+        else:
+            return zet
+
+
 ########################################################################################################################
 
 class FacultyForm(ModelForm):
