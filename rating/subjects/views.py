@@ -119,6 +119,16 @@ def import_subjects(request):
                 else:
                     is_cathedra = Cathedra.objects.filter(name=row[4]).exists()
                     is_semester = Semester.objects.filter(id=row[2]).exists()
+                    
+                    # проверка формата ЗЕТ
+                    pattern = r'^([0-9]{2,3})\s\(([0-9]{1,2})\)'  # 72 (2)
+                    if row[6] == '':
+                        zet = ''
+                    elif not re.match(pattern, row[6]):
+                        errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
+                        break
+                    else:
+                        zet = row[6]
 
                     if not is_cathedra:
                         cathedra = ''
@@ -131,7 +141,7 @@ def import_subjects(request):
                         errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
                         break
 
-                    form_control = row[1]
+                    form_control = row[1].strip()
                     choices = list(map(lambda x: x[0], Subject._meta.get_field('form_control').choices))
                     if form_control not in choices:
                         errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
@@ -141,7 +151,7 @@ def import_subjects(request):
                         row[0] = row[0].replace('"', "")
 
                     # проверка формата даты зачисления
-                    if row[-1] != '':
+                    if row[5] != '':
                         pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
                         if not re.match(pattern, row[5]):
                             date_validation = False
@@ -154,7 +164,7 @@ def import_subjects(request):
                             defaults={
                                 'name': row[0],
                                 'form_control': row[1],
-                                'zet': row[6],
+                                'zet': zet,
                                 'semester': semester,
                                 'teacher': row[3],
                                 'cathedra_id': cathedra,
@@ -164,6 +174,7 @@ def import_subjects(request):
                         defaults={
                             'name': row[0],
                             'form_control': row[1],
+                            'zet': zet,
                             'semester': semester,
                             'teacher': row[3],
                             'cathedra_id': cathedra,
