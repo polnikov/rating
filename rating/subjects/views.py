@@ -150,6 +150,8 @@ def import_subjects(request):
 
                     if row[0].startswith('"'):
                         subject_name = row[0].replace('"', "")
+                    else:
+                        subject_name = row[0].strip()
 
                     # проверка формата даты зачисления
                     if row[5] != '':
@@ -162,7 +164,7 @@ def import_subjects(request):
                             # преобразование даты к формату поля модели
                             att_date ='-'.join(row[5].split('.')[::-1])
 
-                            defaults={
+                            defaults = {
                                 'name': subject_name,
                                 'form_control': form_control,
                                 'zet': zet,
@@ -172,7 +174,7 @@ def import_subjects(request):
                                 'att_date': att_date,
                             }
                     else:
-                        defaults={
+                        defaults = {
                             'name': subject_name,
                             'form_control': form_control,
                             'zet': zet,
