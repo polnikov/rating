@@ -15,20 +15,48 @@
    <table class="ui very basic table">
       <tbody>
          <tr>
+            <!-- Group info -->
             <td class="collapsing">
                <div class="ui steps">
                   <div id="group-info-label" class="active step">
                      <div class="content">
-                        <div id="groupname" class="title"><h2 style="font-family: Hack">{{ group }}</h2></div>
-                        <div class="description"><font size="2px">
-                           {{ group.code }}<br>
-                           {{ group.direction }}<br>
-                           {{ group.profile }}</font>
-                        </div>
+
+                        <table class="ui very basic small table left aligned">
+                           <tbody>
+                              <tr>
+                                 <td rowspan="3" class="top aligned">
+                                    <div id="groupname" class="title"><h2 style="font-family: Hack">{{ group }}</h2></div>
+                                    <font size="2px">
+                                       {{ group.code }}<br>
+                                       {{ group.direction }}<br>
+                                       {{ group.profile }}
+                                    </font>
+                                 </td>
+                                 <td class="right aligned">Курс</td>
+                                 <td class="right aligned"><div id="info" class="ui grey circular label">
+                                    {{ course }}
+                                 </div></td>
+                              </tr>
+                              <tr>
+                                 <td class="right aligned">Семестр</td>
+                                 <td class="right aligned"><div id="info" class="ui grey circular label">
+                                    <div id="semester">{{ semester }}</div>
+                                 </div></td>
+                              </tr>
+                              <tr>
+                                 <td class="right aligned">Численность</td>
+                                 <td class="right aligned"><div id="info" class="ui grey circular label">
+                                    {{ students.count }}
+                                 </div></td>
+                              </tr>
+                           </tbody>
+                        </table>
+
                      </div>
                   </div>
                </div>
             </td>
+
             <td id="back-button-cell" class="top aligned" colspan="2">
                <button id="transfer" class="ui green small circular button" style="font-family: Hack; ; display: none" onclick="transferStudents()"><i class="level up alternate icon"></i>Перевести</button>
                <button id="cancel-button" class="ui red small circular button" style="font-family: Hack; display: none" onclick="closeCheckboxColumn()"><i class="times circle icon"></i></i>Отмена</button>
@@ -37,35 +65,6 @@
                   <button id="import-button" class="ui orange small circular button" style="font-family: Hack"><i class="icon download"></i>Импорт ведомости</button></a>
                <a href="{% url 'groups:cards' %}">
                   <button id="back-button" class="ui grey small circular button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
-            </td>
-         </tr>
-      </tbody>
-   </table>
-   <!-- Group info -->
-   <table class="ui very basic collapsing table">
-      <tbody>
-         <tr>
-            <td>
-               <div id="info" class="ui grey basic large circular label">
-                  Курс
-                  <div class="detail">
-                     {% autoescape off %}
-                        {{ course }}
-                     {% endautoescape %}
-                  </div>
-               </div>
-            </td>
-            <td>
-               <div id="info" class="ui grey basic large circular label">
-                  Семестр
-                  <div id="semester" class="detail">{{ semester }}</div>
-               </div>
-            </td>
-            <td>
-               <div id="info" class="ui grey basic large circular label">
-                  Численность
-                  <div class="detail">{{ students.count }}</div>
-               </div>
             </td>
          </tr>
       </tbody>
