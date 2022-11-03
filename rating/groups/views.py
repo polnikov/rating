@@ -77,7 +77,7 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
             is_archived=False
         ).order_by('subjects__form_control', 'subjects__name')
         # текущий курс группы
-        course = students[0].course if students else '<i class="icon red close"></i>'
+        course = students[0].course if students else '-'
         context = {
             'students': students,
             'subjects': subjects,
