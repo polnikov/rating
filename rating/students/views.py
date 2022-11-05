@@ -29,7 +29,7 @@ class StudentListView(LoginRequiredMixin, ListView):
     model = Student
     template_name = 'students/students.html'
 
-    def get_context_data(self,*args, **kwargs):
+    def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args,**kwargs)
         students = Student.objects.select_related('group', 'semester').filter(is_archived=False).order_by(
             'semester',
