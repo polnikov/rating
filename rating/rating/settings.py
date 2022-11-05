@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'import_export',
     'semanticuiforms',
     'django_better_admin_arrayfield',
+    'rest_framework',
 ]
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True  # import_export package
@@ -181,6 +182,11 @@ LOGGING = {
 IMPORT_DELIMITER = ';'
 
 SITE_ID = 1
+
+# debug_toolbar
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
