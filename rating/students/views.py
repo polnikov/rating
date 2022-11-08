@@ -130,6 +130,8 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         except ZeroDivisionError:
             rating = 0
 
+        marks = Result.objects.select_related().filter(students=student.student_id)
+
         context = {
             'student': student,
             'history': history,
@@ -163,8 +165,8 @@ class StudentRatingApiView(LoginRequiredMixin, View):
             start = 1
         
         if groups:
-                students = Student.objects.select_related('group', 'semester', 'basis').filter(
-                    is_archived=False, group__name__in=groups, semester__semester__gte=start)
+            students = Student.objects.select_related('group', 'semester', 'basis').filter(
+                is_archived=False, group__name__in=groups, semester__semester__gte=start)
         else:
             students = Student.objects.select_related(
                 'group', 'semester', 'basis').filter(
@@ -747,4 +749,3 @@ def search_results(request):
         }
 
     return render(request, 'search_results.html', context=context)
-
