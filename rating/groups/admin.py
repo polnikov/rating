@@ -1,11 +1,31 @@
 from django.contrib import admin
+from import_export import resources
+from import_export.admin import ImportExportActionModelAdmin
 
 from groups.models import Group
 from groups.forms import GroupForm
 
 
+class GroupResource(resources.ModelResource):
+
+    class Meta:
+        model = Group
+        fields = (
+            'name',
+            'direction',
+            'profile',
+            'level',
+            'code',
+            'is_archived',
+        )
+        export_order = fields
+        skip_unchanged = True
+        report_skipped = False
+
+
 @admin.register(Group)
-class GroupAdmin(admin.ModelAdmin):
+class GroupAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
+    resource_class = GroupResource
     list_display = (
         'id',
         'name',

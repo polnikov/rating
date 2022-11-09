@@ -16,6 +16,7 @@ class SubjectResource(resources.ModelResource):
             'teacher',
             'cathedra__name',
             'att_date',
+            'is_archived',
         )
         export_order = fields
         skip_unchanged = True
@@ -94,6 +95,7 @@ class SubjectLog(admin.ModelAdmin):
 
 ########################################################################################################################
 
+
 class CathedraResource(resources.ModelResource):
 
     class Meta:
@@ -101,7 +103,7 @@ class CathedraResource(resources.ModelResource):
         fields = (
             'name',
             'short_name',
-            'faculty',
+            'faculty__name',
         )
         export_order = fields
         skip_unchanged = True
@@ -129,14 +131,30 @@ class CathedraAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
 
 ########################################################################################################################
 
+
+class FacultyResource(resources.ModelResource):
+
+    class Meta:
+        model = Faculty
+        fields = (
+            'name',
+            'short_name',
+        )
+        export_order = fields
+        skip_unchanged = True
+        report_skipped = False
+
+
 @admin.register(Faculty)
-class FacultyAdmin(admin.ModelAdmin):
+class FacultyAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
+    resource_class = FacultyResource
     list_display = (
         'name',
         'short_name',
     )
 
 ########################################################################################################################
+
 
 class GroupSubjectResource(resources.ModelResource):
 
