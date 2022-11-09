@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'groups.apps.GroupsConfig',
     'students.apps.StudentsConfig',
     'subjects.apps.SubjectsConfig',
+    'api.apps.ApiConfig',
 
     # add apps
     'stronghold',
