@@ -112,6 +112,7 @@ class StudentLog(admin.ModelAdmin):
 
 ########################################################################################################################
 
+
 class ResultResource(resources.ModelResource):
 
     class Meta:
