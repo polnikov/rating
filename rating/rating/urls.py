@@ -18,4 +18,6 @@ urlpatterns += [
     path('students/', include('students.urls', namespace='students')),
     path('subjects/', include('subjects.urls', namespace='subjects')),
     path('__debug__/', include('debug_toolbar.urls')),
+    path('api-auth/', include('rest_framework.urls')),
+    path('api/', include('api.urls', namespace='api')),
 ]
