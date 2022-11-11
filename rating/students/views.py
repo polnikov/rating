@@ -274,60 +274,61 @@ def import_students(request):
             context = {'file_validation': file_validation}
             return render(request, 'import/import_students.html', context)
 
-        try:
-            for n, line in enumerate(import_file):
-                row = line.decode().strip().split(IMPORT_DELIMITER)
-                if n == 0:
-                    pass
+        for n, line in enumerate(import_file):
+            row = line.decode().strip().split(IMPORT_DELIMITER)
+            if n == 0:
+                pass
+            else:
+                if len(row[4]) == 2:
+                    basis = row[4].upper()
                 else:
-                    if len(row[4]) == 2:
-                        basis = row[4].upper()
-                    else:
-                        basis = row[4].capitalize()
-                    is_basis = Basis.objects.filter(name=basis).exists()
+                    basis = row[4].capitalize()
+                is_basis = Basis.objects.filter(name=basis).exists()
 
-                    group = row[7]
-                    is_group = Group.objects.filter(name=group).exists()
+                group = row[7]
+                is_group = Group.objects.filter(name=group).exists()
 
-                    is_semester = Semester.objects.filter(id=row[8]).exists()
+                is_semester = Semester.objects.filter(id=row[8]).exists()
 
-                    citizenship = row[5].capitalize()
-                    is_citizenship = citizenship in list(map(lambda x: x[0], Student._meta.get_field('citizenship').choices))
+                citizenship = row[5].capitalize()
+                is_citizenship = citizenship in list(map(lambda x: x[0], Student._meta.get_field('citizenship').choices))
 
-                    level = row[6].capitalize()
-                    is_level = level in list(map(lambda x: x[0], Student._meta.get_field('level').choices))
+                level = row[6].capitalize()
+                is_level = level in list(map(lambda x: x[0], Student._meta.get_field('level').choices))
 
-                    raw_status = row[10].strip()
-                    if len(raw_status) == 5:
-                        status = ' '.join(raw_status.split()[0].lower(), raw_status.split()[0].upper())
-                    else:
-                        status = raw_status.capitalize()
-                    is_status = status in list(map(lambda x: x[0], Student._meta.get_field('status').choices))
+                raw_status = row[10].strip()
+                if len(raw_status) == 5:
+                    status = ' '.join(raw_status.split()[0].lower(), raw_status.split()[0].upper())
+                else:
+                    status = raw_status.capitalize()
+                is_status = status in list(map(lambda x: x[0], Student._meta.get_field('status').choices))
 
-                    money = row[12]
-                    is_money = money in list(map(lambda x: x[0], Student._meta.get_field('money').choices))
+                money = row[12]
+                is_money = money in list(map(lambda x: x[0], Student._meta.get_field('money').choices))
 
-                    tag = row[11]
-                    is_tag = tag in list(map(lambda x: x[0], Student._meta.get_field('tag').choices)) + ['']
+                tag = row[11]
+                is_tag = tag in list(map(lambda x: x[0], Student._meta.get_field('tag').choices)) + ['']
 
-                    if all([is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag, is_money]):
-                        basis = Basis.objects.get(name=basis).id
-                        group = Group.objects.get(name=group).id
-                        semester = Semester.objects.get(id=row[8]).id
-                    else:
-                        errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-                        break
+                if all([is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag, is_money]):
+                    basis = Basis.objects.get(name=basis).id
+                    group = Group.objects.get(name=group).id
+                    semester = Semester.objects.get(id=row[8]).id
+                else:
+                    print('[!] ---> Ошибка импорта студента:', [is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag, is_money])
+                    errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
+                    break
 
-                    # проверка формата даты зачисления
-                    pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
-                    if not re.match(pattern, row[9]):
-                        date_validation = False
-                        print('[!] ---> Неверный формат даты зачисления.')
-                        break
-                    else:
-                        # преобразование даты к формату поля модели
-                        start_date = '-'.join(row[9].split('.')[::-1])
+                # проверка формата даты зачисления
+                pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
+                if not re.match(pattern, row[9]):
+                    date_validation = False
+                    print('[!] ---> Неверный формат даты зачисления.')
+                    break
+                else:
+                    # преобразование даты к формату поля модели
+                    start_date = '-'.join(row[9].split('.')[::-1])
 
+                try:
                     obj, created = Student.objects.get_or_create(
                         student_id=row[0],
                         defaults={
@@ -347,11 +348,10 @@ def import_students(request):
                     )
                     if not created:
                         errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
+                except Exception as import_students_error:
+                    print('[!] ---> Ошибка импорта студента:', import_students_error, sep='\n')
             if not errors:
                 success = True
-
-        except Exception as import_students_error:
-            print('[!] ---> Ошибка импорта студентов:', import_students_error, sep='\n')
 
     context = {
         'file_validation': file_validation,
