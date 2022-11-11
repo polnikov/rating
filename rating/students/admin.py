@@ -27,11 +27,12 @@ class StudentResource(resources.ModelResource):
             'status',
             'tag',
             'money',
+            'comment',
         )
         export_order = fields
-        import_id_fields = ('student_id',)
         skip_unchanged = True
         report_skipped = False
+        import_id_fields = ('student_id',)
 
 
 @admin.register(Student)

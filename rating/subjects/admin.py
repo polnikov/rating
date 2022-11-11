@@ -9,6 +9,7 @@ class SubjectResource(resources.ModelResource):
     class Meta:
         model = Subject
         fields = (
+            'id',
             'name',
             'form_control',
             'zet',
@@ -19,6 +20,7 @@ class SubjectResource(resources.ModelResource):
         export_order = fields
         skip_unchanged = True
         report_skipped = False
+        import_id_fields = ('name', 'form_control', 'semester')
 
 
 @admin.register(Subject)
@@ -92,6 +94,7 @@ class CathedraResource(resources.ModelResource):
     class Meta:
         model = Cathedra
         fields = (
+            'id',
             'name',
             'short_name',
             'faculty__name',
@@ -99,6 +102,7 @@ class CathedraResource(resources.ModelResource):
         export_order = fields
         skip_unchanged = True
         report_skipped = False
+        import_id_fields = ('name', 'short_name', 'faculty__name')
 
 
 @admin.register(Cathedra)
@@ -128,12 +132,14 @@ class FacultyResource(resources.ModelResource):
     class Meta:
         model = Faculty
         fields = (
+            'id',
             'name',
             'short_name',
         )
         export_order = fields
         skip_unchanged = True
         report_skipped = False
+        import_id_fields = ('name', 'short_name')
 
 
 @admin.register(Faculty)
