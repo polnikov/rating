@@ -43,6 +43,8 @@ class Group(CommonTimestampModel, CommonArchivedModel):
             'level',
             'code',
         ]
+        unique_together = (('name', 'direction', 'level', 'code'),)
+
 
     def __str__(self):
         return f'{self.name}'

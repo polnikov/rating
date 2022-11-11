@@ -13,9 +13,7 @@ class SubjectResource(resources.ModelResource):
             'form_control',
             'zet',
             'semester',
-            'teacher',
             'cathedra__name',
-            'att_date',
             'is_archived',
         )
         export_order = fields
@@ -33,9 +31,7 @@ class SubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'form_control',
         'zet',
         'semester',
-        'teacher',
         'cathedra',
-        'att_date',
         'comment',
         'updated_date',
         'created_date',
@@ -47,21 +43,16 @@ class SubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'form_control',
         'semester',
         'name',
-        'att_date',
-        'teacher',
     )
     fields = [
-        ('name', 'cathedra', 'teacher'),
+        ('name', 'cathedra'),
         ('form_control', 'semester', 'zet'),
-        'att_date',
         'comment',
         'is_archived',
     ]
     search_fields = [
         'name',
-        'teacher',
         'cathedra',
-        'att_date',
         'form_control',
     ]
     list_editable = [
@@ -69,11 +60,11 @@ class SubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'is_archived',
     ]
     ordering = [
-        '-att_date',
         'name',
     ]
 
 ########################################################################################################################
+
 
 @admin.register(SubjectLog)
 class SubjectLog(admin.ModelAdmin):
@@ -163,6 +154,8 @@ class GroupSubjectResource(resources.ModelResource):
         fields = (
             'groups',
             'subjects',
+            'teacher',
+            'att_date',
         )
         export_order = fields
         skip_unchanged = True
@@ -180,7 +173,8 @@ class GroupSubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'groups',
         'get_semester',
         'get_subject_form_control',
-        'get_teacher'
+        'teacher',
+        'att_date',
     )
     fields = [
         'subjects',
@@ -192,6 +186,8 @@ class GroupSubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     ]
     list_filter = (
         'groups',
+        'teacher',
+        'att_date',
     )
     search_fields = [
         'subjects',
@@ -204,10 +200,6 @@ class GroupSubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     def get_subject_name(self, obj):
         return f'{obj.subjects.name}'
     get_subject_name.short_description = 'Дисциплина'
-
-    def get_teacher(self, obj):
-        return f'{obj.subjects.teacher}'
-    get_teacher.short_description = 'Преподаватель'
 
     def get_subject_form_control(self, obj):
         return f'{obj.subjects.form_control}'

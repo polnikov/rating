@@ -29,11 +29,43 @@
                         </tr>
                         <tr>
                             <td>Группа</td>
-                            <td>{{ groupsubject.groups }}-{{ groupsubject.subjects.semester.semester }}</td>
+                            <td><div class="ui label">{{ groupsubject.groups }}-{{ groupsubject.subjects.semester.semester }}</div></td>
+                        </tr>
+                        <tr>
+                            <td>Преподаватель</td>
+                            {% if groupsubject.teacher %}
+                                <td class="positive">
+                                    <i class="icon checkmark"></i>
+                                    {{ groupsubject.teacher }}
+                                </td>
+                            {% else %}
+                                <td class="negative">
+                                    <i class="icon close"></i>
+                                    {{ groupsubject.empty_teacher }}
+                                </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Дата аттестации</td>
+                            {% if groupsubject.att_date %}
+                                <td class="positive">
+                                    <i class="icon checkmark"></i>
+                                    {{ groupsubject.att_date }}
+                                </td>
+                            {% else %}
+                                <td class="negative">
+                                    <i class="icon close"></i>
+                                    {{ groupsubject.empty_att_date }}
+                                </td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <td>Кафедра</td>
                             <td>{{ groupsubject.subjects.empty_cathedra }}</td>
+                        </tr>
+                        <tr>
+                            <td>Примечание</td>
+                            <td>{{ groupsubject.comment }}</td>
                         </tr>
                     </tbody>
                 </table>

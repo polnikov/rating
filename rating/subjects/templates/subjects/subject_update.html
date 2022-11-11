@@ -27,34 +27,16 @@
                     </div>
 
                     <div class="four fields">
-                        <div class="required four wide field">
+                        <div class="required three wide field">
                             <label>Форма контроля</label>
-                            {% render_field form.form_control _no_label='True' %}
+                            {% render_field form.form_control _no_label='True' placeholder='Выбрать' %}
                         </div>
 
                         <div class="required two wide field">
                             <label>Семестр</label>
-                            {% render_field form.semester _no_label='True' %}
+                            {% render_field form.semester _no_label='True' placeholder='Выбрать' %}
                         </div>
-
-                        <div class="four wide field {% if form.att_date.errors %} error {% endif %}">
-                            <label>Дата аттестации</label>
-                            <div class="ui calendar">
-                                <div class="ui input left icon">
-                                    <i class="calendar alternate outline icon"></i>
-                                    {{ form.att_date }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="six wide field {% if form.teacher.errors %} error {% endif %}">
-                            <label>Фамилия И.О. преподавателя</label>
-                            {{ form.teacher }}
-                        </div>
-                    </div>
-
-                    <div class="two fields">
-                        <div class="fourteen wide field">
+                        <div class="nine wide field">
                             <label>Кафедра</label>
                             {% render_field form.cathedra _no_label='True' placeholder='Выбрать' %}
                         </div>

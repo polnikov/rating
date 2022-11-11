@@ -444,6 +444,14 @@ function addColorForAttCells() {
    });
 };
 
+// убрать границы таблицы - инфо группы
+function deleteTableBorder() {
+   let tableCells = document.getElementsByName("info-td");
+   tableCells.forEach(element => {
+      element.style.border = '0px';
+   });
+};
+
 /* Observer ***********************************************************************************************************/
 
 // отслеживание изменения оценок для стилизации

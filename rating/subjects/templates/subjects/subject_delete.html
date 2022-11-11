@@ -25,15 +25,25 @@
                         </tr>
                         <tr>
                             <td>Семестр</td>
-                            <td>{{ subject.semester.semester }}</td>
+                            <td>
+                                <div class="ui circular label">{{ subject.semester.semester }}</div>
+                            </td>
                         </tr>
                         <tr>
                             <td class="three wide">Группы</td>
-                            <td>
-                                {% for group in groups %}
-                                    <div class="ui label">{{ group }}</div>
-                                {% endfor %}
-                            </td>
+                            {% if groups %}
+                                <td class="left aligned">
+                                    {% for group in groups %}
+                                        <div class="ui circular label">
+                                            {{ group }}
+                                        </div>
+                                    {% endfor %}
+                                </td>
+                            {% else %}
+                                <td class="negative">
+                                    Не назначено
+                                </td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <td>Форма контроля</td>
@@ -56,22 +66,6 @@
                                 {% else %}
                                     <td class="negative collapsing"><i class="icon close"></i> Нет</td>
                                 {% endif %}
-                        </tr>
-                        <tr>
-                            <td>Преподаватель</td>
-                            {% if subject.teacher %}
-                                <td class="positive"><i class="icon checkmark"></i>{{ subject.teacher }}</td>
-                            {% else %}
-                                <td class="negative"><i class="icon close"></i>{{ subject.empty_teacher }}</td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            <td>Дата аттестации</td>
-                            {% if subject.att_date %}
-                                <td>{{ subject.att_date|date:"l" }}, {{ subject.empty_att_date }}</td>
-                            {% else %}
-                                <td class="negative"><i class="icon close"></i>{{ subject.empty_att_date }}</td>
-                            {% endif %}
                         </tr>
                         <tr>
                             <td>ЗЕТ</td>

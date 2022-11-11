@@ -1,8 +1,7 @@
 from django.db import models
 from django.urls import reverse
-from django_currentuser.db.models import CurrentUserField
 
-from rating.abstracts import CommonArchivedModel, CommonTimestampModel, CommonModelLog
+from rating.abstracts import CommonArchivedModel, CommonModelLog, CommonTimestampModel
 
 
 class Subject(CommonArchivedModel, CommonTimestampModel):
@@ -35,17 +34,10 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
     cathedra = models.ForeignKey(
         'subjects.Cathedra',
         on_delete=models.SET_NULL,
+        blank=True,
         null=True,
-        blank=True,
-        verbose_name='Кафедра',
-    )
-    teacher = models.CharField(
-        verbose_name='Преподаватель',
-        help_text='Фамилия И.О.',
-        max_length=150,
-        blank=True,
         default='',
-        unique=False,
+        verbose_name='Кафедра',
     )
     zet = models.CharField(
         verbose_name='ЗЕТ',
@@ -54,14 +46,6 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
         blank=True,
         default='',
         unique=False,
-    )
-    att_date = models.DateField(
-        verbose_name='Дата аттестации',
-        auto_now=False,
-        auto_now_add=False,
-        unique=False,
-        blank=True,
-        null=True,
     )
     comment = models.CharField(
         verbose_name='Примечание',
@@ -77,14 +61,12 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
         ordering = [
             'name',
             'semester',
-            'name',
             '-form_control',
             'cathedra',
-            'att_date',
         ]
 
     def __str__(self):
-        return f'{self.name} | {self.form_control} | {self.semester} семестр | {self.teacher}'
+        return f'{self.name} | {self.form_control} | {self.semester} семестр'
 
     def save(self, *args, **kwargs):
         # Проверяем, существует ли объект
@@ -123,22 +105,6 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
         return reverse('subjects:detail', args=[str(self.id)])
 
     @property
-    def empty_att_date(self):
-        """Делает пометку для предметов, где не указана дата аттестации."""
-        if self.att_date == None or self.att_date == "":
-            return 'Нет'
-        else:
-            return self.att_date
-
-    @property
-    def empty_teacher(self):
-        """Делает пометку для предметов, где не указана фамилия преподавателя."""
-        if self.teacher == '':
-            return 'Нет'
-        else:
-            return f'{self.teacher}'
-
-    @property
     def empty_cathedra(self):
         """Вернуть <Нет>, если кафедра не выбрана."""
         if not self.cathedra:
@@ -170,6 +136,7 @@ class SubjectLog(CommonModelLog):
 
 ########################################################################################################################
 
+
 class GroupSubject(CommonArchivedModel, CommonTimestampModel):
     """Модель <Назначение дисциплины группе>."""
     groups = models.ForeignKey(
@@ -182,6 +149,29 @@ class GroupSubject(CommonArchivedModel, CommonTimestampModel):
         on_delete=models.CASCADE,
         verbose_name='Дисциплина',
     )
+    teacher = models.CharField(
+        verbose_name='Преподаватель',
+        help_text='Фамилия И.О.',
+        max_length=150,
+        blank=True,
+        default='',
+        unique=False,
+    )
+    att_date = models.DateField(
+        verbose_name='Дата аттестации',
+        auto_now=False,
+        auto_now_add=False,
+        unique=False,
+        blank=True,
+        null=True,
+    )
+    comment = models.CharField(
+        verbose_name='Примечание',
+        max_length=255,
+        blank=True,
+        unique=False,
+        default='',
+    )
 
     class Meta:
         verbose_name = 'Назначения дисциплин'
@@ -189,15 +179,43 @@ class GroupSubject(CommonArchivedModel, CommonTimestampModel):
         ordering = [
             'groups_id',
             'subjects',
+            '-att_date',
         ]
         unique_together = (
             ('groups', 'subjects'),
         )
 
     def __str__(self):
-        return f'{self.subjects} | {self.groups}'
+        if self.teacher and not self.att_date:
+            return f'{self.subjects} | {self.groups} | {self.teacher}'
+        elif not self.teacher and self.att_date:
+            return f'{self.subjects} | {self.groups} | {self.att_date}'
+        elif not self.teacher and not self.att_date:
+            return f'{self.subjects} | {self.groups}'
+        else:
+            return f'{self.subjects} | {self.groups} | {self.teacher} | {self.att_date}'
+
+    def get_absolute_url(self):
+        return reverse('groupsubjects:detail', args=[str(self.id)])
+
+    @property
+    def empty_att_date(self):
+        """Делает пометку, где не указана дата аттестации."""
+        if self.att_date == None or self.att_date == "":
+            return 'Нет'
+        else:
+            return self.att_date
+
+    @property
+    def empty_teacher(self):
+        """Делает пометку, где не указаны ФИО преподавателя."""
+        if self.teacher == '':
+            return 'Нет'
+        else:
+            return f'{self.teacher}'
 
 ########################################################################################################################
+
 
 class Cathedra(CommonTimestampModel):
     """Модель <Кафедра>."""
@@ -217,8 +235,8 @@ class Cathedra(CommonTimestampModel):
         on_delete=models.SET_NULL,
         verbose_name='Факультет',
         blank=True,
+        default='',
         null=True,
-        default=0,
     )
 
     class Meta:
@@ -254,6 +272,7 @@ class Cathedra(CommonTimestampModel):
             return self.faculty
 
 ########################################################################################################################
+
 
 class Faculty(CommonTimestampModel):
     """Модель <Факультет>."""

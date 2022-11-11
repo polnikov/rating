@@ -2,7 +2,6 @@ import re
 from collections import Counter
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
@@ -20,14 +19,7 @@ class SubjectListView(LoginRequiredMixin, ListView):
     """Отобразить все предметы."""
     model = Subject
     template_name = 'subjects/subjects.html'
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args,**kwargs)
-        subjects = Subject.objects.select_related('semester', 'cathedra').filter(is_archived=False)
-        context['subjects_list'] = subjects
-        context['empty_date'] = subjects.filter(att_date__exact=None).count()
-        context['empty_teacher'] = subjects.filter(teacher__exact='').count()
-        return context
+    queryset = Subject.objects.select_related('semester', 'cathedra').filter(is_archived=False)
 
 
 class SubjectCreateView(LoginRequiredMixin, CreateView):
@@ -52,7 +44,7 @@ class SubjectDetailView(LoginRequiredMixin, DetailView):
 
         # отображение истории изменений дисциплины
         try:
-            history = SubjectLog.objects.select_related().filter(record_id=subject.id).values()
+            history = SubjectLog.objects.select_related().filter(record_id=subject.id).order_by('-timestamp').values()
         except:
             history = 'Error'
 
@@ -71,10 +63,10 @@ class SubjectDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'subjects/subject_delete.html'
     success_url = '/subjects/'
 
-    def get_context_data(self,*args, **kwargs):
-        context = super().get_context_data(*args,**kwargs)
-        id = self.kwargs.get('pk')
-        groups = GroupSubject.objects.filter(subjects=id)
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        pk = self.kwargs.get('pk')
+        groups = GroupSubject.objects.filter(subjects=pk)
         groups_data = []
         for group in groups:
             groups_data.append(f'{group.groups}-{group.subjects.semester.semester}')
@@ -89,18 +81,11 @@ class SubjectUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'subjects/subject_update.html'
 
 
-def subjects_json(request):
-    subjects = Subject.objects.all()
-    data = [subject.get_data() for subject in subjects]
-    response = {'data': data}
-    return JsonResponse(response)
-
-
 def import_subjects(request):
     '''Импортировать дисциплины из CSV файла.'''
     success = False
     errors = []  # список дисциплин, которые не были импортированы
-    file_validation = date_validation = ''
+    file_validation = ''
 
     if request.method == 'POST':
         import_file = request.FILES['import_file'] if request.FILES else False
@@ -117,30 +102,30 @@ def import_subjects(request):
                 if n == 0:
                     pass
                 else:
-                    is_cathedra = Cathedra.objects.filter(name=row[4]).exists()
                     is_semester = Semester.objects.filter(id=row[2]).exists()
+                    is_cathedra = Cathedra.objects.filter(name=row[3]).exists()
                     
                     # проверка формата ЗЕТ
                     pattern = r'([0-9]{2,3})\s\(([0-9]{1,2})\)'  # 72 (2)
-                    if row[6] == '':
+                    if row[4] == '':
                         zet = ''
                     else:
                         try:
-                            zet = re.search(pattern, row[6]).group(0)
+                            zet = re.search(pattern, row[4]).group(0)
                         except AttributeError:
                             errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
                             break
-
-                    if not is_cathedra:
-                        cathedra = ''
-                    else:
-                        cathedra = Cathedra.objects.get(name=row[4]).id
 
                     if is_semester:
                         semester = Semester.objects.get(id=row[2])
                     else:
                         errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
                         break
+
+                    if not is_cathedra:
+                        cathedra = ''
+                    else:
+                        cathedra = Cathedra.objects.get(name=row[3]).id
 
                     form_control = row[1].strip()
                     choices = list(map(lambda x: x[0], Subject._meta.get_field('form_control').choices))
@@ -153,57 +138,35 @@ def import_subjects(request):
                     else:
                         subject_name = row[0].strip()
 
-                    # проверка формата даты зачисления
-                    if row[5] != '':
-                        pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
-                        if not re.match(pattern, row[5]):
-                            date_validation = False
-                            print('[!] ---> Неверный формат даты аттестации.')
-                            break
-                        else:
-                            # преобразование даты к формату поля модели
-                            att_date ='-'.join(row[5].split('.')[::-1])
-
-                            defaults = {
-                                'name': subject_name,
-                                'form_control': form_control,
-                                'zet': zet,
-                                'semester': semester,
-                                'teacher': row[3],
-                                'cathedra_id': cathedra,
-                                'att_date': att_date,
-                            }
-                    else:
-                        defaults = {
-                            'name': subject_name,
-                            'form_control': form_control,
-                            'zet': zet,
-                            'semester': semester,
-                            'teacher': row[3],
-                            'cathedra_id': cathedra,
-                        }
                     obj, created = Subject.objects.get_or_create(
                         name=subject_name,
                         form_control=form_control,
                         semester=semester,
-                        defaults=defaults,
+                        defaults={
+                            'name': subject_name,
+                            'form_control': form_control,
+                            'semester': semester,
+                            'cathedra_id': cathedra,
+                            'zet': zet,
+                        },
                     )
                     if not created:
                         errors.append(f'[{n+1}] {subject_name} {row[1]} {row[2]} семестр')
-            if not errors: success = True
+            if not errors:
+                success = True
 
         except Exception as subjects_import_error:
             print('[!] ---> Ошибка импорта дисциплин:', subjects_import_error, sep='\n')
             print(errors)
     context = {
         'file_validation': file_validation,
-        'date_validation': date_validation,
         'errors': errors,
         'success': success,
     }
     return render(request, 'import/import_subjects.html', context)
 
 ########################################################################################################################
+
 
 class CathedraListView(LoginRequiredMixin, ListView):
     """Отобразить все кафедры."""
@@ -239,7 +202,7 @@ def import_cathedras(request):
     '''Импортировать кафедры из CSV файла.'''
     success = False
     errors = []  # список кафедр, которые не были импортированы
-    file_validation = date_validation = ''
+    file_validation = ''
 
     if request.method == 'POST':
         import_file = request.FILES['import_file'] if request.FILES else False
@@ -274,7 +237,8 @@ def import_cathedras(request):
                     )
                     if not created:
                         errors.append(f'[{n+1}] {row[0]} {row[1]}')
-            if not errors: success = True
+            if not errors:
+                success = True
 
         except Exception as import_cathedras_error:
             print('[!] ---> Ошибка импорта кафедр:', import_cathedras_error, sep='\n')
@@ -287,6 +251,7 @@ def import_cathedras(request):
     return render(request, 'import/import_cathedras.html', context)
 
 ########################################################################################################################
+
 
 class FacultyListView(LoginRequiredMixin, ListView):
     """Отобразить все факультеты."""
@@ -318,11 +283,20 @@ class FacultyDeleteView(LoginRequiredMixin, DeleteView):
 
 ########################################################################################################################
 
+
 class GroupSubjectListView(LoginRequiredMixin, ListView):
     """Отобразить все назначения на дисциплины."""
     model = GroupSubject
     template_name = 'subjects/groupsubjects.html'
-    queryset = GroupSubject.objects.select_related('subjects__semester', 'groups').filter(is_archived=False)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        groupsubjects = GroupSubject.objects.select_related('subjects__semester', 'groups').filter(is_archived=False)
+        print(groupsubjects)
+        context['groupsubjects_list'] = groupsubjects
+        context['empty_date'] = groupsubjects.filter(att_date__exact=None).count()
+        context['empty_teacher'] = groupsubjects.filter(teacher__exact='').count()
+        return context
 
 
 class GroupSubjectCreateView(LoginRequiredMixin, CreateView):
@@ -334,14 +308,26 @@ class GroupSubjectCreateView(LoginRequiredMixin, CreateView):
     def post(self, request, *args, **kwargs):
         subject = request.POST['subjects'].replace('<option value=&quot;', '').split('&')[0]
         group = request.POST['groups'].replace('<option value=&quot;', '').split('&')[0]
+        teacher = request.POST['teacher']
+        att_date = request.POST['att_date']
+
+        if request.POST.get('is_archived', False):
+            is_archived = True
+        else:
+            is_archived = False
         
-        form = GroupSubjectForm(data={'subjects': subject, 'groups': group})
+        form = GroupSubjectForm(data={
+            'subjects': subject,
+            'groups': group,
+            'teacher': teacher,
+            'att_date': att_date,
+            'is_archived': is_archived,
+        })
         if form.is_valid():
             form.save()
             return redirect('subjects:groupsubjects')
 
         return super().post(request, *args, **kwargs)
-
 
 
 class GroupSubjectUpdateView(LoginRequiredMixin, UpdateView):
@@ -390,8 +376,33 @@ def import_groupsubjects(request):
                     if all([is_subject, is_group]):
                         subject = Subject.objects.get(name=row[0], form_control=row[1], semester=row[2])
                         group = Group.objects.get(name=row[3])
+
+                        # проверка формата даты зачисления
+                        if row[5] != '':
+                            pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
+                            if not re.match(pattern, row[5]):
+                                date_validation = False
+                                print('[!] ---> Неверный формат даты аттестации.')
+                                break
+                            else:
+                                # преобразование даты к формату поля модели
+                                att_date = '-'.join(row[5].split('.')[::-1])
+
+                                defaults = {
+                                    'groups': group,
+                                    'subjects': subject,
+                                    'att_date': att_date,
+                                    'teacher': row[4],
+                                }
+                        else:
+                            defaults = {
+                                'groups': group,
+                                'subjects': subject,
+                                'teacher': row[4],
+                            }
+
                         if not GroupSubject.objects.filter(groups=group, subjects=subject).exists():
-                            GroupSubject.objects.create(groups=group, subjects=subject)
+                            GroupSubject.objects.create(**defaults)
                         else:
                             errors.append(f'[{n+1}] уже существует')
                     else:
@@ -399,18 +410,22 @@ def import_groupsubjects(request):
                             errors.append(f'[{n+1}] дисциплины нет в этом семестре')
                         if not is_group:
                             errors.append(f'[{n+1}] группа отсутствует')
-            if not errors: success = True
+            if not errors:
+                success = True
+
         except Exception as groupsubjects_import_error:
             print('[!] ---> Ошибка импорта назначений:', groupsubjects_import_error, sep='\n')
-            print(errors)
+
     context = {
         'file_validation': file_validation,
+        'date_validation': date_validation,
         'errors': errors,
         'success': success,
     }
     return render(request, 'import/import_groupsubjects.html', context)
 
 ########################################################################################################################
+
 
 class SubjectsDebtsListView(LoginRequiredMixin, ListView):
     """Отобразить задолженности всех студентов."""
@@ -421,14 +436,17 @@ class SubjectsDebtsListView(LoginRequiredMixin, ListView):
         negative = ['ня', 'нз', '2']
 
         # id всех назначений с отрицательными оценками
-        negative_subjects = Result.objects.select_related('groupsubject__subjects').filter(mark__contained_by=negative).values('groupsubject__id')
+        negative_subjects = Result.objects.select_related('groupsubject__subjects').filter(
+            mark__contained_by=negative).values('groupsubject__id')
         # назначения
-        group_subjects = GroupSubject.objects.select_related('subjects__semester', 'groups').filter(is_archived=False, id__in=negative_subjects).order_by('-subjects__semester')
+        group_subjects = GroupSubject.objects.select_related('subjects__semester', 'groups').filter(
+            is_archived=False, id__in=negative_subjects).order_by('-subjects__semester')
 
         for gsub in group_subjects:
             all_marks = [
                 i[0]
-                for i in gsub.result_set.select_related('students__semester_semester').filter(mark__contained_by=negative).values_list('mark')]
+                for i in gsub.result_set.select_related('students__semester_semester').filter(
+                    mark__contained_by=negative).values_list('mark')]
             marks_att1 = [i[0] for i in all_marks]
             marks_att2 = [i[1] for i in list(filter(lambda x: len(x) in [2, 3], all_marks))]
             marks_att3 = [i[2] for i in list(filter(lambda x: len(x) == 3, all_marks))]
@@ -440,5 +458,3 @@ class SubjectsDebtsListView(LoginRequiredMixin, ListView):
             gsub.att3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
 
         return group_subjects
-
-########################################################################################################################

@@ -46,6 +46,7 @@ class GroupUpdateView(LoginRequiredMixin, UpdateView):
 
 ########################################################################################################################
 
+
 class GroupCardsView(LoginRequiredMixin, ListView):
     """Отобразить карточки групп."""
     model = Group
@@ -56,6 +57,7 @@ class GroupCardsView(LoginRequiredMixin, ListView):
         return Group.objects.filter(is_archived=False).values('id', 'name', 'direction', 'profile', 'level', 'code')
 
 ########################################################################################################################
+
 
 class GroupDetailListView(LoginRequiredMixin, TemplateView):
     '''Отображение студентов соответствующей группы и семестра и назначенных им дисциплин.'''
@@ -168,7 +170,9 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
     return if student: `list`
     '''
     # дисциплины, назначенные текущей группе в соответствующем семестре
-    subjects = GroupSubject.objects.select_related().filter(groups__name=groupname, subjects__semester=semester).order_by('subjects__form_control', 'subjects__name')
+    subjects = GroupSubject.objects.select_related().filter(
+        groups__name=groupname, subjects__semester=semester, is_archived=False).order_by(
+        'subjects__form_control', 'subjects__name')
 
     # добавляем порядковую нумерацию дисциплин
     for n, s in enumerate(subjects):
@@ -185,8 +189,8 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
     if student:
         # существующие оценки студента текущей группы по назначенным группе дисциплинам
         results = Result.objects.select_related('groupsubject').filter(groupsubject__groups__name=groupname,
-                                        groupsubject__subjects__semester=semester,
-                                        students=int(student))
+                                                                       groupsubject__subjects__semester=semester,
+                                                                       students=int(student))
         marks = [i.mark for i in results]
         negative = ['ня', 'нз', '2']
         # считаем количество задолженностей по каждому этапу аттестации
@@ -211,9 +215,6 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
                         cnt3 += 1
 
         att1, att2, att3 = cnt1, cnt2, cnt3
-        # print('----->>>>>', att1)
-        # print('----->>>>>', att2)
-        # print('----->>>>>', att3)
 
     ######### подсчет оценок для определения стипендии
 
@@ -270,7 +271,6 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
         students = Student.objects.select_related('basis', 'semester').filter(group__name=groupname, semester=semester, is_archived=False).order_by('last_name')
         # существующие оценки студентов текущей группы по назначенным группе дисциплинам
         results = Result.objects.select_related().filter(groupsubject__groups__name=groupname, groupsubject__subjects__semester=semester)
-
 
         # готовим структуру оценок по каждому студенту
         num_subjects = len(subjects)
@@ -330,9 +330,6 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
                                 cnt3 += 1
 
             m.att1, m.att2, m.att3 = cnt1, cnt2, cnt3
-            # print('----->>>>>', m.att1)
-            # print('----->>>>>', m.att2)
-            # print('----->>>>>', m.att3)
 
     ######### подсчет оценок для определения стипендии
 

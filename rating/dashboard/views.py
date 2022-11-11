@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.views.generic import TemplateView
 
 from dateutil.relativedelta import relativedelta
-from students.models import Student, StudentLog
+from students.models import Student
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):

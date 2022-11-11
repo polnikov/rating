@@ -1,5 +1,7 @@
 import locale
 import re
+import xlrd
+
 from collections import Counter
 from datetime import datetime
 
@@ -13,9 +15,7 @@ from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView, View
 )
 
-import xlrd
 from groups.models import Group
-from groups.views import _get_students_group_statistic_and_marks
 from students.forms import ResultForm, StudentForm
 from students.models import Basis, Result, Semester, Student, StudentLog
 from students.validators import validate_mark
@@ -30,7 +30,7 @@ class StudentListView(LoginRequiredMixin, ListView):
     template_name = 'students/students.html'
 
     def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args,**kwargs)
+        context = super().get_context_data(*args, **kwargs)
         students = Student.objects.select_related('group', 'semester').filter(is_archived=False).order_by(
             'semester',
             'group',
@@ -64,7 +64,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         student = Student.objects.select_related('group', 'semester', 'basis').get(student_id__exact=pk)
 
         try:
-            history = StudentLog.objects.select_related('user').filter(record_id=student.student_id)
+            history = StudentLog.objects.select_related('user').filter(record_id=student.student_id).order_by('-timestamp').values()
         except:
             history = 'Error'
 
@@ -74,7 +74,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             ~Q(groupsubject__subjects__form_control__exact='Зачет'))
         # все аттестации для данного направления (группы), исключая зачеты
         atts = GroupSubject.objects.select_related('subjects').filter(
-            groups=student.group, 
+            groups=student.group,
             is_archived=False
         ).filter(~Q(subjects__form_control__exact='Зачет'))
 
@@ -150,6 +150,7 @@ class StudentRatingTableView(LoginRequiredMixin, ListView):
         return render(request, 'students/students_rating.html', context={'semesters': semesters,
                                                                          'groups': groups})
 
+
 class StudentRatingApiView(LoginRequiredMixin, View):
     """Расчет среднего балла студента."""
 
@@ -158,12 +159,12 @@ class StudentRatingApiView(LoginRequiredMixin, View):
         sem_start = request.GET.get('semStart', '')
         sem_stop = request.GET.get('semStop', '')
         groups = request.GET.getlist('groups[]', False)
-        
+
         if sem_start:
             start = sem_start
         else:
             start = 1
-        
+
         if groups:
             students = Student.objects.select_related('group', 'semester', 'basis').filter(
                 is_archived=False, group__name__in=groups, semester__semester__gte=start)
@@ -172,7 +173,12 @@ class StudentRatingApiView(LoginRequiredMixin, View):
                 'group', 'semester', 'basis').filter(
                 is_archived=False, semester__semester__gte=start)
 
-        if (not sem_start and not sem_stop) or (sem_start and not sem_stop) or (not sem_start and sem_stop) or (sem_start and sem_stop == '-'):
+        flag_1 = not sem_start and not sem_stop
+        flag_2 = sem_start and not sem_stop
+        flag_3 = not sem_start and sem_stop
+        flag_4 = sem_start and sem_stop == '-'
+
+        if flag_1 or flag_2 or flag_3 or flag_4:
             # средний балл за указанный семестр. по умолчанию - за 1ый
             for student in students:
                 rating = calculate_rating(student, start)
@@ -241,7 +247,8 @@ class StudentDeleteView(LoginRequiredMixin, DeleteView):
         try:
             obj = queryset.get()
         except queryset.model.DoesNotExist:
-            raise Http404(_("No %(verbose_name)s found matching the query") % {'verbose_name': queryset.model._meta.verbose_name})
+            raise Http404(_("No %(verbose_name)s found matching the query") %
+                          {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
 
@@ -250,13 +257,6 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
     model = Student
     form_class = StudentForm
     template_name = 'students/student_update.html'
-
-
-def students_json(request):
-    students = Student.objects.all()
-    data = [student.get_data() for student in students]
-    response = {'data': data}
-    return JsonResponse(response)
 
 
 def import_students(request):
@@ -313,7 +313,7 @@ def import_students(request):
                         break
                     else:
                         # преобразование даты к формату поля модели
-                        start_date ='-'.join(row[9].split('.')[::-1])
+                        start_date = '-'.join(row[9].split('.')[::-1])
 
                     obj, created = Student.objects.get_or_create(
                         student_id=row[0],
@@ -334,7 +334,8 @@ def import_students(request):
                     )
                     if not created:
                         errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-            if not errors: success = True
+            if not errors:
+                success = True
 
         except Exception as import_students_error:
             print('[!] ---> Ошибка импорта студентов:', import_students_error, sep='\n')
@@ -355,8 +356,8 @@ def transfer_students(request):
     students_for_transfer = request.POST.getlist('checkedStudents[]', False)
     students_id = list(map(int, students_for_transfer))
 
-    for id in students_id:
-        student = Student.objects.get(student_id=id)
+    for st in students_id:
+        student = Student.objects.get(student_id=st)
         current_semester = student.semester.semester
         level = student.level
 
@@ -371,7 +372,7 @@ def transfer_students(request):
             student.is_archived = True
             student.save()
 
-    return JsonResponse({"success":"Updated"})
+    return JsonResponse({"success": "Updated"})
 
 ########################################################################################################################
 
@@ -380,9 +381,9 @@ class ResultListView(LoginRequiredMixin, ListView):
     """Отобразить все оценки."""
     model = Result
     template_name = 'students/results.html'
-    
-    def get_context_data(self,*args, **kwargs):
-        context = super().get_context_data(*args,**kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
         results = Result.objects.select_related().filter(students__is_archived=False).order_by(
             '-groupsubject__subjects__att_date')
         context['result_list'] = results
@@ -404,7 +405,7 @@ class ResultCreateView(LoginRequiredMixin, CreateView):
         mark_1 = request.POST['mark_1']
         mark_2 = request.POST['mark_2']
         tag = request.POST['tag']
-        
+
         form = ResultForm(data={'students': student,
                                 'groupsubject': groupsubject,
                                 'mark_0': mark_0,
@@ -511,7 +512,6 @@ def import_results(request):
         raw_data = []
         for n in range(num_rows):
             row_data = list(filter(lambda x: x != '', sheet.row_values(n)))
-            # print('----- row_data >>>', n, row_data)
             if row_data:
                 raw_data.append(row_data)
 
@@ -627,7 +627,8 @@ def import_results(request):
                                 result.save()
                             else:
                                 errors.append(f'{student.fullname}: {validation[-1]}')
-            if not errors: success = True
+            if not errors:
+                success = True
 
         except Exception as ex:
             print('----- ERROR >>>', ex)
@@ -657,9 +658,12 @@ class StudentsDebtsListView(LoginRequiredMixin, ListView):
         negative = ['ня', 'нз', '2']
 
         # id всех студентов с отрицательными оценками
-        negative_students = Result.objects.select_related('students').filter(mark__contained_by=negative).values('students__student_id')
+        negative_students = Result.objects.select_related('students').filter(
+            mark__contained_by=negative).values('students__student_id')
         # студенты
-        students = Student.objects.select_related('basis', 'group', 'semester').filter(is_archived=False, student_id__in=negative_students)
+        students = Student.objects.select_related(
+            'basis', 'group', 'semester').filter(
+            is_archived=False, student_id__in=negative_students)
 
         for st in students:
             all_marks = [
@@ -709,7 +713,7 @@ def calculate_rating(student, start, stop=False):
             subjects__semester__semester=start,
             is_archived=False
         ).filter(~Q(subjects__form_control__exact='Зачет'))
-        
+
     # вычисление среднего балла за семестр или период
     # берем только последнюю оценку и исключаем <ня> и <2>
     marks = list(filter(lambda x: x not in ['ня', '2'], [i['mark'][-1] for i in marks]))
@@ -721,7 +725,7 @@ def calculate_rating(student, start, stop=False):
         rating = round(sum([int(k) * v for k, v in count_marks.items()]) / num_atts, 2)
     except ZeroDivisionError:
         rating = 0
-    
+
     return rating
 
 ########################################################################################################################
@@ -731,7 +735,7 @@ def search_results(request):
     if request.method == 'GET':
         search = request.GET.get('search')
         search_query = SearchQuery(search)
-        
+
         search_vector_stu = SearchVector('student_id', 'last_name', 'first_name', 'second_name')
         result_students = Student.objects.annotate(
             search=search_vector_stu, rank=SearchRank(search_vector_stu, search_query)

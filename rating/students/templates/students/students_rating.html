@@ -101,18 +101,18 @@
 <script type="text/javascript" src="{% static 'js/script_students_rating.js' %}"></script>
 
 <script type="text/javascript">
-/* on page ************************************************************************************************************/
+    /* on page ************************************************************************************************************/
 
-// убрать верхний отступ сегмента с таблицей
-function deletePaddingTopForDatatableSegment() {
-    let datatableSegment = document.getElementById("datatable-segment");
-    datatableSegment.style.paddingTop = '0';
- };
+    // убрать верхний отступ сегмента с таблицей
+    function deletePaddingTopForDatatableSegment() {
+        let datatableSegment = document.getElementById("datatable-segment");
+        datatableSegment.style.paddingTop = '0';
+    };
 
-/* script *************************************************************************************************************/
+    /* script *************************************************************************************************************/
 
-deletePaddingTopBottomForFilterSegment();
-deletePaddingTopBottomForTitleSegment();
-
+    deletePaddingTopBottomForFilterSegment();
+    deletePaddingTopBottomForTitleSegment();
 </script>
+
 {% endblock %}

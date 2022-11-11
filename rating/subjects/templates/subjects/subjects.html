@@ -32,7 +32,7 @@
 
 	<!-- Table -->
 	<div id="datatable-segment" class="ui basic segment">
-		{% if subjects_list %}
+		{% if subject_list %}
 			<div class="ui segment">
 				<table id="subjects" class="ui selectable celled table">
 
@@ -40,49 +40,25 @@
 						<tr class="center aligned">
 							<th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
 							<th>Название
-								<div id="count-label" class="ui left pointing grey tiny label">{{ subjects_list.count }}</div>
+								<div id="count-label" class="ui left pointing grey tiny label">{{ subject_list.count }}</div>
 							</th>
 							<th class="collapsing" style="width: 50px">Форма контроля</th>
 							<th class="collapsing">Семестр</th>
-							<th class="collapsing">Преподаватель {% if empty_teacher %}<div id="count-label" class="ui left pointing red tiny label">
-								{{ empty_teacher }}</div>{% endif %}
-							</th>
-							<th class="collapsing">Дата аттестации {% if empty_date %}<div id="count-label" class="ui left pointing red tiny label">
-								{{ empty_date }}</div>{% endif %}
-							</th>
 							<th class="collapsing center aligned">Кафедра</th>
 							<th>Примечание</th>
 						</tr>
 					</thead>
 
 					<tbody>
-						{% for subject in subjects_list %}
+						{% for subject in subject_list %}
 							<tr>
 								<td class="collapsing center aligned">{{ forloop.counter }}</td>
-								<td class="collapsing">
-									<a href="{{ subject.get_absolute_url }}">{{ subject.name|truncatechars:30 }}</a>
+								<td>
+									<a href="{{ subject.get_absolute_url }}">{{ subject.name | truncatechars:80 }}</a>
 									{% if subject.is_archived %}<i class="archive brown icon"></i>{% endif %}
 								</td>
 								<td class="collapsing">{{ subject.form_control }}</td>
 								<td class="collapsing center aligned">{{ subject.semester.semester }}</td>
-
-								{% if subject.teacher %}
-									<td class="collapsing center aligned">{{ subject.teacher }}</td>
-								{% else %}
-									<td class="negative collapsing center aligned"><i class="icon close"></i>
-										{{ subject.empty_teacher }}
-									</td>
-								{% endif %}
-
-								{% if subject.att_date %}
-									<td class="collapsing center aligned">
-										{{ subject.empty_att_date|date:"D d M Y" }}
-									</td>
-								{% else %}
-									<td class="negative collapsing center aligned"><i class="icon close"></i>
-										{{ subject.empty_att_date }}
-									</td>
-								{% endif %}
 
 								{% if subject.cathedra.short_name %}
 									<td class="collapsing center aligned">
@@ -93,7 +69,8 @@
 										<i class="icon close"></i> Нет
 									</td>
 								{% endif %}
-								<td class="collapsing">{{ subject.comment|truncatechars:20 }}</td>
+
+								<td class="collapsing">{{ subject.comment | truncatechars:20 }}</td>
 							</tr>
 						{% endfor %}
 					</tbody>
@@ -113,79 +90,77 @@
 <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
 
 <script type="text/javascript">
-
-// DataTable
-$(document).ready(function() {
-	let firstRow = $('#subjects thead tr')[0];
-	let secondRow = firstRow.cloneNode(true);
-	firstRow.after(secondRow);
-
-	let filterColumns = $('#subjects thead tr')[0].children;
-	for (let i = 0; i < filterColumns.length; i++) {
-		let inputWidth = filterColumns[i].offsetWidth - 15;
-		if(i != 0) {
-			filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 150px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-		} else {filterColumns[i].innerHTML = ""};
-	};
-
-	document.querySelector('#subjects').style.width = "100%";
 	// DataTable
-	var table = $('#subjects').DataTable({
-		language: {
-			lengthMenu: '_MENU_ записей на страницу',
-			zeroRecords: 'Записей нет...',
-			info: 'Всего записей: _MAX_',
-			infoEmpty: '',
-			infoFiltered: 'Найдено: _TOTAL_',
-			search: '',
-			searchPlaceholder: 'поиск',
-			paginate: {
-				first:    '«',
-				previous: '‹',
-				next:     '›',
-				last:     '»'
-			}
-		},
-		lengthMenu: [
-			[20, 50, -1],
-			[20, 50, 'Все']
-		],
-		pageLength: 20,
-		autoWidth: false,
-		columnDefs: [
-			{ "width": "50px", "targets": 0 },
-			{ "width": "150px", "targets": 2 },
-			{ "width": "100px", "targets": 3 },
-			{ "width": "150px", "targets": 4 },
-			{ "width": "150px", "targets": 5 },
-		],
-		columnDefs: [
-			{ searchable: false, targets: 0 }
-		],
+	$(document).ready(function() {
+		let firstRow = $('#subjects thead tr')[0];
+		let secondRow = firstRow.cloneNode(true);
+		firstRow.after(secondRow);
+
+		let filterColumns = $('#subjects thead tr')[0].children;
+		for (let i = 0; i < filterColumns.length; i++) {
+			let inputWidth = filterColumns[i].offsetWidth - 15;
+			if(i != 0) {
+				filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 150px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
+			} else {filterColumns[i].innerHTML = ""};
+		};
+
+		document.querySelector('#subjects').style.width = "100%";
+		// DataTable
+		var table = $('#subjects').DataTable({
+			language: {
+				lengthMenu: '_MENU_ записей на страницу',
+				zeroRecords: 'Записей нет...',
+				info: 'Всего записей: _MAX_',
+				infoEmpty: '',
+				infoFiltered: 'Найдено: _TOTAL_',
+				search: '',
+				searchPlaceholder: 'поиск',
+				paginate: {
+					first:    '«',
+					previous: '‹',
+					next:     '›',
+					last:     '»'
+				}
+			},
+			lengthMenu: [
+				[20, 50, -1],
+				[20, 50, 'Все']
+			],
+			pageLength: 20,
+			autoWidth: false,
+			columnDefs: [
+				{ "width": "50px", "targets": 0 },
+				{ "width": "150px", "targets": 2 },
+				{ "width": "100px", "targets": 3 },
+				{ "width": "150px", "targets": 4 },
+				{ "width": "150px", "targets": 5 },
+			],
+			columnDefs: [
+				{ searchable: false, targets: 0 }
+			],
+		});
+
+		// Filter event handler
+		$(table.table().container()).on('keyup', 'thead input', function() {table
+			.column($(this).data('index'))
+			.search(this.value)
+			.draw();
+		});
+
+		// Очистка фильтров двойным кликом выше head
+	$(document).on("dblclick",  ".ui.stackable.grid", function() {
+		let inputs = document.getElementsByName("filter");
+		inputs.forEach(e => {
+			e.value = "";
+		});
+		table.search('');
+		table.columns().search('').draw();
+	});
+		changeDatatableInputFont();
 	});
 
-	// Filter event handler
-	$(table.table().container()).on('keyup', 'thead input', function() {table
-		.column($(this).data('index'))
-		.search(this.value)
-		.draw();
-	});
-
-	// Очистка фильтров двойным кликом выше head
-   $(document).on("dblclick",  ".ui.stackable.grid", function() {
-      let inputs = document.getElementsByName("filter");
-      inputs.forEach(e => {
-         e.value = "";
-      });
-      table.search('');
-      table.columns().search('').draw();
-   });
-	changeDatatableInputFont();
-});
-
-deletePaddingTopBottomForTitleBlock();
-deletePaddingTopForDatatableSegment();
-
+	deletePaddingTopBottomForTitleBlock();
+	deletePaddingTopForDatatableSegment();
 </script>
 
 {% endblock %}

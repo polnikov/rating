@@ -19,8 +19,6 @@ urlpatterns = [
     # Subjects debts
     path('debts/', views.SubjectsDebtsListView.as_view(), name='debts'),
 
-    path('json/', views.subjects_json, name='subjects_json'),
-
     # Faculties
     path('faculties/', views.FacultyListView.as_view(), name='faculties'),
     path('faculties/add/', views.FacultyCreateView.as_view(), name='faculty_add'),
