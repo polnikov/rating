@@ -22,6 +22,7 @@ class GroupResource(resources.ModelResource):
         export_order = fields
         skip_unchanged = True
         report_skipped = False
+        exclude = ('id')
 
 
 @admin.register(Group)
