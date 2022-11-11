@@ -102,9 +102,6 @@ def import_subjects(request):
                 if n == 0:
                     pass
                 else:
-                    is_semester = Semester.objects.filter(id=row[2]).exists()
-                    is_cathedra = Cathedra.objects.filter(name=row[3]).exists()
-                    
                     # проверка формата ЗЕТ
                     pattern = r'([0-9]{2,3})\s\(([0-9]{1,2})\)'  # 72 (2)
                     if row[4] == '':
@@ -116,16 +113,15 @@ def import_subjects(request):
                             errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
                             break
 
+                    is_semester = Semester.objects.filter(id=row[2]).exists()
                     if is_semester:
                         semester = Semester.objects.get(id=row[2])
                     else:
                         errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
                         break
 
-                    if not is_cathedra:
-                        cathedra = ''
-                    else:
-                        cathedra = Cathedra.objects.get(name=row[3]).id
+                    if row[3] and Cathedra.objects.filter(name=row[3]).exists():
+                        cathedra = Cathedra.objects.get(name=row[3])
 
                     form_control = row[1].strip()
                     choices = list(map(lambda x: x[0], Subject._meta.get_field('form_control').choices))
@@ -138,20 +134,25 @@ def import_subjects(request):
                     else:
                         subject_name = row[0].strip()
 
-                    obj, created = Subject.objects.get_or_create(
-                        name=subject_name,
-                        form_control=form_control,
-                        semester=semester,
-                        defaults={
-                            'name': subject_name,
-                            'form_control': form_control,
-                            'semester': semester,
-                            'cathedra_id': cathedra,
-                            'zet': zet,
-                        },
-                    )
+                    if cathedra:
+                        obj, created = Subject.objects.get_or_create(
+                            name=subject_name,
+                            form_control=form_control,
+                            semester=semester,
+                            cathedra=cathedra,
+                            zet=zet
+                        )
+                    else:
+                        obj, created = Subject.objects.get_or_create(
+                            name=subject_name,
+                            form_control=form_control,
+                            semester=semester,
+                            zet=zet
+                        )
                     if not created:
-                        errors.append(f'[{n+1}] {subject_name} {row[1]} {row[2]} семестр')
+                        errors.append(f'[{n+1}] {subject_name} {row[1]} {row[2]} семестр - уже существует')
+                        print('[!] ---> ', row)
+
             if not errors:
                 success = True
 
