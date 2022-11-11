@@ -5,11 +5,16 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms.widgets import DateInput, MultiWidget, RadioSelect, TextInput, Input
 
+from groups.models import Group
 from students.models import Result, Student
 
 
 class StudentForm(forms.ModelForm):
     """Форма модели <Студент>"""
+    def __init__(self, *args, **kwargs):
+        super(StudentForm, self).__init__(*args, **kwargs)
+        self.fields['group'].queryset = Group.objects.filter(is_archived=False)
+
     class Meta:
         model = Student
         fields = [
@@ -65,10 +70,12 @@ class StudentForm(forms.ModelForm):
 
 ########################################################################################################################
 
+
 class ResultForm(forms.ModelForm):
     """Форма модели <Оценка>"""
     students = Input()
     groupsubject = Input()
+
     class Meta:
         model = Result
         fields = [

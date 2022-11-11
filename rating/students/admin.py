@@ -120,8 +120,8 @@ class ResultResource(resources.ModelResource):
         fields = (
             'groupsubject__subjects__name',
             'groupsubject__subjects__form_control',
-            'groupsubject__subjects__teacher',
-            'groupsubject__subjects__att_date',
+            'groupsubject__teacher',
+            'groupsubject__att_date',
             'students__last_name',
             'students__first_name',
             'students__second_name',
@@ -165,7 +165,6 @@ class ResultAdmin(ImportExportActionModelAdmin, admin.ModelAdmin, DynamicArrayMi
     list_display_links = ('get_student_name',)
     form_class = ResultForm
 
-
     def get_student_name(self, obj):
         return f'{obj.students.fullname}'
     get_student_name.short_description = 'Студент'
@@ -184,12 +183,14 @@ class ResultAdmin(ImportExportActionModelAdmin, admin.ModelAdmin, DynamicArrayMi
 
 ########################################################################################################################
 
+
 @admin.register(Basis)
 class BasisAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     ordering = ['id']
 
 ########################################################################################################################
+
 
 @admin.register(Semester)
 class SemesterAdmin(admin.ModelAdmin):

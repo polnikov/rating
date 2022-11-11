@@ -217,25 +217,6 @@ class Student(CommonArchivedModel, CommonTimestampModel):
                     return self.start_date + relativedelta(years=2)
 
 
-    def get_data(self):
-        return {
-            'student_id': self.student_id,
-            'last_name': self.last_name,
-            'first_name': self.first_name,
-            'second_name': self.second_name,
-            # 'basis': self.basis,
-            'citizenship': self.citizenship,
-            'level': self.level,
-            # 'group': self.group,
-            'start_date': self.start_date,
-            'status': self.status,
-            'comment': self.comment,
-            'money': self.money,
-            'created_date': self.created_date,
-            'updated_date': self.updated_date,
-        }
-
-
 class StudentLog(CommonModelLog):
     """Модель <Логирование изменений по студентам>."""
 
@@ -250,6 +231,7 @@ class StudentLog(CommonModelLog):
         return f'{self.id}'
 
 ########################################################################################################################
+
 
 class Result(CommonArchivedModel, CommonTimestampModel, DynamicArrayMixin):
     """Модель <Результат>."""
@@ -266,7 +248,7 @@ class Result(CommonArchivedModel, CommonTimestampModel, DynamicArrayMixin):
         models.CharField(max_length=3, blank=True),
         size=3,
         blank=True,
-        null = True,
+        null=True,
         verbose_name='Оценка',
         default=list,
     )
@@ -279,7 +261,7 @@ class Result(CommonArchivedModel, CommonTimestampModel, DynamicArrayMixin):
         'subjects.GroupSubject',
         on_delete=models.CASCADE,
         verbose_name='Дисциплина',
-        default=''
+        default='',
     )
     TAG = [
         ('СЗ', 'СЗ'),
@@ -319,6 +301,7 @@ class Result(CommonArchivedModel, CommonTimestampModel, DynamicArrayMixin):
 
 ########################################################################################################################
 
+
 class Basis(CommonTimestampModel):
     """Модель <Основа обучения>."""
     name = models.CharField(
@@ -335,6 +318,7 @@ class Basis(CommonTimestampModel):
         return f'{self.name}'
 
 ########################################################################################################################
+
 
 class Semester(models.Model):
     """Модель <Семестр>."""

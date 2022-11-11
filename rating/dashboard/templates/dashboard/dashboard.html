@@ -127,22 +127,22 @@
                         <tr>
                            <td>Стандартная</td>
                            <td class="right aligned"><div class="ui circular grey label">{{ num_min_money }}</div></td>
-                           <td class="right aligned"><div class="ui circular grey label">{{ per_min_money }}</div></td>
+                           <td class="right aligned"><div class="ui circular grey label">{{ per_min_money }}%</div></td>
                         </tr>
                         <tr>
                            <td>Повышенная</td>
                            <td class="right aligned"><div class="ui circular orange label">{{ num_middle_money }}</div></td>
-                           <td class="right aligned"><div class="ui circular orange label">{{ per_middle_money }}</div></td>
+                           <td class="right aligned"><div class="ui circular orange label">{{ per_middle_money }}%</div></td>
                         </tr>
                         <tr>
                            <td>Высокая</td>
                            <td class="right aligned"><div class="ui circular green label">{{ num_max_money }}</div></td>
-                           <td class="right aligned"><div class="ui circular green label">{{ per_max_money }}</div></td>
+                           <td class="right aligned"><div class="ui circular green label">{{ per_max_money }}%</div></td>
                         </tr>
                         <tr>
                            <td>Не получают</td>
                            <td class="right aligned"><div class="ui circular black label">{{ no_money_students }}</div></td>
-                           <td class="right aligned"><div class="ui circular black label">{{ per_no_money }}</div></td>
+                           <td class="right aligned"><div class="ui circular black label">{{ per_no_money }}%</div></td>
                         </tr>
                      </tbody>
                   </table>
@@ -232,7 +232,7 @@
                         <td class="collapsing left aligned"><a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a></td>
                         <td class="right aligned" style="width: 250px">
                            {% if not st.msg %}
-                              {{ st.delay_end_date|timeuntil }}
+                              {{ st.delay_end_date | timeuntil }}
                            {% else %}
                               <i class="times red large icon"></i>
                            {% endif %}
@@ -261,7 +261,7 @@
                         <td class="collapsing left aligned"><a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a></td>
                         <td class="right aligned" style="width: 250px">
                            {% if not st.msg %}
-                              {{ st.sick_date|timesince }}
+                              {{ st.sick_date | timesince }}
                            {% else %}
                               <i class="times red large icon"></i>
                            {% endif %}

@@ -4,6 +4,8 @@
 
 {% load semanticui %}
 
+{% load static %}
+
 {% block title %}Обновить назначение дисциплины{% endblock %}
 
 {% block content %}
@@ -23,9 +25,37 @@
                     <div class="required field">
                         {% render_field form.subjects %}
                     </div>
+
                     <div class="required field">
                         {% render_field form.groups %}
                     </div>
+
+                    <div class="two fields">
+                        <div class="seven wide field {% if form.teacher.errors %} error {% endif %}">
+                            <label>Фамилия И.О. преподавателя</label>
+                            {{ form.teacher }}
+                        </div>
+
+                        <div class="four wide field {% if form.att_date.errors %} error {% endif %}">
+                            <label>Дата аттестации</label>
+                            <div class="ui calendar">
+                                <div class="ui input left icon">
+                                    <i class="calendar alternate outline icon"></i>
+                                    {{ form.att_date }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Примечание</label>
+                        {{ form.comment }}
+                    </div>
+
+                    <div class="field">
+                        {% render_field form.is_archived _no_label='True' %}
+                    </div>
+
                 </div>
         </div>
 
@@ -41,4 +71,32 @@
         </form>
     </div>
 </div>
+
+<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<script>
+    $('select.dropdown').dropdown();
+    
+    // календарь
+    $(function () {
+        $("#id_att_date").datepicker({
+            weekStart: 1,
+            daysMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+            monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+            format:'dd.mm.yyyy',
+            autoHide: true,
+        });
+    });
+
+    $(document).ready(function() {
+ 
+        // изменить шрифт в поле <input>
+        let formElements = document.forms[1].elements;
+        for (let i = 0; i < formElements.length; i++) {
+           if (formElements[i].localName == "input" && formElements[i].type == "text") {
+              formElements[i].style.fontFamily = "Hack"
+           }
+        };
+     });
+</script>
+
 {% endblock %}

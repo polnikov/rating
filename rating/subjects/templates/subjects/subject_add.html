@@ -27,7 +27,7 @@
                     </div>
 
                     <div class="four fields">
-                        <div class="required four wide field">
+                        <div class="required three wide field">
                             <label>Форма контроля</label>
                             {% render_field form.form_control _no_label='True' placeholder='Выбрать' %}
                         </div>
@@ -36,25 +36,7 @@
                             <label>Семестр</label>
                             {% render_field form.semester _no_label='True' placeholder='Выбрать' %}
                         </div>
-
-                        <div class="four wide field {% if form.att_date.errors %} error {% endif %}">
-                            <label>Дата аттестации</label>
-                            <div class="ui calendar">
-                                <div class="ui input left icon">
-                                    <i class="calendar alternate outline icon"></i>
-                                    {{ form.att_date }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="six wide field {% if form.teacher.errors %} error {% endif %}">
-                            <label>Фамилия И.О. преподавателя</label>
-                            {{ form.teacher }}
-                        </div>
-                    </div>
-
-                    <div class="two fields">
-                        <div class="fourteen wide field">
+                        <div class="nine wide field">
                             <label>Кафедра</label>
                             {% render_field form.cathedra _no_label='True' placeholder='Выбрать' %}
                         </div>
@@ -67,6 +49,10 @@
                     <div class="field">
                         <label>Примечание</label>
                         {% render_field form.comment _no_label='True' %}
+                    </div>
+
+                    <div class="field">
+                        {% render_field form.is_archived _no_label='True' %}
                     </div>
                 </div>
             </div>
@@ -84,17 +70,17 @@
 
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
 <script>
-changeFormsInputFont();
-// календарь
-$(function () {
-    $("#id_att_date").datepicker({
-        weekStart: 1,
-        daysMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-        monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-        format:'dd.mm.yyyy',
-        autoHide: true,
+    changeFormsInputFont();
+    // календарь
+    $(function () {
+        $("#id_att_date").datepicker({
+            weekStart: 1,
+            daysMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+            monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+            format:'dd.mm.yyyy',
+            autoHide: true,
+        });
     });
-});
 </script>
 
 {% endblock %}

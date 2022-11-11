@@ -27,7 +27,7 @@
                         <div class="ui search selection dropdown" id="subjects">
                             <input type="hidden" name="subjects">
                             <i class="dropdown icon"></i>
-                            <div class="default text">Выбрать</div>
+                            <div class="default text">Выбрать или начать вводить текст</div>
                             <div class="menu">
                                 {% for s in form.subjects %}
                                 <div class="item">{{ s }}</div>
@@ -41,13 +41,39 @@
                         <div class="ui search selection dropdown five column" id="groups">
                             <input type="hidden" name="groups">
                             <i class="dropdown icon"></i>
-                            <div class="default text">Выбрать</div>
+                            <div class="default text">Выбрать или начать вводить текст</div>
                             <div class="menu">
                                 {% for g in form.groups %}
                                     <div class="item">{{ g }}</div>
                                 {% endfor %}
                             </div>
                         </div>
+                    </div>
+
+                    <div class="two fields">
+                        <div class="seven wide field {% if form.teacher.errors %} error {% endif %}">
+                            <label>Фамилия И.О. преподавателя</label>
+                            {{ form.teacher }}
+                        </div>
+
+                        <div class="four wide field {% if form.att_date.errors %} error {% endif %}">
+                            <label>Дата аттестации</label>
+                            <div class="ui calendar">
+                                <div class="ui input left icon">
+                                    <i class="calendar alternate outline icon"></i>
+                                    {{ form.att_date }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Примечание</label>
+                        {{ form.comment }}
+                    </div>
+
+                    <div class="field">
+                        {% render_field form.is_archived _no_label='True' %}
                     </div>
                 </div>
             </div>
@@ -63,19 +89,22 @@
     </div>
 </div>
 
+<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
 <script>
+    changeFormsInputFont();
+
     $('select.dropdown').dropdown();
     
-    $(document).ready(function() {
- 
-       // изменить шрифт в поле <input>
-       let formElements = document.forms.form.elements;
-       for (let i = 0; i < formElements.length; i++) {
-          if (formElements[i].localName == "input" && formElements[i].type == "text") {
-             formElements[i].style.fontFamily = "Hack"
-          }
-       };
+    // календарь
+    $(function () {
+        $("#id_att_date").datepicker({
+            weekStart: 1,
+            daysMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+            monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+            format:'dd.mm.yyyy',
+            autoHide: true,
+        });
     });
- </script>
+</script>
  
 {% endblock %}

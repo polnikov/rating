@@ -44,6 +44,12 @@
                             <th class="collapsing">Форма контроля</th>
                             <th class="collapsing">Группа</th>
                             <th class="collapsing">Семестр</th>
+                            <th class="collapsing">Преподаватель {% if empty_teacher %}<div id="count-label" class="ui left pointing red tiny label">
+								{{ empty_teacher }}</div>{% endif %}
+							</th>
+                            <th class="collapsing">Дата аттестации {% if empty_date %}<div id="count-label" class="ui left pointing red tiny label">
+								{{ empty_date }}</div>{% endif %}
+							</th>
                             <th class="collapsing">Кафедра</th>
                             <th name="actions" class="collapsing">Удалить</th>
                             <th name="actions" class="collapsing">Изменить</th>
@@ -51,7 +57,7 @@
                     </thead>
 
                     <tbody>
-                        {% for item in groupsubject_list %}
+                        {% for item in groupsubjects_list %}
                             <tr>
                                 <td class="collapsing center aligned">{{ forloop.counter }}</td>
                                 <td><a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name }}</a></td>
@@ -64,15 +70,35 @@
                                 </td>
 
                                 <td class="center aligned collapsing">{{ item.subjects.semester.semester }}</td>
-                                {% if item.subjects.cathedra.short_name %}
-                                <td class="center aligned collapsing">
-                                    {{ item.subjects.cathedra.short_name }}
-                                </td>
+
+                                {% if item.teacher %}
+                                    <td class="collapsing">{{ item.teacher }}</td>
+                                {% else %}
+                                    <td class="negative collapsing center aligned"><i class="icon close"></i>
+                                        {{ item.empty_teacher }}
+                                    </td>
+                                {% endif %}
+
+                                {% if item.att_date %}
+                                    <td class="collapsing center aligned">
+                                        {{ item.empty_att_date | date:"D d M Y" }}
+                                    </td>
+                                {% else %}
+                                    <td class="negative collapsing center aligned"><i class="icon close"></i>
+                                        {{ item.empty_att_date }}
+                                    </td>
+                                {% endif %}
+
+                                {% if item.item.cathedra.short_name %}
+                                    <td class="center aligned collapsing">
+                                        {{ item.subjects.cathedra.short_name }}
+                                    </td>
                                 {% else %}
                                     <td class="center aligned negative collapsing">
                                         <i class="icon close"></i> Нет
                                     </td>
                                 {% endif %}
+
                                 <td class="center aligned collapsing">
                                     <a href="{% url 'subjects:groupsubject_delete' item.id %}">
                                         <button id="trash-button" class="circular ui red tiny icon button">
@@ -105,80 +131,72 @@
 <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
 
 <script type="text/javascript">
+    let firstRow = $('#group-subjects thead tr')[0];
+        let secondRow = firstRow.cloneNode(true);
+        firstRow.after(secondRow);
 
-// DataTable
-$(document).ready(function() {
-	let firstRow = $('#group-subjects thead tr')[0];
-	let secondRow = firstRow.cloneNode(true);
-	firstRow.after(secondRow);
-
-	let filterColumns = $('#group-subjects thead tr')[0].children;
-	for (let i = 0; i < filterColumns.length; i++) {
-		let inputWidth = filterColumns[i].offsetWidth - 15;
-		if(![0, 6, 7].includes(i)) {
-            filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 250px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-		} else {filterColumns[i].innerHTML = ""};
-	};
+        let filterColumns = $('#group-subjects thead tr')[0].children;
+        for (let i = 0; i < filterColumns.length; i++) {
+            let inputWidth = filterColumns[i].offsetWidth - 15;
+            if(![0, 8, 9].includes(i)) {
+                filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 250px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
+            } else {filterColumns[i].innerHTML = ""};
+        };
 
     document.querySelector('#group-subjects').style.width = "100%";
-	// DataTable
-	var table = $('#group-subjects').DataTable({
-		language: {
-			lengthMenu: '_MENU_ записей на страницу',
-			zeroRecords: 'Записей нет...',
-			info: 'Всего записей: _MAX_',
-			infoEmpty: '',
-			infoFiltered: 'Найдено: _TOTAL_',
-			search: '',
-			searchPlaceholder: 'поиск',
-			paginate: {
-                first:    '«',
-                previous: '‹',
-                next:     '›',
-                last:     '»'
-            }
-        },
-        lengthMenu: [
-            [20, 50, -1],
-            [20, 50, 'Все']
-        ],
-        pageLength: 20,
-        autoWidth: false,
-        columnDefs: [
-            { "width": "50px", "targets": 0 },
-            { "width": "150px", "targets": 2 },
-            { "width": "100px", "targets": 3 },
-            { "width": "100px", "targets": 4 },
-            { "width": "100px", "targets": 5 },
-        ],
-        columnDefs: [
-            { searchable: false, targets: 0 },
-            { orderable: false, targets: [6, 7] },
-        ],
-	});
 
-	// Filter event handler
-	$(table.table().container()).on('keyup', 'thead input', function() {table
-		.column($(this).data('index'))
-		.search(this.value)
-		.draw();
-	});
-
-    // Очистка фильтров двойным кликом выше head
-    $(document).on("dblclick",  ".ui.stackable.grid", function() {
-        let inputs = document.getElementsByName("filter");
-        inputs.forEach(e => {
-            e.value = "";
+    // DataTable
+    $(document).ready(function() {
+        document.querySelector('#group-subjects').style.width = "100%";
+        // DataTable
+        var table = $('#group-subjects').DataTable({
+            language: {
+                lengthMenu: '_MENU_ записей на страницу',
+                zeroRecords: 'Записей нет...',
+                info: 'Всего записей: _MAX_',
+                infoEmpty: '',
+                infoFiltered: 'Найдено: _TOTAL_',
+                search: '',
+                searchPlaceholder: 'поиск',
+                paginate: {
+                    first:    '«',
+                    previous: '‹',
+                    next:     '›',
+                    last:     '»'
+                }
+            },
+            lengthMenu: [
+                [20, 50, -1],
+                [20, 50, 'Все']
+            ],
+            pageLength: 20,
+            columnDefs: [
+                { searchable: false, targets: [0, 8, 9] },
+                { orderable: false, targets: [8, 9] },
+            ],
         });
-        table.search('');
-        table.columns().search('').draw();
+
+        // Filter event handler
+        $(table.table().container()).on('keyup', 'thead input', function() {table
+            .column($(this).data('index'))
+            .search(this.value)
+            .draw();
+        });
+
+        // Очистка фильтров двойным кликом выше head
+        $(document).on("dblclick",  ".ui.stackable.grid", function() {
+            let inputs = document.getElementsByName("filter");
+            inputs.forEach(e => {
+                e.value = "";
+            });
+            table.search('');
+            table.columns().search('').draw();
+        });
+        changeDatatableInputFont();
     });
-    changeDatatableInputFont();
-});
 
-deletePaddingTopBottomForTitleBlock();
-deletePaddingTopForDatatableSegment();
-
+    deletePaddingTopBottomForTitleBlock();
+    deletePaddingTopForDatatableSegment();
 </script>
 
 {% endblock %}

@@ -116,7 +116,7 @@
         <div id="footer" class="ui footer mini segment" style="font-family: Hack">
             <div class="ui grid">
                 <!-- Version -->
-                <div id="text" class="eight wide column left aligned"><i class="react icon"></i>Version 1.0</div>
+                <div id="text" class="eight wide column left aligned"><i class="react icon"></i>Version 1.1</div>
                 <!-- Author -->
                 <div id="text" class="eight wide column right aligned">
                     Iurii Polnikov <script>document.write(new Date().getFullYear())</script> | All Rights Reserved
@@ -133,36 +133,26 @@
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
 
 <script type="text/javascript">
-$('.ui.dropdown').dropdown();
+    $('.ui.dropdown').dropdown();
 
-// функция закрытия меню
-function closeMenu() {
-    let menu = document.querySelector("nav");
-    menu.style.left = "-320px";
-};
+    // функция закрытия меню
+    function closeMenu() {
+        let menu = document.querySelector("nav");
+        menu.style.left = "-320px";
+    };
 
-// закрытие меню, если курсор ушел с меню
-$(".nav").hover(function(){}, closeMenu);
+    // закрытие меню, если курсор ушел с меню
+    $(".nav").hover(function(){}, closeMenu);
 
-// открытие меню при наведении курсора на название приложения
-{% comment %} $('#toggle').hover(
-    function(){
-        $('.nav').animate({
-            left: '0px'
-        }, 100);
-    }, function(){}
-); {% endcomment %}
+    $('#toggle').click(
+        function(){
+            $('.nav').animate({
+                left: '0px'
+            }, 100);
+        });
 
-$('#toggle').click(
-    function(){
-        $('.nav').animate({
-            left: '0px'
-        }, 100);
-    });
-
-jobTimeInfo();
-setInterval("jobTimeInfo()", 60000);
-
+    jobTimeInfo();
+    setInterval("jobTimeInfo()", 60000);
 </script>
 
 </html>

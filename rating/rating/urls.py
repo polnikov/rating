@@ -10,7 +10,6 @@ urlpatterns = [
 urlpatterns += [
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('img/favicon.ico'))),
     path('accounts/', include('django.contrib.auth.urls')),
-    # path('logout/', logout_page.as_view(), name='logout'),
     path('', RedirectView.as_view(url='/groups/cards')),
     path('archive/', include('archive.urls', namespace='archive')),
     path('dashboard/', include('dashboard.urls', namespace='dashboard')),

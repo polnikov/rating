@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 
 register = template.Library()
 
+
 @register.filter(name='get_username')
 def get_username(id):
     """Возвращает фамилию и имя пользователя по id."""

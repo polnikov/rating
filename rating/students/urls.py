@@ -26,8 +26,6 @@ urlpatterns = [
     # Students money
     path('money/', views.StudentsMoneyListView.as_view(), name='money'),
 
-    path('json/', views.students_json, name='json'),
-
     # Searching
     path('search/', views.search_results, name='search'),
 

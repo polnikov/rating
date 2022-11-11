@@ -1,6 +1,7 @@
-from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportActionModelAdmin
+
+from django.contrib import admin
 
 from groups.models import Group
 from groups.forms import GroupForm

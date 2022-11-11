@@ -123,74 +123,73 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
 <script type="text/javascript">
-// всплывающие окна с информацией о шифре, направлении, профиле группы
-document.addEventListener('DOMContentLoaded', function() {
+   // всплывающие окна с информацией о шифре, направлении, профиле группы
+   document.addEventListener('DOMContentLoaded', function() {
 
-   var groupbuttons = document.getElementsByName('groupbutton');
-   groupbuttons.forEach(function(item){
+      var groupbuttons = document.getElementsByName('groupbutton');
+      groupbuttons.forEach(function(item){
 
-      /* Назначаем каждой кнопке обработчик клика */
-      item.addEventListener('click', function(event) {
-         let code = $(this).data('code');
-         let direction = $(this).data('direction');
-         let profile = $(this).data('profile');
-         swal({
-            html: '<div class="ui small icon message right aligned" style="font-family: Hack">' +
-                  '<i class="info green icon"></i>' +
-                     '<div class="content">' +
-                        "<p>" + code + "</p>" +
-                        "<p>" + direction + "</p>" +
-                        "<p>" + profile + "</p>" +
-                     "</div>" +
-                  "</div>",
-         }),
-         false
+         /* Назначаем каждой кнопке обработчик клика */
+         item.addEventListener('click', function(event) {
+            let code = $(this).data('code');
+            let direction = $(this).data('direction');
+            let profile = $(this).data('profile');
+            swal({
+               html: '<div class="ui small icon message right aligned" style="font-family: Hack">' +
+                     '<i class="info green icon"></i>' +
+                        '<div class="content">' +
+                           "<p>" + code + "</p>" +
+                           "<p>" + direction + "</p>" +
+                           "<p>" + profile + "</p>" +
+                        "</div>" +
+                     "</div>",
+            }),
+            false
+         });
+
       });
 
    });
 
-});
-
-// стилизация всплывающего окна
-const attrObserver = new MutationObserver((mutations) => {
-   mutations.forEach(mu => {
-      if(mu.type === "attributes" && mu.attributeName === "class" && mu.target.className) {
-         document.getElementsByClassName('swal2-actions')[0].remove();
-         document.getElementsByClassName('swal2-header')[0].remove();
-      } else {return};
+   // стилизация всплывающего окна
+   const attrObserver = new MutationObserver((mutations) => {
+      mutations.forEach(mu => {
+         if(mu.type === "attributes" && mu.attributeName === "class" && mu.target.className) {
+            document.getElementsByClassName('swal2-actions')[0].remove();
+            document.getElementsByClassName('swal2-header')[0].remove();
+         } else {return};
+      });
    });
-});
-let targetNode = document.querySelectorAll('body');
-targetNode.forEach(el => attrObserver.observe(el, {attributes: true}));
+   let targetNode = document.querySelectorAll('body');
+   targetNode.forEach(el => attrObserver.observe(el, {attributes: true}));
 
-// подсветка текущих семестров
-$(document).ready(function() {
-   var currentMonth = new Date().getMonth() + 1;
+   // подсветка текущих семестров
+   $(document).ready(function() {
+      var currentMonth = new Date().getMonth() + 1;
 
-   autumn = [9, 10, 11, 12, 1];  // odd
-   spring = [2, 3, 4, 5, 6, 7, 8];  // even
+      autumn = [9, 10, 11, 12, 1];  // odd
+      spring = [2, 3, 4, 5, 6, 7, 8];  // even
 
-   semesterButtons = document.getElementsByName("semester");
+      semesterButtons = document.getElementsByName("semester");
 
-   if(autumn.includes(currentMonth)) {
-      semesterButtons.forEach(element => {
-         num = parseInt(element.id) % 2;
-         if(num == 1) {
-            element.classList.add("grey");
-            element.classList.remove("basic");
-         };
-      });
-   } else if(spring.includes(currentMonth)) {
-      semesterButtons.forEach(element => {
-         num = parseInt(element.id) % 2;
-         if(num == 0) {
-            element.classList.add("grey");
-            element.classList.remove("basic");
-         };
-      });
-   };
-});
-
+      if(autumn.includes(currentMonth)) {
+         semesterButtons.forEach(element => {
+            num = parseInt(element.id) % 2;
+            if(num == 1) {
+               element.classList.add("grey");
+               element.classList.remove("basic");
+            };
+         });
+      } else if(spring.includes(currentMonth)) {
+         semesterButtons.forEach(element => {
+            num = parseInt(element.id) % 2;
+            if(num == 0) {
+               element.classList.add("grey");
+               element.classList.remove("basic");
+            };
+         });
+      };
+   });
 </script>
 
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views.generic import ListView, TemplateView
+
 from groups.models import Group
 from students.models import Result, Student
 from subjects.models import GroupSubject, Subject
@@ -24,8 +25,9 @@ class ArchiveDataView(LoginRequiredMixin, ListView):
                 'subjects': subjects,
                 'groupsubjects': groupsubjects,
                 'groups': groups,
-            }
+            },
         )
+
 
 class HelpPageView(LoginRequiredMixin, TemplateView):
     template_name = 'help.html'

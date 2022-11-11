@@ -44,6 +44,8 @@ class Group(CommonTimestampModel, CommonArchivedModel):
             'code',
             'name',
         ]
+        unique_together = (('name', 'direction', 'level', 'code'),)
+
 
     def __str__(self):
         return f'{self.name}'
