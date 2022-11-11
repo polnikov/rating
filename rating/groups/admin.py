@@ -12,6 +12,7 @@ class GroupResource(resources.ModelResource):
     class Meta:
         model = Group
         fields = (
+            'id',
             'name',
             'direction',
             'profile',
@@ -22,7 +23,7 @@ class GroupResource(resources.ModelResource):
         export_order = fields
         skip_unchanged = True
         report_skipped = False
-        exclude = ('id')
+        import_id_fields = ('name', 'direction', 'profile', 'level')
 
 
 @admin.register(Group)
