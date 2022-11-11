@@ -20,7 +20,7 @@ class SubjectResource(resources.ModelResource):
         export_order = fields
         skip_unchanged = True
         report_skipped = False
-        import_id_fields = ('name', 'form_control', 'semester')
+        import_id_fields = ('name', 'form_control', 'semester', 'cathedra__name')
 
 
 @admin.register(Subject)
@@ -109,6 +109,7 @@ class CathedraResource(resources.ModelResource):
 class CathedraAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     resource_class = CathedraResource
     list_display = (
+        'id',
         'name',
         'short_name',
         'faculty',
@@ -123,6 +124,7 @@ class CathedraAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     list_filter = (
         'faculty',
     )
+    list_display_links = ('name',)
 
 ########################################################################################################################
 
@@ -149,6 +151,7 @@ class FacultyAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'name',
         'short_name',
     )
+    list_display_links = ('name',)
 
 ########################################################################################################################
 
