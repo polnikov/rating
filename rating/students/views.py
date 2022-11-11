@@ -283,19 +283,32 @@ def import_students(request):
                     else:
                         basis = row[4].capitalize()
                     is_basis = Basis.objects.filter(name=basis).exists()
+
                     group = row[7]
                     is_group = Group.objects.filter(name=group).exists()
+
                     is_semester = Semester.objects.filter(id=row[8]).exists()
+
                     citizenship = row[5].capitalize()
                     is_citizenship = citizenship in list(map(lambda x: x[0], Student._meta.get_field('citizenship').choices))
+
                     level = row[6].capitalize()
                     is_level = level in list(map(lambda x: x[0], Student._meta.get_field('level').choices))
-                    status = row[10].capitalize()
+
+                    raw_status = row[10].strip()
+                    if len(raw_status) == 5:
+                        status = ' '.join(raw_status.split()[0].lower(), raw_status.split()[0].upper())
+                    else:
+                        status = raw_status.capitalize()
                     is_status = status in list(map(lambda x: x[0], Student._meta.get_field('status').choices))
+
+                    money = row[12]
+                    is_money = money in list(map(lambda x: x[0], Student._meta.get_field('money').choices))
+
                     tag = row[11]
                     is_tag = tag in list(map(lambda x: x[0], Student._meta.get_field('tag').choices)) + ['']
 
-                    if all([is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag]):
+                    if all([is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag, is_money]):
                         basis = Basis.objects.get(name=basis).id
                         group = Group.objects.get(name=group).id
                         semester = Semester.objects.get(id=row[8]).id
@@ -326,8 +339,8 @@ def import_students(request):
                             'semester_id': semester,
                             'start_date': start_date,
                             'status': status,
-                            'tag': row[11],
-                            'money': tag,
+                            'tag': tag,
+                            'money': money,
                         },
                     )
                     if not created:
