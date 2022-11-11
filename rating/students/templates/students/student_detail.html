@@ -79,11 +79,13 @@
                                 </tr>
                                 <tr>
                                     <td>Дата зачисления</td>
-                                    <td>{{ student.start_date|date:"l" }}, {{ student.start_date }}</td>
+                                    <td>{{ student.start_date | date:"l" }}, {{ student.start_date }}</td>
                                 </tr>
                                 <tr>
                                     <td>Стипендия</td>
-                                    <td>{{ student.money }}</td>
+                                    <td>
+                                        <div class="ui yellow disabled rating" data-rating="{{ student.money_rate }}" data-max-rating="3"></div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Статус</td>
@@ -107,7 +109,7 @@
                                 </tr>
                                 <tr>
                                     <td>Примечание</td>
-                                    <td>{{ student.comment|truncatechars:100 }}</td>
+                                    <td>{{ student.comment | truncatechars:100 }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -254,7 +256,7 @@
 <script>
     // tabs
     $('.menu .item').tab();
-
+    
     // datatables
     $(document).ready(function () {
         $('#student-marks').DataTable({
