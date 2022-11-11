@@ -42,6 +42,7 @@ class Group(CommonTimestampModel, CommonArchivedModel):
         ordering = [
             'level',
             'code',
+            'name',
         ]
         unique_together = (('name', 'direction', 'level', 'code'),)
 
