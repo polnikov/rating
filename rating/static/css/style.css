@@ -90,13 +90,10 @@
 #tag-label,
 #widget,
 #info,
+#group-cards,
 [name="point"],
 #edit-button {
    box-shadow: 0 8px 28px rgba(0,0,0,0.25), 0 8px 8px rgba(0,0,0,0.22);
-}
-
-#group-cards {
-   box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
 }
 
 #import,
