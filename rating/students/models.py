@@ -216,6 +216,19 @@ class Student(CommonArchivedModel, CommonTimestampModel):
                 case 'Магистратура':
                     return self.start_date + relativedelta(years=2)
 
+    @property
+    def money_rate(self):
+        """Возвращает уровень стипендии."""
+        match self.money:
+            case 'нет':
+                return 0
+            case '1.0':
+                return 1
+            case '1.25':
+                return 2
+            case '1.5':
+                return 3
+
 
 class StudentLog(CommonModelLog):
     """Модель <Логирование изменений по студентам>."""
