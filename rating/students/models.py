@@ -1,11 +1,9 @@
 from dateutil.relativedelta import relativedelta
 from django.db import models
-from django.db.models.fields import IntegerField
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from django_better_admin_arrayfield.models.fields import ArrayField
-from django_currentuser.db.models import CurrentUserField
 
 from rating.abstracts import CommonArchivedModel, CommonTimestampModel, CommonModelLog
 

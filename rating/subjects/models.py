@@ -66,7 +66,10 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
         ]
 
     def __str__(self):
-        return f'{self.name} | {self.form_control} | {self.semester} семестр'
+        if self.cathedra is None:
+            return f'{self.name} | {self.form_control} | {self.semester} семестр | ***'
+        else:
+            return f'{self.name} | {self.form_control} | {self.semester} семестр | {self.cathedra.short_name}'
 
     def save(self, *args, **kwargs):
         # Проверяем, существует ли объект
