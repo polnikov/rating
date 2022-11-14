@@ -210,3 +210,14 @@
    -webkit-transition: width .5s ease;
    transition: width .5s ease;
 }
+/**********************************************************************************************************************/
+
+#group-cards:hover {
+   transform: scale(1.1);
+   transition: all 0.3s;
+}
+
+[name="semester"]:hover {
+   transform: scale(1.1);
+   transition: all 0.3s;
+}
