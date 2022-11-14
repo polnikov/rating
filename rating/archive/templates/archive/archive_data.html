@@ -57,15 +57,14 @@
                      {% for student in students %}
                         <tr>
                            <td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
-                           <td class="collapsing"><a href="{{ student.get_absolute_url }}">{{ student.fullname }}</a></td>
+                           <td class="collapsing"><a href="{{ student.get_absolute_url }}">{{ student.fullname }} </a>
+                              {% if student.tag %}
+                                 <div id="tag-label" class="ui small pink label">{{ student.tag }}</div>
+                              {% endif %}
+                           </td>
                            <td class="center aligned">{{ student.group }}</td>
                            <td class="center aligned">{{ student.semester.semester }}</td>
-                           <td class="center aligned collapsing">
-                                 {{ student.get_status_display }}
-                                 {% if student.tag %}
-                                    <div id="tag-label" class="ui small pink label">{{ student.tag }}</div>
-                                 {% endif %}
-                           </td>
+                           <td class="center aligned collapsing">{{ student.get_status_display }}</td>
                            <td>{{ student.comment|truncatechars:25 }}</td>
                         </tr>
                      {% endfor %}
