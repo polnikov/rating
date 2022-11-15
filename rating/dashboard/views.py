@@ -4,6 +4,7 @@ from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.views.generic import TemplateView
+from django.forms.models import model_to_dict
 
 from dateutil.relativedelta import relativedelta
 from students.models import Student
@@ -22,7 +23,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # активные студенты
         active_students = current_students.exclude(status='Академический отпуск')
         # в академическом отпуске
-        delay_students = current_students.exclude(status='Является студентом')
+        delay_students = current_students.exclude(status='Является студентом').order_by('last_name')
 
         # количественный блок
         num_students = current_students.count()
@@ -41,82 +42,72 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         num_mag_for_students = num_mag_students - num_mag_rus_students
 
         # блок стипендии
-        no_money_students = active_students.filter(money='нет').count()
-        num_money_students = num_active_students - no_money_students
+        no_money = active_students.filter(money='нет').count()
+        num_money = num_active_students - no_money
 
         # общее
         num_min_money = active_students.filter(money='1.0').count()
-        num_middle_money = active_students.filter(money='1.25').count()
+        num_med_money = active_students.filter(money='1.25').count()
         num_max_money = active_students.filter(money='1.5').count()
 
         try:
-            per_min_money = round(num_min_money / num_money_students * 100, 1)
-        except ZeroDivisionError:
-            per_min_money = 0
-        try:
-            per_middle_money = round(num_middle_money / num_money_students * 100, 1)
-        except ZeroDivisionError:
-            per_middle_money = 0
-        try:
-            per_max_money = round(num_max_money / num_money_students * 100, 1)
-        except ZeroDivisionError:
-            per_max_money = 0
-        try:
-            per_no_money = round(no_money_students / num_active_students * 100, 1)
+            per_no_money = round(no_money / num_active_students * 100, 1)
         except ZeroDivisionError:
             per_no_money = 0
 
         # бакалавриат
         num_bac_active_students = active_students.filter(level='Бакалавриат').count()
         num_bac_min_money = active_students.filter(money='1.0', level='Бакалавриат').count()
-        num_bac_middle_money = active_students.filter(money='1.25', level='Бакалавриат').count()
+        num_bac_med_money = active_students.filter(money='1.25', level='Бакалавриат').count()
         num_bac_max_money = active_students.filter(money='1.5', level='Бакалавриат').count()
-        num_bac_no_money = num_bac_active_students - num_bac_min_money - num_bac_middle_money - num_bac_max_money
+        num_bac_no_money = num_bac_active_students - num_bac_min_money - num_bac_med_money - num_bac_max_money
+        num_bac_money = num_bac_active_students - num_bac_no_money
 
         try:
             per_bac_min_money = round(num_bac_min_money / num_bac_active_students * 100, 1)
         except ZeroDivisionError:
             per_bac_min_money = 0
         try:
-            per_bac_middle_money = round(num_bac_middle_money / num_bac_active_students * 100, 1)
+            per_bac_med_money = round(num_bac_med_money / num_bac_active_students * 100, 1)
         except ZeroDivisionError:
-            per_bac_middle_money = 0
+            per_bac_med_money = 0
         try:
             per_bac_max_money = round(num_bac_max_money / num_bac_active_students * 100, 1)
         except ZeroDivisionError:
             per_bac_max_money = 0
         try:
-            per_bac_no_money = round(100 - per_bac_min_money - per_bac_middle_money - per_bac_max_money, 2)
+            per_bac_no_money = round(100 - per_bac_min_money - per_bac_med_money - per_bac_max_money, 2)
         except ZeroDivisionError:
             per_bac_no_money = 0
 
         # магистратура
         num_mag_active_students = active_students.filter(level='Магистратура').count()
         num_mag_min_money = active_students.filter(money='1.0', level='Магистратура').count()
-        num_mag_middle_money = active_students.filter(money='1.25', level='Магистратура').count()
+        num_mag_med_money = active_students.filter(money='1.25', level='Магистратура').count()
         num_mag_max_money = active_students.filter(money='1.5', level='Магистратура').count()
-        num_mag_no_money = num_mag_active_students - num_mag_max_money - num_mag_middle_money - num_mag_min_money
+        num_mag_no_money = num_mag_active_students - num_mag_max_money - num_mag_med_money - num_mag_min_money
+        num_mag_money = num_mag_active_students - num_mag_no_money
 
         try:
-            per_mag_min_money = round(num_mag_min_money / num_money_students * 100, 1)
+            per_mag_min_money = round(num_mag_min_money / num_money * 100, 1)
         except ZeroDivisionError:
             per_mag_min_money = 0
         try:
-            per_mag_middle_money = round(num_mag_middle_money / num_money_students * 100, 1)
+            per_mag_med_money = round(num_mag_med_money / num_money * 100, 1)
         except ZeroDivisionError:
-            per_mag_middle_money = 0
+            per_mag_med_money = 0
         try:
-            per_mag_max_money = round(num_mag_max_money / num_money_students * 100, 1)
+            per_mag_max_money = round(num_mag_max_money / num_money * 100, 1)
         except ZeroDivisionError:
             per_mag_max_money = 0
         try:
-            per_mag_no_money = round(100 - per_mag_min_money - per_mag_middle_money - per_mag_max_money, 2)
+            per_mag_no_money = round(100 - per_mag_min_money - per_mag_med_money - per_mag_max_money, 2)
         except ZeroDivisionError:
             per_mag_no_money = 0
 
         # список болеющих студентов
         sick_students = []
-        for st in active_students:
+        for st in active_students.order_by('last_name'):
             # извлекаем дату начала болезни из комментария
             pattern_sick = r'Болеет:([0-9]{2})\.([0-9]{2})\.([0-9]{4})'  # Болеет:DD.MM.YYYY
             if 'болеет' in st.comment.lower():
@@ -130,6 +121,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                     if 'болеет' in st.comment.lower():
                         sick_students.append(st)
 
+        # список студентов в АО
+        list_of_delay_students = []
         # добавляем дату выхода из АО
         for st in delay_students:
             # извлекаем дату ухода в АО из комментария
@@ -139,6 +132,10 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 delay_start_date_string = re.search(pattern_delay, comment).group(0).split(':')[-1]
                 st.delay_start_date = datetime.strptime(delay_start_date_string, '%d.%m.%Y').date()
                 st.delay_end_date = st.delay_start_date + relativedelta(months=12)
+                st.delta_days = (st.delay_end_date - datetime.now().date()).days
+                st_dict = model_to_dict(st)
+                st_dict['delay_end_date'] = st.delay_end_date
+                list_of_delay_students.append(st_dict)
             except AttributeError:
                 st.msg = 'no'
 
@@ -160,37 +157,34 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['num_mag_for_students'] = num_mag_for_students
 
         # блок стипендии
-        context['num_money_students'] = num_money_students
-        context['no_money_students'] = no_money_students
+        context['num_money'] = num_money
+        context['no_money'] = no_money
         context['per_no_money'] = per_no_money
         context['num_min_money'] = num_min_money
-        context['num_middle_money'] = num_middle_money
+        context['num_med_money'] = num_med_money
         context['num_max_money'] = num_max_money
-        context['per_min_money'] = per_min_money
-        context['per_middle_money'] = per_middle_money
-        context['per_max_money'] = per_max_money
+        context['per_bac_no_money'] = per_bac_no_money
+        context['per_mag_no_money'] = per_mag_no_money
 
         # бакалавриат
         context['num_bac_min_money'] = num_bac_min_money
-        context['num_bac_middle_money'] = num_bac_middle_money
+        context['num_bac_med_money'] = num_bac_med_money
         context['num_bac_max_money'] = num_bac_max_money
         context['num_bac_no_money'] = num_bac_no_money
-        context['per_bac_min_money'] = per_bac_min_money
-        context['per_bac_middle_money'] = per_bac_middle_money
-        context['per_bac_max_money'] = per_bac_max_money
-        context['per_bac_no_money'] = per_bac_no_money
+        context['num_bac_money'] = num_bac_money
 
         # магистратура
         context['num_mag_min_money'] = num_mag_min_money
-        context['num_mag_middle_money'] = num_mag_middle_money
+        context['num_mag_med_money'] = num_mag_med_money
         context['num_mag_max_money'] = num_mag_max_money
         context['num_mag_no_money'] = num_mag_no_money
-        context['per_mag_min_money'] = per_mag_min_money
-        context['per_mag_middle_money'] = per_mag_middle_money
-        context['per_mag_max_money'] = per_mag_max_money
-        context['per_mag_no_money'] = per_mag_no_money
+        context['num_mag_money'] = num_mag_money
 
         context['sick_students'] = sick_students
         context['delay_students'] = delay_students
+        context['num_sick_students'] = len(sick_students)
+        context['num_delay_students'] = len(delay_students)
+
+        context['current_date'] = datetime.now().date()
 
         return context

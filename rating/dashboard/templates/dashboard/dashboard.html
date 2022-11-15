@@ -10,270 +10,297 @@
 
 {% block content %}
 
-<div class="ui basic segment" style="padding-top: 25px">
-   <div class="ui four column grid" style="padding-top: 25px">
-      <div class="row">
+<div class="ui basic segment" style="padding-bottom: 25px">
+    <div class="ui two column grid" style="padding-top: 25px">
+        <div class="row">
 
-         <div class="column left aligned">
-            <!-- Card -->
-            <div class="ui raised card">
-               <div class="content">
+            <div class="eight wide column">
+                <!-- Больничный -->
+                <table class="ui black selectable table">
+                    <thead>
+                        <tr>
+                            <th colspan="3"><i class="heart broken red icon"></i> НА БОЛЬНИЧНОМ
+                                <div class="ui circular grey label">{{ num_sick_students }}</div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Группа</th>
+                            <th class="center aligned">Студент</th>
+                            <th class="right aligned">Срок болезни</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for st in sick_students %}
+                            <tr>
+                                <td style="width: 150px">
+                                    <a href="{% url 'groups:detail' groupname=st.group.name semester=st.semester.semester %}">
+                                        {{ st.group.name }}-{{ st.semester.semester }}
+                                    </a>
+                                </td>
+                                <td><a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a></td>
+                                <td class="collapsing right aligned" {% if not st.msg %} data-tooltip="{{ st.sick_date | date:"d.m.y" }}" data-position="left center" data-variation="mini" data-inverted=""{% endif %}>
+                                    {% if not st.msg %}
+                                        {{ st.sick_date | timesince }}
+                                    {% else %}
+                                        <i class="times red large icon"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
 
-                  <div class="header left floated">
-                     <div id="count-label" class="ui black circular big label">{{ num_students }}</div>
-                  </div>
-                  <div class="header right floated"><i class="icon big users"></i></div>
+                <div class="ui horizontal divider"></div>
 
-               </div>
-
-               <div class="extra content left aligned">
-
-                  <div class="ui middle aligned list">
-
-                     <div class="item" style="font-family: Hack">
-                        <i class="icon green checkmark"></i>
-                        <div class="content">
-                           <div class="header" style="font-family: Hack">Активные <div class="ui circular green small label right floated">{{ num_active_students }}</div></div>
-                        </div>
-                     </div>
-
-                     <div class="item">
-                        <i class="icon orange hourglass half"></i>
-                        <div class="content">
-                           <div class="header" style="font-family: Hack">Академический отпуск <div class="ui circular orange small label right floated">{{ num_delay_students }}</div></div>
-                        </div>
-                     </div>
-
-                  </div>
-
-                  <div class="ui divider"></div>
-
-                  <div class="ui middle aligned list">
-                     <div class="item">
-                        <div class="content">
-                           <div class="header" style="font-family: Hack">Россия <div class="ui circular brown small label right floated">{{ num_rus_students }}</div></div>
-                        </div>
-                     </div>
-
-                     <div class="item">
-                        <div class="content">
-                           <div class="header" style="font-family: Hack">Иностранцы <div class="ui circular brown small label right floated">{{ num_for_students }}</div></div>
-                        </div>
-                     </div>
-                  </div>
-
-                  <div class="ui horizontal divider">Бакалавриат</div>
-
-                  <div class="extra content">
-                     <table class="ui very basic selectable small table">
-                        <thead>
-                           <tr>
-                              <th colspan="2" class="center aligned"><div class="ui violet small label">{{ num_bac_students }}</div></th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           <tr>
-                              <td>Россия</td>
-                              <td class="right aligned"><div class="ui circular black label">{{ num_bac_rus_students }}</div></td>
-                           </tr>
-                           <tr>
-                              <td>Иностранцы</td>
-                              <td class="right aligned"><div class="ui circular black label">{{ num_bac_for_students }}</div></td>
-                           </tr>
-                        </tbody>
-                     </table>
-                  </div>
-
-                  <div class="ui horizontal divider">Магистратура</div>
-
-                  <div class="extra content">
-                     <table class="ui very basic selectable small table">
-                        <thead>
-                           <tr>
-                              <th colspan="2" class="center aligned"><div class="ui purple small label">{{ num_mag_students }}</div></th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           <tr>
-                              <td>Россия</td>
-                              <td class="right aligned"><div class="ui circular black label">{{ num_mag_rus_students }}</div></td>
-                           </tr>
-                           <tr>
-                              <td>Иностранцы</td>
-                              <td class="right aligned"><div class="ui circular black label">{{ num_mag_for_students }}</div></td>
-                           </tr>
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-
+                <!-- АО -->
+                <table class="ui black selectable table">
+                    <thead>
+                        <tr>
+                            <th colspan="3" class="left aligned"><i class="icon orange hourglass half"></i> В АКАДЕМИЧЕСКОМ ОТПУСКЕ
+                                <div class="ui circular grey label">{{ num_delay_students }}</div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th class="left aligned">Группа</th>
+                            <th class="center aligned">Студент</th>
+                            <th class="right aligned">Выход из АО</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for st in delay_students %}
+                            <tr {% if st.delta_days < 31 %} class="red" {% endif %}>
+                                <td style="width: 150px">
+                                    <a href="{% url 'groups:detail' groupname=st.group.name semester=st.semester.semester %}">
+                                        {{ st.group.name }}-{{ st.semester.semester }}
+                                    </a>
+                                </td>
+                                <td class="left aligned">
+                                    <a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a>
+                                </td>
+                                <td class="collapsing right aligned" {% if not st.msg %} data-tooltip="{{ st.delay_end_date | date:"d.m.y" }}" data-position="left center" data-variation="mini" data-inverted=""{% endif %}>
+                                    {% if not st.msg %}
+                                        {{ st.delay_end_date | timeuntil }}
+                                    {% else %}
+                                        <i class="times red large icon"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-         </div>
 
-         <div class="column">
-            <!-- Card -->
-            <div class="ui raised card">
+            <div class="eight wide column">
 
-               <div class="content">
-                  <div class="header left floated">
-                     <div id="count-label" class="ui black circular big label">{{ num_money_students }}</div>
-                  </div>
-                  <div class="header right floated"><i class="hand holding usd big icon"></i></div>
-               </div>
-
-               <div class="extra content">
-                  <table class="ui very basic selectable table">
-                     <tbody>
+                <!-- Численность -->
+                <table class="ui black celled table">
+                    <thead>
                         <tr>
-                           <td>Стандартная</td>
-                           <td class="right aligned"><div class="ui circular grey label">{{ num_min_money }}</div></td>
-                           <td class="right aligned"><div class="ui circular grey label">{{ per_min_money }}%</div></td>
+                            <th colspan="5" class="left aligned"><i class="icon users"></i> ЧИСЛЕННОСТЬ</th>
                         </tr>
                         <tr>
-                           <td>Повышенная</td>
-                           <td class="right aligned"><div class="ui circular orange label">{{ num_middle_money }}</div></td>
-                           <td class="right aligned"><div class="ui circular orange label">{{ per_middle_money }}%</div></td>
+                            <th></th>
+                            <th class="center aligned">Всего</th>
+                            <th class="center aligned"><i class="ru flag"></i>Россия</th>
+                            <th class="center aligned"><i class="eu flag"></i>Иностранцы</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Все</td>
+                            <td class="center aligned">{{ num_students }}</td>
+                            <td class="center aligned">{{ num_rus_students }}</td>
+                            <td class="center aligned">{{ num_for_students }}</td>
                         </tr>
                         <tr>
-                           <td>Высокая</td>
-                           <td class="right aligned"><div class="ui circular green label">{{ num_max_money }}</div></td>
-                           <td class="right aligned"><div class="ui circular green label">{{ per_max_money }}%</div></td>
+                            <td>Бакалавриат</td>
+                            <td class="center aligned">{{ num_bac_students }}</td>
+                            <td class="center aligned">{{ num_bac_rus_students }}</td>
+                            <td class="center aligned">{{ num_bac_for_students }}</td>
                         </tr>
                         <tr>
-                           <td>Не получают</td>
-                           <td class="right aligned"><div class="ui circular black label">{{ no_money_students }}</div></td>
-                           <td class="right aligned"><div class="ui circular black label">{{ per_no_money }}%</div></td>
+                            <td>Магистратура</td>
+                            <td class="center aligned">{{ num_mag_students }}</td>
+                            <td class="center aligned">{{ num_mag_rus_students }}</td>
+                            <td class="center aligned">{{ num_mag_for_students }}</td>
                         </tr>
-                     </tbody>
-                  </table>
+                        <tr>
+                            <td colspan="4">
+                                <div class="label">Общая численность</div>
+                                <div class="ui multiple inverted progress" name="progress"
+                                    data-total="{{ num_students }}"
+                                    data-value="{{ num_bac_students }},{{ num_mag_students }}">
+                                    <div class="blue bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                    <div class="yellow bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <div class="label"><i class="ru flag"></i>Россия</div>
+                                <div class="ui multiple inverted progress" name="progress"
+                                    data-total="{{ num_rus_students }}"
+                                    data-value="{{ num_bac_rus_students }},{{ num_mag_rus_students }}">
+                                    <div class="blue bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                    <div class="yellow bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <div class="label"><i class="eu flag"></i>Иностранцы</div>
+                                <div class="ui multiple inverted progress" name="progress"
+                                    data-total="{{ num_for_students }}"
+                                    data-value="{{ num_bac_for_students }},{{ num_mag_for_students }}">
+                                    <div class="blue bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                    <div class="yellow bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                </table>
 
-                  <div class="ui horizontal divider">Бакалавриат</div>
+                <div class="ui horizontal divider"></div>
 
-                  <div class="item" style="font-family: Hack">
-                     <div class="content">
-                        <table class="ui very basic small selectable table">
-                           <tbody>
-                              <tr>
-                                 <td>Стандартная</td>
-                                 <td class="right aligned"><div class="ui circular grey label">{{ num_bac_min_money }}</div></td>
-                                 <td class="right aligned"><div class="ui circular grey label">{{ per_bac_min_money }}%</div></td>
-                              </tr>
-                              <tr>
-                                 <td>Повышенная</td>
-                                 <td class="right aligned"><div class="ui circular orange label">{{ num_bac_middle_money }}</div></td>
-                                 <td class="right aligned"><div class="ui circular orange label">{{ per_bac_middle_money }}%</div></td>
-                              </tr>
-                              <tr>
-                                 <td>Высокая</td>
-                                 <td class="right aligned"><div class="ui circular green label">{{ num_bac_max_money }}</div></td>
-                                 <td class="right aligned"><div class="ui circular green label">{{ per_bac_max_money }}%</div></td>
-                              </tr>
-                              <tr>
-                                 <td>Не получают</td>
-                                 <td class="right aligned"><div class="ui circular black label">{{ num_bac_no_money }}</div></td>
-                                 <td class="right aligned"><div class="ui circular black label">{{ per_bac_no_money }}%</div></td>
-                              </tr>
-                           </tbody>
-                        </table>
-                     </div>
-                  </div>
-
-                  <div class="ui horizontal divider">Магистратура</div>
-
-                  <div class="item" style="font-family: Hack">
-                     <div class="content">
-                        <table class="ui very basic basic small selectable table">
-                           <tbody>
-                              <tr>
-                                 <td>Стандартная</td>
-                                 <td class="right aligned"><div class="ui circular grey label">{{ num_mag_min_money }}</div></td>
-                                 <td class="right aligned"><div class="ui circular grey label">{{ per_mag_min_money }}%</div></td>
-                              </tr>
-                              <tr>
-                                 <td>Повышенная</td>
-                                 <td class="right aligned"><div class="ui circular orange label">{{ num_mag_middle_money }}</div></td>
-                                 <td class="right aligned"><div class="ui circular orange label">{{ per_mag_middle_money }}%</div></td>
-                              </tr>
-                              <tr>
-                                 <td>Высокая</td>
-                                 <td class="right aligned"><div class="ui circular green label">{{ num_mag_max_money }}</div></td>
-                                 <td class="right aligned"><div class="ui circular green label">{{ per_mag_max_money }}%</div></td>
-                              </tr>
-                              <tr>
-                                 <td>Не получают</td>
-                                 <td class="right aligned"><div class="ui circular black label">{{ num_mag_no_money }}</div></td>
-                                 <td class="right aligned"><div class="ui circular black label">{{ per_mag_no_money }}%</div></td>
-                              </tr>
-                           </tbody>
-                        </table>
-                     </div>
-                  </div>
-
-               </div>
-
+                <!-- Стипендия -->
+                <table class="ui black celled table">
+                    <thead>
+                        <tr>
+                            <th colspan="5" class="left aligned"><i class="icon green donate"></i> СТИПЕНДИЯ</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th class="center aligned"><div class="ui yellow disabled rating" data-rating="0" data-max-rating="3"></div></th>
+                            <th class="center aligned"><div class="ui yellow disabled rating" data-rating="1" data-max-rating="3"></div></th>
+                            <th class="center aligned"><div class="ui yellow disabled rating" data-rating="2" data-max-rating="3"></div></th>
+                            <th class="center aligned"><div class="ui yellow disabled rating" data-rating="3" data-max-rating="3"></div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2">Все</td>
+                            <td rowspan="2" class="center aligned">
+                                {{ no_money }}<br>
+                                <div class="ui basic circular label">{{ per_no_money }}%</div>
+                            </td>
+                            <td class="center aligned">
+                                {{ num_min_money }}
+                            </td>
+                            <td class="center aligned">
+                                {{ num_med_money }}
+                            </td>
+                            <td class="center aligned">
+                                {{ num_max_money }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="center aligned">
+                                <div class="ui multiple inverted progress" name="progress"
+                                    data-total="{{ num_money }}"
+                                    data-value="{{ num_min_money }},{{ num_med_money }},{{ num_max_money }}">
+                                    <div class="yellow bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                    <div class="orange bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                    <div class="green bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">Бакалавриат</td>
+                            <td rowspan="2" class="center aligned">
+                                {{ num_bac_no_money }}<br>
+                                <div class="ui basic circular label">{{ per_bac_no_money }}%</div>
+                            </td>
+                            <td class="center aligned">
+                                {{ num_bac_min_money }}
+                            </td>
+                            <td class="center aligned">
+                                {{ num_bac_med_money }}
+                            </td>
+                            <td class="center aligned">
+                                {{ num_bac_max_money }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="center aligned">
+                                <div class="ui multiple inverted progress" name="progress"
+                                    data-total="{{ num_bac_money }}"
+                                    data-value="{{ num_bac_min_money }},{{ num_bac_med_money }},{{ num_bac_max_money }}">
+                                    <div class="yellow bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                    <div class="orange bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                    <div class="green bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">Магистратура</td>
+                            <td rowspan="2" class="center aligned">
+                                {{ num_mag_no_money }}<br>
+                                <div class="ui basic circular label">{{ per_mag_no_money }}%</div>
+                            </td>
+                            <td class="center aligned">
+                                {{ num_mag_min_money }}
+                            </td>
+                            <td class="center aligned">
+                                {{ num_mag_med_money }}
+                            </td>
+                            <td class="center aligned">
+                                {{ num_mag_max_money }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="center aligned">
+                                <div class="ui multiple inverted progress" name="progress"
+                                    data-total="{{ num_mag_money }}"
+                                    data-value="{{ num_mag_min_money }},{{ num_mag_med_money }},{{ num_mag_max_money }}">
+                                    <div class="yellow bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                    <div class="orange bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                    <div class="green bar">
+                                        <div class="progress centered "></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                </table>
             </div>
-         </div>
-
-         <div class="six wide column">
-            <table class="ui very basic selectable table">
-               <thead>
-                  <tr>
-                     <th colspan="3" class="left aligned"><i class="icon orange hourglass half"></i> До выхода из академического отпуска</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  {% for st in delay_students %}
-                     <tr>
-                        <td class="center aligned" style="width: 80px">
-                           <a href="{% url 'groups:detail' groupname=st.group.name semester=st.semester.semester %}">
-                              {{ st.group.name }}-{{ st.semester.semester }}
-                           </a>
-                        </td>
-                        <td class="collapsing left aligned"><a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a></td>
-                        <td class="right aligned">
-                           {% if not st.msg %}
-                              {{ st.delay_end_date | timeuntil }}
-                           {% else %}
-                              <i class="times red large icon"></i>
-                           {% endif %}
-                        </td>
-                     </tr>
-                  {% endfor %}
-               </tbody>
-            </table>
-
-            <div class="ui horizontal divider"></div>
-
-            <table class="ui very basic selectable table">
-               <thead>
-                  <tr>
-                     <th colspan="3" class="left aligned"><i class="heart broken red icon"></i> Болеют</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  {% for st in sick_students %}
-                     <tr>
-                        <td class="center aligned" style="width: 80px">
-                           <a href="{% url 'groups:detail' groupname=st.group.name semester=st.semester.semester %}">
-                              {{ st.group.name }}-{{ st.semester.semester }}
-                           </a>
-                        </td>
-                        <td class="collapsing left aligned"><a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a></td>
-                        <td class="right aligned">
-                           {% if not st.msg %}
-                              {{ st.sick_date | timesince }}
-                           {% else %}
-                              <i class="times red large icon"></i>
-                           {% endif %}
-                        </td>
-                     </tr>
-                  {% endfor %}
-               </tbody>
-            </table>
-         </div>
-
-      </div>
-   </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    $('[name=progress]').progress();
+    $(document).ready(function () {
+        progressBras = document.getElementsByName('progress');
+        progressBras.forEach(element => {
+            element.style.marginBottom = '0';
+        });
+    });
+</script>
 
 {% endblock %}
