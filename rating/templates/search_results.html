@@ -6,70 +6,100 @@
 
 {% block content %}
 
-<div class="ui container center aligned">
-    {% if search %}
+    <div class="ui container center aligned">
         <div class="ui equal width grid">
+
             <div class="row">
-                <h3 style="font-family: Hack">Результаты поиска по запросу: <div class="ui black large circular label">{{ search }}</div></h3>
+                <div class="column">
+                    <form action="{% url 'students:search' %}" method="GET">
+                        {% csrf_token %}
+                        <div class="ui icon input" style="width: 500px">
+                            <input name="search" type="search" placeholder="Поиск..." style="font-family: Hack">
+                            <i class="search link icon"></i>
+                        </div>
+                    </form>
+                </div>
             </div>
+
             <div class="row">
-                <div class="column left aligned" style="padding-left: 0px">
-                    <div name="search-segment" class="ui segment">
-                        <!-- Students -->
-                        {% if students %}
-                            {% for student in students %}
-                                <div class="ui middle aligned selection list">
-                                    <div class="item">
-                                        <div class="content">
-                                            <div class="header" style="font-family: Hack">
-                                                <i class="user graduate icon"></i> <a href="{{ student.get_absolute_url }}">{{ student.fullname }}</a> 
-                                                <div class="ui basic circular label">
-                                                    {{ student.group }}-{{ student.course }}
+                <h3 style="font-family: Hack">Результаты поиска по запросу: {% if  search %}<div class="ui black large label">{{ search }}</div>{% endif %}</h3>
+            </div>
+
+            <h5 class="ui horizontal divider header"><i class="search link icon"></i></h5>
+
+            {% if not search %}
+                <div class="row">
+                    <div class="column">
+                        <div class="ui negative message"><div class="header" style="font-family: Hack">Пустой поиск</div></div>
+                    </div>
+                </div>
+            {% elif students or subjects or groupsubjects %}
+
+                <div class="row">
+                    <div class="column">
+
+                        <div name="search-segment" class="ui segment left aligned">
+
+                            <!-- Students -->
+                            {% if students %}
+                                {% for student in students %}
+                                    <div class="ui middle aligned selection list">
+                                        <div class="item">
+                                            <div class="content">
+                                                <div class="header" style="font-family: Hack">
+                                                    <i class="user graduate icon"></i> <a href="{{ student.get_absolute_url }}">{{ student.fullname }}</a>
+                                                    <div class="ui basic circular label">
+                                                        {{ student.group }}-{{ student.course }}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            Совпадений по студентам не найдено
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="column left aligned" style="padding-right: 0px">
-                    <div name="search-segment" class="ui segment">
-                        <!-- Subjects -->
-                        {% if subjects %}
-                            {% for subject in subjects %}
-                                <div class="ui middle aligned selection list">
-                                    <div class="item">
-                                        <div class="content">
-                                            <div class="header" style="font-family: Hack">
-                                                <i class="book icon"></i> <a href="{{ subject.get_absolute_url }}">{{ subject }}</a> 
+                                {% endfor %}
+                            {% endif %}
+
+                            <!-- Subjects -->
+                            {% if subjects %}
+                                {% for subject in subjects %}
+                                    <div class="ui middle aligned selection list">
+                                        <div class="item">
+                                            <div class="content">
+                                                <div class="header" style="font-family: Hack">
+                                                    <i class="book icon"></i> <a href="{{ subject.get_absolute_url }}">{{ subject }}</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            Совпадений по дисциплинам не найдено
-                        {% endif %}
+                                {% endfor %}
+                            {% endif %}
+
+                            <!-- GroupSubjects -->
+                            {% if groupsubjects %}
+                                {% for gsub in groupsubjects %}
+                                    <div class="ui middle aligned selection list">
+                                        <div class="item">
+                                            <div class="content">
+                                                <div class="header" style="font-family: Hack">
+                                                    <i class="book icon"></i> <a href="">{{ gsub }}</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    {% else %}
-    <div class="ui negative message"><div class="header">Пустой поиск</div></div>
-    {% endif %}
-</div>
 
-<script type="text/javascript">
-    $(document).ready(function() {
-        let segments = document.querySelectorAll("[name='search-segment']");
-        segments.forEach(e => {
-            e.style.boxShadow = 'rgba(17, 12, 46, 0.15) 0px 48px 100px 0px';
-        })
-    })
-</script>
+            {% else %}
+                <div class="row">
+                    <div class="column">
+                        <div class="ui negative message"><div class="header" style="font-family: Hack">Ничего не найдено...</div></div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
 {% endblock %}
