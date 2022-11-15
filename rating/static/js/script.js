@@ -34,9 +34,8 @@ function deleteSidePadding(attr, name) {
 };
 
 // убрать нижний отступ сегмента с заголовком и кнопками
-function deletePaddingTopBottomForTitleBlock() {
+function deletePaddingBottomForTitleBlock() {
    let segments = document.getElementById("segments");
-   segments.style.paddingTop = '0';
    segments.style.paddingBottom = '0';
 };
 

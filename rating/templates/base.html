@@ -98,12 +98,8 @@
 </nav>
 
 <!-- Content -->
-<div id="content">
-        {% if breadcrumbs %}
-            {% include "breadcrumbs.html" with breadcrumbs=breadcrumbs %}
-        {% endif %}
-    {% block content %}
-    {% endblock %}
+<div id="content" style="padding-top: 55px; padding-bottom: 35px">
+    {% block content %}{% endblock %}
 </div>
 
 <!-- Footer -->
