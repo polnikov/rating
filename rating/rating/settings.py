@@ -42,10 +42,7 @@ INSTALLED_APPS = [
     'import_export',
     'semanticuiforms',
     'django_better_admin_arrayfield',
-    'dynamic_breadcrumbs',
 ]
-
-DYNAMIC_BREADCRUMBS_HOME_LABEL = 'Главная'
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True  # import_export package
 
@@ -81,7 +78,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'dynamic_breadcrumbs.context_processors.breadcrumbs',
             ],
             'libraries':{
                 'customfilters': 'templatetags.customfilters',
@@ -185,11 +181,6 @@ LOGGING = {
 IMPORT_DELIMITER = ';'
 
 SITE_ID = 1
-
-# debug_toolbar
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
