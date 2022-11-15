@@ -166,12 +166,13 @@ class Student(CommonArchivedModel, CommonTimestampModel):
                             record_id=update_fields['student_id'],
                         )
             except Exception as student_log_ex:
-                print(f'Не удалось записать изменения по студентам:')
+                print('Не удалось записать изменения по студентам:')
                 print('[!] ---> Ошибка:', student_log_ex)
 
             #: Если студент получает статус <Отчислен> или <Выпускник> - отправляем его в архив
             if self.status in ['Отчислен', 'Выпускник']:
                 self.is_archived = True
+                self.tag = ''
 
         super(Student, self).save(*args, **kwargs)
 
