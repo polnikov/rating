@@ -757,10 +757,16 @@ def search_results(request):
             search=search_vector_sub, rank=SearchRank(search_vector_sub, search_query)
             ).filter(search=search_query).order_by("-rank")
 
+        search_vector_grsub = SearchVector('teacher')
+        result_groupsubjects = GroupSubject.objects.annotate(
+            search=search_vector_grsub, rank=SearchRank(search_vector_grsub, search_query)
+            ).filter(search=search_query).order_by("-rank")
+
         context = {
             'search': search,
             'students': result_students,
             'subjects': result_subjects,
+            'groupsubjects': result_groupsubjects,
         }
 
     return render(request,'search_results.html', context=context)
