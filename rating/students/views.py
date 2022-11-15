@@ -752,7 +752,7 @@ def search_results(request):
             search=search_vector_stu, rank=SearchRank(search_vector_stu, search_query)
             ).filter(search=search_query).order_by("-rank")
 
-        search_vector_sub = SearchVector('name', 'teacher', 'cathedra')
+        search_vector_sub = SearchVector('name', 'cathedra')
         result_subjects = Subject.objects.annotate(
             search=search_vector_sub, rank=SearchRank(search_vector_sub, search_query)
             ).filter(search=search_query).order_by("-rank")
