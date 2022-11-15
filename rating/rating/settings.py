@@ -36,11 +36,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'semanticuiforms',
     'django_better_admin_arrayfield',
-    'dynamic_breadcrumbs',
     'rest_framework',
 ]
-
-DYNAMIC_BREADCRUMBS_HOME_LABEL = 'Главная'
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True  # import_export package
 
@@ -77,7 +74,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'dynamic_breadcrumbs.context_processors.breadcrumbs',
             ],
             'libraries':{
                 'customfilters': 'templatetags.customfilters',
