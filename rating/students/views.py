@@ -64,7 +64,8 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         student = Student.objects.select_related('group', 'semester', 'basis').get(student_id__exact=pk)
 
         try:
-            history = StudentLog.objects.select_related('user').filter(record_id=student.student_id).order_by('-timestamp').values()
+            history = StudentLog.objects.select_related('user').filter(
+                record_id=student.student_id).order_by('-timestamp').values()
         except:
             history = 'Error'
 
@@ -546,7 +547,7 @@ def import_results(request):
 
                 day = raw_data[i + 4][2]
                 month = raw_data[i + 4][4].strip()
-                year = '20' + raw_data[i + 4][6]
+                year = '20' + str(int(raw_data[i + 4][6]))
 
                 raw_att_date = f'{year}-{months[month]}-{day}'
                 locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
@@ -571,45 +572,46 @@ def import_results(request):
                 data['marks'].append(st)
 
         try:
-            subject = Subject.objects.get(
-                Q(name=data['subject']) &
-                Q(form_control=data['form_control']) &
-                Q(semester=data['semester'])
-            )
-            if not subject.cathedra:
-                subject.cathedra = Cathedra.objects.get(name=data['cathedra'])
-            if not subject.teacher:
-                subject.teacher = data['teacher']
-            if not subject.att_date:
-                subject.att_date = data['att_date']
-            subject.save()
-
             try:
                 group = Group.objects.get(name=data['group'])
             except Group.DoesNotExist:
                 errors.append('Ошибка группы - проверьте наименование или что группа существует.')
-            
+
             try:
-                groupsubject = GroupSubject.objects.get(
-                    Q(groups=group.id) &
-                    Q(subjects=subject.id)
+                subject = Subject.objects.get(
+                    Q(name=data['subject']) &
+                    Q(form_control=data['form_control']) &
+                    Q(semester=data['semester'])
                 )
+            except Subject.DoesNotExist:
+                errors.append('Ошибка дисциплины - проверьте наименование или что дисциплина существует.')
+
+            if not subject.cathedra:
+                subject.cathedra = Cathedra.objects.get(name=data['cathedra'])
+
+            try:
+                groupsubject = GroupSubject.objects.get(Q(groups=group) & Q(subjects=subject))
             except GroupSubject.DoesNotExist:
-                errors.append('Данная дисциплина еще не назначена группе.')
+                errors.append('Ошибка назначения - проверьте, что назначение существует.')
+
+            if not groupsubject.teacher:
+                groupsubject.teacher = data['teacher']
+            if not groupsubject.att_date:
+                groupsubject.att_date = data['att_date']
+            groupsubject.save()
 
             for item in data['marks']:
-
                 try:
                     student = Student.objects.get(student_id=int(item[1]))
                 except Student.DoesNotExist:
                     errors.append(f'ID студента [{item[0]}] в ведомости не корректно.')
 
-                type = data['type']
-                match type:
+                sheet_type = data['type']
+                match sheet_type:
                     case 0:
                         try:
                             result = Result.objects.get(students=student, groupsubject=groupsubject)
-                            result.mark=[item[-1]]
+                            result.mark = [item[-1]]
                             result.save()
                         except Result.DoesNotExist:
                             result = Result.objects.create(students=student, groupsubject=groupsubject, mark=[item[-1]])

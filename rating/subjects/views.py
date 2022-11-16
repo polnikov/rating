@@ -293,7 +293,6 @@ class GroupSubjectListView(LoginRequiredMixin, ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         groupsubjects = GroupSubject.objects.select_related('subjects__semester', 'groups').filter(is_archived=False)
-        print(groupsubjects)
         context['groupsubjects_list'] = groupsubjects
         context['empty_date'] = groupsubjects.filter(att_date__exact=None).count()
         context['empty_teacher'] = groupsubjects.filter(teacher__exact='').count()

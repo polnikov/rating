@@ -267,9 +267,11 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
 
     else:
         # студенты текущей группы
-        students = Student.objects.select_related('basis', 'semester').filter(group__name=groupname, semester=semester, is_archived=False).order_by('last_name')
+        students = Student.objects.select_related('basis', 'semester').filter(
+            group__name=groupname, semester=semester, is_archived=False).order_by('last_name')
         # существующие оценки студентов текущей группы по назначенным группе дисциплинам
-        results = Result.objects.select_related().filter(groupsubject__groups__name=groupname, groupsubject__subjects__semester=semester)
+        results = Result.objects.select_related().filter(groupsubject__groups__name=groupname,
+                                                         groupsubject__subjects__semester=semester)
 
         # готовим структуру оценок по каждому студенту
         num_subjects = len(subjects)
