@@ -102,14 +102,14 @@ class GroupSubjectForm(ModelForm):
 
     def clean_teacher(self):
         """Проверить формат ФИО преподавателя."""
-        teacher = self.cleaned_data['teacher']
-        pattern_1 = r'^(\w{1,})\s(\w{1})\.(\w{1})\.$'  # Фамилия И.О.
-        pattern_2 = r'^(\w{1,})-(\w{1,})\s(\w{1})\.(\w{1})\.$'  # Фамилия-Фамилия И.О.
+        raw_teachers = self.cleaned_data['teacher']
+        if not raw_teachers:
+            return ''
+        else:
+            teachers = check_teachers_name(raw_teachers)
 
-        if not teacher:
-            return teacher
-        elif re.match(pattern_1, teacher) or re.match(pattern_2, teacher):
-            return teacher
+        if teachers:
+            return teachers
         else:
             raise ValidationError('Неверный формат ФИО')
 
@@ -124,3 +124,26 @@ class GroupSubjectForm(ModelForm):
             raise ValidationError('Неверный формат даты')
         else:
             return date
+
+
+def check_teachers_name(names: list):
+    pattern_1 = r'^(\w{1,})\s(\w{1})\.(\w{1})\.$'  # Фамилия И.О.
+    pattern_2 = r'^(\w{1,})-(\w{1,})\s(\w{1})\.(\w{1})\.$'  # Фамилия-Фамилия И.О.
+    teachers = []
+    raw_teachers = names.split(', ')
+
+    if len(raw_teachers) == 1:  # ['Фамилия И.О.']
+        teacher = raw_teachers[0]
+        if not teacher:
+            return False
+        elif re.match(pattern_1, teacher) or re.match(pattern_2, teacher):
+            return teacher
+        else:
+            return False
+    else:
+        for name in raw_teachers:  # ['Фамилия1 И.О.', 'Фамилия1 И.О.']
+            if not re.match(pattern_1, name) or re.match(pattern_2, name):
+                return False
+            else:
+                teachers.append(name)
+        return ', '.join(teachers)

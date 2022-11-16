@@ -169,10 +169,13 @@ class Student(CommonArchivedModel, CommonTimestampModel):
                 print('Не удалось записать изменения по студентам:')
                 print('[!] ---> Ошибка:', student_log_ex)
 
-            #: Если студент получает статус <Отчислен> или <Выпускник> - отправляем его в архив
+            #: Если студент получает статус <Отчислен> или <Выпускник> - отправляем его в архив со сбросом тэга
             if self.status in ['Отчислен', 'Выпускник']:
                 self.is_archived = True
                 self.tag = ''
+            #: Если студент получает статус <АО> - отправляем его в архив без сброса тэга
+            if self.status == 'Академический отпуск':
+                self.is_archived = True
 
         super(Student, self).save(*args, **kwargs)
 

@@ -15,41 +15,43 @@
         <div class="row">
 
             <div class="eight wide column">
-                <!-- Больничный -->
-                <table class="ui black selectable small table">
-                    <thead>
-                        <tr>
-                            <th colspan="2"><i class="heart broken red icon"></i> НА БОЛЬНИЧНОМ</th>
-                            <th class="right aligned"><div class="ui circular grey label">{{ num_sick_students }}</div></th>
-                        </tr>
-                        <tr>
-                            <th>Группа</th>
-                            <th class="center aligned">Студент</th>
-                            <th class="right aligned">Срок болезни</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for st in sick_students %}
+                {% if sick_students %}
+                    <!-- Больничный -->
+                    <table class="ui black selectable small table">
+                        <thead>
                             <tr>
-                                <td style="width: 150px">
-                                    <a href="{% url 'groups:detail' groupname=st.group.name semester=st.semester.semester %}">
-                                        {{ st.group.name }}-{{ st.semester.semester }}
-                                    </a>
-                                </td>
-                                <td><a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a></td>
-                                <td class="collapsing right aligned" {% if not st.msg %} data-tooltip="{{ st.sick_date | date:"d.m.y" }}" data-position="left center" data-variation="mini" data-inverted=""{% endif %}>
-                                    {% if not st.msg %}
-                                        {{ st.sick_date | timesince }}
-                                    {% else %}
-                                        <i class="times red large icon"></i>
-                                    {% endif %}
-                                </td>
+                                <th colspan="2"><i class="heart broken red icon"></i> НА БОЛЬНИЧНОМ</th>
+                                <th class="right aligned"><div class="ui circular grey label">{{ num_sick_students }}</div></th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                            <tr>
+                                <th>Группа</th>
+                                <th class="center aligned">Студент</th>
+                                <th class="right aligned">Срок болезни</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for st in sick_students %}
+                                <tr>
+                                    <td style="width: 150px">
+                                        <a href="{% url 'groups:detail' groupname=st.group.name semester=st.semester.semester %}">
+                                            {{ st.group.name }}-{{ st.semester.semester }}
+                                        </a>
+                                    </td>
+                                    <td><a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a></td>
+                                    <td class="collapsing right aligned" {% if not st.msg %} data-tooltip="{{ st.sick_date | date:"d.m.y" }}" data-position="left center" data-variation="mini" data-inverted=""{% endif %}>
+                                        {% if not st.msg %}
+                                            {{ st.sick_date | timesince }}
+                                        {% else %}
+                                            <i class="times red large icon"></i>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
 
-                <div class="ui horizontal divider"></div>
+                    <div class="ui horizontal divider"></div>
+                {% endif %}
 
                 <!-- АО -->
                 <table class="ui black selectable small table">
