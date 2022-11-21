@@ -3,7 +3,7 @@ $(document).ready(function() {
 
    const groupName = document.getElementById('groupname').textContent;
    const semester = document.getElementById('semester').textContent;
-   const url = window.location.origin + "/groups/json/groupmarks/"
+   const url = window.location.origin + "/api/v1/groupmarks/"
 
    // запрос в БД на получение данных о студентах: оценки, задолженности, стипендия
    function getFromServer(groupName, semester) {

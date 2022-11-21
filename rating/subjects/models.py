@@ -199,7 +199,7 @@ class GroupSubject(CommonArchivedModel, CommonTimestampModel):
             return f'{self.subjects} | {self.groups} | {self.teacher} | {self.att_date}'
 
     def get_absolute_url(self):
-        return reverse('groupsubjects:detail', args=[str(self.id)])
+        return reverse('subjects:groupsubject_update', args=[str(self.id)])
 
     @property
     def empty_att_date(self):
