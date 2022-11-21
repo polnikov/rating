@@ -98,6 +98,7 @@ class StudentAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
 @admin.register(StudentLog)
 class StudentLog(admin.ModelAdmin):
     list_display = (
+        'id',
         'user',
         'record_id',
         'field',

@@ -159,6 +159,7 @@ class StudentRatingApiView(LoginRequiredMixin, View):
     """Расчет среднего балла студента."""
 
     def get(self, request):
+        """Расчет среднего балла студента."""
         serialized_data = []
         sem_start = request.GET.get('semStart', '')
         sem_stop = request.GET.get('semStop', '')

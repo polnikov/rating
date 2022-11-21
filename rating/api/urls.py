@@ -9,7 +9,6 @@ app_name = 'api'
 
 router = routers.SimpleRouter()
 router.register('students', views.StudentViewSet)
-router.register('money', views.StudentMoneyList)
 router.register('results', views.ResultViewSet)
 router.register('groups', views.GroupsViewSet)
 router.register('cathedras', views.CathedraViewSet)
@@ -20,11 +19,17 @@ router.register('semesters', views.SemesterViewSet)
 
 urlpatterns = [
     path('v1/', include(router.urls)),
-    # Students history
-    path('v1/students/history/', views.StudentLogList.as_view()),
-    # Students money
-    # path('v1/students/money/', views.StudentMoneyList.as_view()),
-    # Subjects history
-    path('v1/subjects/history/', views.SubjectLogList.as_view()),
+    path('v1/history/students/', views.StudentLogList.as_view()),
+    path('v1/history/subjects/', views.SubjectLogList.as_view()),
+    path('v1/groupmarks/', views.group_marks),
+    path('v1/money/', views.StudentMoneyList.as_view()),
+    path('v1/debts/students/', views.students_debts),
+    path('v1/rating/', views.student_rating),
+    path('v1/search/', views.search),
+
+    path('v1/transferstudents/', views.transfer_students),
+    path('v1/import/students/', views.import_students),
+    path('v1/import/results/', views.import_results),
+    # path('v1/import/subjects/', views.import_subjects),
 ]
 
