@@ -64,6 +64,10 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
             '-form_control',
             'cathedra',
         ]
+        unique_together = (
+            ('name', 'form_control', 'semester'),
+        )
+
 
     def __str__(self):
         if self.cathedra is None:
