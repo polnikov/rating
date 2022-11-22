@@ -38,7 +38,9 @@ class SubjectDetailView(LoginRequiredMixin, DetailView):
         # текущая дисциплина
         subject = get_object_or_404(Subject, id=pk)
         # группы, которым назначена текущая дисциплина в соответствующем семестре
-        groups = GroupSubject.objects.filter(subjects=subject.id, is_archived=False)
+        groups = GroupSubject.objects.filter(
+            subjects=subject.id, is_archived=False).order_by(
+            'groups__code', 'groups__name')
         # выборка студентов, сдававших дисциплину в соответствующем семестре
         students = Result.objects.select_related().filter(groupsubject__subjects=subject.id)
 
