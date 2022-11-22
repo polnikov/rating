@@ -24,13 +24,13 @@ The rating is based on the educational trajectory of students [SPSUACE](https://
 
 ### **Main stack:**
 - Python 3.10.6
-- Django 3.2.15
+- Django 3.2.16
+- Django Rest Framework 3.2.14
 - PostgreSQL
 
 ### **Django package's:**
 - [django-better-admin-arrayfield](https://github.com/gradam/django-better-admin-arrayfield)
 - [django-currentuser](https://github.com/PaesslerAG/django-currentuser)
-- [django-dynamic-breadcrumbs](https://github.com/marcanuy/django-dynamic-breadcrumbs)
 - [django-import-export](https://github.com/django-import-export/django-import-export)
 - [django-semanticui-forms](https://github.com/michaelmob/django-semanticui-forms)
 - [django-stronghold](https://github.com/mgrouchy/django-stronghold)
