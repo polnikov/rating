@@ -294,7 +294,9 @@
 </div>
 
 <script>
-    $('[name=progress]').progress();
+    $('[name=progress]').progress({
+        precision: 1,
+    });
     $(document).ready(function () {
         progressBras = document.getElementsByName('progress');
         progressBras.forEach(element => {
