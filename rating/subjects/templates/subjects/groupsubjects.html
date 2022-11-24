@@ -44,15 +44,15 @@
                             <th class="collapsing">Форма контроля</th>
                             <th class="collapsing">Группа</th>
                             <th class="collapsing">Семестр</th>
-                            <th class="collapsing">Преподаватель {% if empty_teacher %}<div id="count-label" class="ui left pointing red tiny label">
+                            <th class="collapsing">Преподаватель {% if empty_teacher %}<br><div id="count-label" class="ui red tiny label">
 								{{ empty_teacher }}</div>{% endif %}
 							</th>
-                            <th class="collapsing">Дата аттестации {% if empty_date %}<div id="count-label" class="ui left pointing red tiny label">
+                            <th class="collapsing">Дата аттестации {% if empty_date %}<br><div id="count-label" class="ui red tiny label">
 								{{ empty_date }}</div>{% endif %}
 							</th>
                             <th class="collapsing">Кафедра</th>
-                            <th name="actions" class="collapsing">Удалить</th>
-                            <th name="actions" class="collapsing">Изменить</th>
+                            <th name="actions" class="collapsing"><i class="trash alternate outline icon"></i></th>
+                            <th name="actions" class="collapsing"><i class="edit icon"></i></th>
                         </tr>
                     </thead>
 
@@ -60,7 +60,7 @@
                         {% for item in groupsubjects_list %}
                             <tr>
                                 <td class="collapsing center aligned">{{ forloop.counter }}</td>
-                                <td><a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name }}</a></td>
+                                <td><a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name | truncatechars:45 }}</a></td>
                                 <td class="collapsing">{{ item.subjects.form_control }}</td>
 
                                 <td class="center aligned collapsing">
