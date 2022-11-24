@@ -158,8 +158,8 @@
             <table id="student-marks" class="ui selectable celled table">
                 <thead>
                     <tr class="center aligned">
-                        <th id="semester" class="collapsing">Семестр</th>
                         <th class="collapsing">Группа</th>
+                        <th id="semester" class="collapsing">Семестр</th>
                         <th>Дисциплина</th>
                         <th>Форма контроля</th>
                         <th name="mark" class="collapsing">Оценка</th>
@@ -170,12 +170,12 @@
                 <tbody>
                     {% for item in marks %}
                         <tr style="padding-right: 0">
-                            <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
                             <td class="collapsing center aligned">
                                 <a href="{% url 'groups:detail' groupname=item.groupsubject.groups semester=item.groupsubject.subjects.semester.semester %}">
                                     {{ item.groupsubject.groups }}
                                 </a>
                             </td>
+                            <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
                             <td>
                                 {% if item.groupsubject.subjects.is_archived %}<i class="archive brown icon"></i>{% endif %}
                                 <a href="{{ item.groupsubject.subjects.get_absolute_url }}">

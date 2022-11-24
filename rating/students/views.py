@@ -131,7 +131,10 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         except ZeroDivisionError:
             rating = 0
 
-        marks = Result.objects.select_related().filter(students=student.student_id)
+        marks = Result.objects.select_related().filter(students=student.student_id).order_by(
+            'groupsubject__subjects__semester',
+            '-groupsubject__subjects__form_control',
+        )
 
         context = {
             'student': student,
