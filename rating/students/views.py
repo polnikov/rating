@@ -749,17 +749,17 @@ def search_results(request):
         search = request.GET.get('search')
         search_query = SearchQuery(search)
 
-        search_vector_stu = SearchVector('student_id', 'last_name', 'first_name', 'second_name')
+        search_vector_stu = SearchVector('student_id', 'last_name', 'first_name', 'second_name', 'comment')
         result_students = Student.objects.annotate(
             search=search_vector_stu, rank=SearchRank(search_vector_stu, search_query)
             ).filter(search=search_query).order_by("-rank")
 
-        search_vector_sub = SearchVector('name', 'cathedra')
+        search_vector_sub = SearchVector('name', 'cathedra', 'comment')
         result_subjects = Subject.objects.annotate(
             search=search_vector_sub, rank=SearchRank(search_vector_sub, search_query)
             ).filter(search=search_query).order_by("-rank")
 
-        search_vector_grsub = SearchVector('teacher')
+        search_vector_grsub = SearchVector('teacher', 'comment')
         result_groupsubjects = GroupSubject.objects.annotate(
             search=search_vector_grsub, rank=SearchRank(search_vector_grsub, search_query)
             ).filter(search=search_query).order_by("-rank")
