@@ -159,10 +159,12 @@ class FacultyAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
 class GroupSubjectResource(resources.ModelResource):
 
     class Meta:
-        model = Subject
+        model = GroupSubject
         fields = (
-            'groups',
-            'subjects',
+            'subjects__name',
+            'subjects__form_control',
+            'subjects__semester__semester',
+            'groups__name',
             'teacher',
             'att_date',
         )
