@@ -21,26 +21,42 @@
             <div class="ui four cards">
                {% for group in group_list %}
                   {% if group.level == 'Бакалавриат' %}
-                        <!-- Card -->
-                        <div id="group-cards" class="ui card" style="width: 200px; margin-left: 35px">
-                           <div class="content">
-                              <!-- Link button to group -->
-                              <div class="header left aligned">
-                                 <button id="group-label" name="groupbutton" type="button" class="fluid ui grey small circular button" style="font-family: Hack"
-                                    data-code="{{ group.code }}"
-                                    data-direction="{{ group.direction }}"
-                                    data-profile="{{ group.profile }}">
-                                    {% if group.is_archived %}<i class="archive yellow icon"></i>{% endif %}
-                                    {{ group.name }}
-                                 </button>
-                              </div>
 
-                              <div class="ui horizontal divider">Семестр</div>
+                     <!-- Card -->
+                     <div id="group-cards" class="ui card" style="width: 200px;{% if group.code == "08.03.01" %} height: 133px;{% endif %} margin-left: 35px">
+                        <div class="content">
+                           <!-- Link button to group -->
+                           <div class="header left aligned">
+                              <button id="group-label" name="groupbutton" type="button" class="fluid ui 
+                                 {% if "ИС-В" in group.name %}
+                                    blue
+                                 {% elif "ИС-Т" in group.name %}
+                                    olive
+                                 {% elif "Сб(ИС)" in group.name %}
+                                    brown
+                                 {% elif "ЭЭб" in group.name %}
+                                    yellow
+                                 {% elif "ТТб" in group.name %}
+                                    red
+                                 {% else %}
+                                    pink
+                                 {% endif %} 
+                                 small circular button" style="font-family: Hack"
+                                 data-code="{{ group.code }}"
+                                 data-direction="{{ group.direction }}"
+                                 data-profile="{{ group.profile }}">
+                                 {% if group.is_archived %}<i class="archive yellow icon"></i>{% endif %}
+                                 {{ group.name }}
+                              </button>
+                           </div>
 
-                              {% csrf_token %}
-                              <!-- Semesters -->
-                              <div class="extra content">
+                           <div class="ui horizontal divider">Семестр</div>
 
+                           {% csrf_token %}
+                           <!-- Semesters -->
+                           <div class="extra content">
+
+                              {% if group.code != "08.03.01" %}
                                  <div class="ui grid">
                                     <div class="row" style="padding-bottom: 7px">
                                        <div class="column" style="padding-left: 0; padding-right: 0">
@@ -59,10 +75,34 @@
                                        </div>
                                     </div>
                                  </div>
+                              {% elif group.code == "08.03.01" and group.name|length_is:"8" %}
+                                 <div class="ui grid">
+                                    <div class="row">
+                                       <div class="column" style="padding-left: 0; padding-right: 0">
+                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="1" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=1 %}';">1</button>
+                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="2" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=2 %}';">2</button>
+                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="3" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=3 %}';">3</button>
+                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="4" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=4 %}';">4</button>
+                                       </div>
+                                    </div>
+                                 </div>
+                              {% else %}
+                                 <div class="ui grid">
+                                    <div class="row">
+                                       <div class="column" style="padding-left: 0; padding-right: 0">
+                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="5" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=5 %}';">5</button>
+                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="6" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=6 %}';">6</button>
+                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="7" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=7 %}';">7</button>
+                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="8" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=8 %}';">8</button>
+                                       </div>
+                                    </div>
+                                 </div>
+                              {% endif %}
 
-                              </div>
                            </div>
                         </div>
+                     </div>
+
                   {% endif %}
                {% endfor %}
             </div>
@@ -77,40 +117,42 @@
             <div class="ui three cards">
                {% for group in group_list %}
                   {% if group.level == 'Магистратура' %}
-                        <!-- Card -->
-                        <div id="group-cards" class="ui card" style="width: 200px; margin-left: 35px">
-                           <div class="content">
-                              <!-- Link button to group -->
-                              <div class="header left aligned">
-                                 <button id="group-label" name="groupbutton" type="button" class="fluid ui grey small circular button" style="font-family: Hack"
-                                    data-code="{{ group.code }}"
-                                    data-direction="{{ group.direction }}"
-                                    data-profile="{{ group.profile }}">
-                                    {% if group.is_archived %}<i class="archive yellow icon"></i>{% endif %}
-                                    {{ group.name }}
-                                 </button>
-                              </div>
 
-                              <div class="ui horizontal divider">Семестр</div>
+                     <!-- Card -->
+                     <div id="group-cards" class="ui card" style="width: 200px; margin-left: 35px">
+                        <div class="content">
+                           <!-- Link button to group -->
+                           <div class="header left aligned">
+                              <button id="group-label" name="groupbutton" type="button" class="fluid ui grey small circular button" style="font-family: Hack"
+                                 data-code="{{ group.code }}"
+                                 data-direction="{{ group.direction }}"
+                                 data-profile="{{ group.profile }}">
+                                 {% if group.is_archived %}<i class="archive yellow icon"></i>{% endif %}
+                                 {{ group.name }}
+                              </button>
+                           </div>
 
-                              {% csrf_token %}
-                              <!-- Semesters -->
-                              <div class="extra content">
+                           <div class="ui horizontal divider">Семестр</div>
 
-                                 <div class="ui grid">
-                                    <div class="row">
-                                       <div class="column" style="padding-left: 0; padding-right: 0">
-                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="1" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=1 %}';">1</button>
-                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="2" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=2 %}';">2</button>
-                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="3" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=3 %}';">3</button>
-                                          <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="4" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=4 %}';">4</button>
-                                       </div>
+                           {% csrf_token %}
+                           <!-- Semesters -->
+                           <div class="extra content">
+
+                              <div class="ui grid">
+                                 <div class="row">
+                                    <div class="column" style="padding-left: 0; padding-right: 0">
+                                       <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="1" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=1 %}';">1</button>
+                                       <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="2" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=2 %}';">2</button>
+                                       <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="3" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=3 %}';">3</button>
+                                       <button class="ui small circular basic button" style="font-family: Hack; width: 35px; padding-left: 0; padding-right: 0" name="semester" id="4" onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=4 %}';">4</button>
                                     </div>
                                  </div>
-
                               </div>
+
                            </div>
                         </div>
+                     </div>
+
                   {% endif %}
                {% endfor %}
             </div>

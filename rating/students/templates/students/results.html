@@ -88,7 +88,7 @@
    
                               {% if item.groupsubject.att_date %}
                                  <td class="collapsing center aligned">
-                                    {{ item.groupsubject.att_date | date:"d M Y" }}
+                                    {{ item.groupsubject.att_date|date:"d M Y" }}
                                  </td>
                               {% else %}
                                  <td class="negative collapsing center aligned"><i class="icon close"></i>
@@ -99,9 +99,9 @@
                               <td class="collapsing center aligned">
                                  <a href="{% url 'students:result_update' item.id %}">
                                     <div class="ui equal width grid collapsing center aligned">
-                                       <div name="mark" class="column collapsing">{{ item.mark | slice:":1" | unpack_mark }}</div>
-                                       <div name="mark" class="column collapsing">{{ item.mark | slice:"1:2" | unpack_mark }}</div>
-                                       <div name="mark" class="column collapsing">{{ item.mark | slice:"2:3" | unpack_mark }}</div>
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
                                     </div>
                                  </a>
                               </td>
@@ -178,7 +178,7 @@
                            <td class="collapsing center aligned">{{ result.groupsubject.subjects.semester.semester }}</td>
                            {% if result.groupsubject.att_date %}
                               <td class="collapsing center aligned">
-                                 {{ result.groupsubject.att_date | date:"D d M Y" }}
+                                 {{ result.groupsubject.att_date|date:"D d M Y" }}
                               </td>
                            {% else %}
                               <td class="negative collapsing center aligned"><i class="icon close"></i>

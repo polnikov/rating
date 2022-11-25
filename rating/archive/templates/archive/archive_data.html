@@ -109,16 +109,16 @@
                               </td>
                               <td>
                                  <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
-                                    {{ item.groupsubject.subjects.name | truncatechars:80 }}
+                                    {{ item.groupsubject.subjects.name|truncatechars:80 }}
                                  </a>
                               </td>
                               <td class="collapsing">{{ item.groupsubject.subjects.form_control }}</td>
 
                               <td class="collapsing center aligned"><a href="{{ item.get_absolute_url }}">
                                  <div class="ui equal width grid collapsing center aligned">
-                                          <div name="mark" class="column collapsing">{{ item.mark | slice:":1" | unpack_mark }}</div>
-                                          <div name="mark" class="column collapsing">{{ item.mark | slice:"1:2" | unpack_mark }}</div>
-                                          <div name="mark" class="column collapsing">{{ item.mark | slice:"2:3" | unpack_mark }}</div>
+                                          <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
+                                          <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
+                                          <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
                                  </div></a>
                               </td>
 
@@ -158,11 +158,11 @@
                         <tr>
                            <td class="collapsing center aligned">{{ forloop.counter }}</td>
                            <td class="collapsing">
-                              <a href="{{ subject.get_absolute_url }}">{{ subject.name | truncatechars:50 }}</a>
+                              <a href="{{ subject.get_absolute_url }}">{{ subject.name|truncatechars:50 }}</a>
                            </td>
                            <td class="collapsing center aligned">{{ subject.form_control }}</td>
                            <td class="collapsing center aligned">{{ subject.semester.semester }}</td>
-                           <td class="collapsing">{{ subject.comment | truncatechars:20 }}</td>
+                           <td class="collapsing">{{ subject.comment|truncatechars:20 }}</td>
                         </tr>
                      {% endfor %}
                   </tbody>
@@ -247,7 +247,7 @@
                         <th><i class="hashtag small icon"></i></th>
                         <th>Название</th>
                         <th>Направление</th>
-                        <th>Профиль | Специализация</th>
+                        <th>Профиль|Специализация</th>
                         <th>Шифр</th>
                         <th class="collapsing">Удалить</th>
                         <th class="collapsing">Изменить</th>
@@ -379,7 +379,7 @@
             zeroRecords: 'Записей нет...',
             info: 'Всего записей: _MAX_',
             infoEmpty: '',
-            infoFiltered: ' | _TOTAL_ найдено',
+            infoFiltered: '|_TOTAL_ найдено',
             search: '',
             searchPlaceholder: 'поиск',
             paginate: {

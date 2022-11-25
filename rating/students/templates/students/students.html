@@ -96,7 +96,7 @@
 
 									<td class="center aligned">{{ student.citizenship }}</td>
 
-									<td>{{ student.comment | truncatechars:25 }}</td>
+									<td>{{ student.comment|truncatechars:25 }}</td>
 								</tr>
 							{% endfor %}
 						</tbody>
@@ -142,7 +142,7 @@
 									<td class="center aligned">{{ student.semester.semester }}</td>
 
 									<td class="center aligned">{{ student.graduate_year|date:"Y" }}</td>
-									<td>{{ student.comment | truncatechars:25 }}</td>
+									<td>{{ student.comment|truncatechars:25 }}</td>
 								</tr>
 							{% endfor %}
 						</tbody>
