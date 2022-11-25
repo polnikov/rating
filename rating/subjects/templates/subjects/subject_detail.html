@@ -89,7 +89,7 @@
                         <td>Кафедра</td>
                         {% if subject.cathedra %}
                             <td>
-                                {{ subject.cathedra | default_if_none:"" }}
+                                {{ subject.cathedra|default_if_none:"" }}
                             </td>
                         {% else %}
                             <td class="negative collapsing">
@@ -170,9 +170,9 @@
                             {% endif %}
                             <td class="two wide center aligned">
                                 <div class="ui equal width grid center aligned">
-                                        <div name="mark" class="column">{{ student.mark | slice:":1" | unpack_mark }}</div>
-                                        <div name="mark" class="column">{{ student.mark | slice:"1:2" | unpack_mark }}</div>
-                                        <div name="mark" class="column">{{ student.mark | slice:"2:3" | unpack_mark }}</div>
+                                        <div name="mark" class="column">{{ student.mark|slice:":1"|unpack_mark }}</div>
+                                        <div name="mark" class="column">{{ student.mark|slice:"1:2"|unpack_mark }}</div>
+                                        <div name="mark" class="column">{{ student.mark|slice:"2:3"|unpack_mark }}</div>
                                 </div>
                             </td>
 
@@ -207,15 +207,15 @@
                     <tbody>
                         {% for record in history %}
                             <tr>
-                                <td class="collapsing">{{ record.timestamp | date:"d.m.y | H:i:s" }}</td>
-                                <td class="collapsing">{{ record.user_id | get_username }}</td>
+                                <td class="collapsing">{{ record.timestamp|date:"d.m.y|H:i:s" }}</td>
+                                <td class="collapsing">{{ record.user_id|get_username }}</td>
                                 <td class="collapsing">{{ record.field }}</td>
                                 {% if record.field == 'Attestaion date' %}
-                                    <td>{{ record.old_value | date_or_else }}</td>
-                                    <td>{{ record.new_value | date_or_else }}</td>
+                                    <td>{{ record.old_value|date_or_else }}</td>
+                                    <td>{{ record.new_value|date_or_else }}</td>
                                 {% else %}
-                                    <td>{{ record.old_value | default:"---" | truncatechars:40 }}</td>
-                                    <td>{{ record.new_value | default:"---" | truncatechars:40 }}</td>
+                                    <td>{{ record.old_value|default:"---"|truncatechars:40 }}</td>
+                                    <td>{{ record.new_value|default:"---"|truncatechars:40 }}</td>
                                 {% endif %}
                             </tr>
                         {% endfor %}

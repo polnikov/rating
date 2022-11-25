@@ -54,7 +54,7 @@
                                 <td class="center aligned">{{ forloop.counter }}</td>
                                 <td class="collapsing center aligned">{{ cathedra.faculty.short_name|default_if_none:"" }}</td>
                                 <td class="collapsing center aligned">{{ cathedra.short_name }}</td>
-                                <td>{{ cathedra.name | truncatechars:85 }}</td>
+                                <td>{{ cathedra.name|truncatechars:85 }}</td>
                                 <td class="center aligned collapsing">
                                     <a href="{% url 'subjects:cathedra_delete' cathedra.id %}">
                                         <button id="trash-button" class="circular ui red tiny icon button">

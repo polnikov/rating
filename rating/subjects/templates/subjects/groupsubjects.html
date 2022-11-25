@@ -60,7 +60,7 @@
                         {% for item in groupsubjects_list %}
                             <tr>
                                 <td class="collapsing center aligned">{{ forloop.counter }}</td>
-                                <td><a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name | truncatechars:45 }}</a></td>
+                                <td><a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name|truncatechars:45 }}</a></td>
                                 <td class="collapsing">{{ item.subjects.form_control }}</td>
 
                                 <td class="center aligned collapsing">
@@ -81,7 +81,7 @@
 
                                 {% if item.att_date %}
                                     <td class="collapsing center aligned">
-                                        {{ item.empty_att_date | date:"D d M Y" }}
+                                        {{ item.empty_att_date|date:"D d M Y" }}
                                     </td>
                                 {% else %}
                                     <td class="negative collapsing center aligned"><i class="icon close"></i>

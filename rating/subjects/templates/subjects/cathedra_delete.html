@@ -24,7 +24,7 @@
                                 <td class="collapsing"><h4 style="font-family: Hack">Вы уверены, что хотите удалить кафедру:</h4></td>
                                 <td class="left aligned">
                                     <div class="ui large circular label">
-                                        {{ cathedra.name }} | {{ cathedra.short_name }}
+                                        {{ cathedra.name }}|{{ cathedra.short_name }}
                                     </div>
                                 </td>
                             </tr>
@@ -33,7 +33,7 @@
                                     <td class="collapsing"><h4 style="font-family: Hack">Факультет:</h4></td>
                                     <td class="left aligned">
                                         <div class="ui large circular label">
-                                            {{ cathedra.faculty | default_if_none:"" }}
+                                            {{ cathedra.faculty|default_if_none:"" }}
                                         </div>
                                     </td>
                                 </tr>

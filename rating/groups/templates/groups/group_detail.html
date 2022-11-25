@@ -100,7 +100,7 @@
                   {% for item in subjects %}
                      <th name="subjects" class="center aligned" style="width: 10px">
                         <span class="rotated-text left aligned"><a style="color: black" href="{% url 'subjects:groupsubject_update' item.id %}">
-                              {{ item.subjects.name | truncatewords:10 }}
+                              {{ item.subjects.name|truncatewords:10 }}
                         </a></span>
                      </th>
                   {% endfor %}
@@ -110,9 +110,9 @@
                {% if subjects %}
                   {% for item in subjects %}
                      <th name="formcontrol" class="one wide center aligned tooltip">
-                        {{ item.subjects.form_control | short_form_control }}
+                        {{ item.subjects.form_control|short_form_control }}
                         <div class="tooltiptext">
-                           {% if item.att_date %}{{ item.att_date | date:"d.m.y" }}{% else %}{{ item.empty_att_date}}{% endif %}<br>{{ item.empty_teacher }}
+                           {% if item.att_date %}{{ item.att_date|date:"d.m.y" }}{% else %}{{ item.empty_att_date}}{% endif %}<br>{{ item.empty_teacher }}
                         </div>
                      </th>
                   {% endfor %}
@@ -127,7 +127,7 @@
                {% for student in students %}
                   <tr>
                      <td name="number" class="collapsing center aligned" data-student-id="{{ student.student_id }}">{{ forloop.counter }}</td>
-                     <td name="has-negative" class="collapsing center aligned">{{ student.basis | short_basis }}</td>
+                     <td name="has-negative" class="collapsing center aligned">{{ student.basis|short_basis }}</td>
                      <td name="student" class="collapsing"><a href="{{ student.get_absolute_url }}">{% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %} {{ student.fullname }}</a> {% if student.tag %}<div id="tag-label" class="ui tiny pink label">{{ student.tag }}</div>{% endif %}</td>
 
                      <!-- Statistics and Marks -->

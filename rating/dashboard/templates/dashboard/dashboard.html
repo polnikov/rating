@@ -38,9 +38,9 @@
                                         </a>
                                     </td>
                                     <td><a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a></td>
-                                    <td class="collapsing right aligned" {% if not st.msg %} data-tooltip="{{ st.sick_date | date:"d.m.y" }}" data-position="left center" data-variation="mini" data-inverted=""{% endif %}>
+                                    <td class="collapsing right aligned" {% if not st.msg %} data-tooltip="{{ st.sick_date|date:"d.m.y" }}" data-position="left center" data-variation="mini" data-inverted=""{% endif %}>
                                         {% if not st.msg %}
-                                            {{ st.sick_date | timesince }}
+                                            {{ st.sick_date|timesince }}
                                         {% else %}
                                             <i class="times red large icon"></i>
                                         {% endif %}
@@ -77,9 +77,9 @@
                                 <td class="left aligned">
                                     <a href="{{ st.get_absolute_url }}">{{ st.fullname }}</a>
                                 </td>
-                                <td class="collapsing right aligned" {% if not st.msg %} data-tooltip="{{ st.delay_end_date | date:"d.m.y" }}" data-position="left center" data-variation="mini" data-inverted=""{% endif %}>
+                                <td class="collapsing right aligned" {% if not st.msg %} data-tooltip="{{ st.delay_end_date|date:"d.m.y" }}" data-position="left center" data-variation="mini" data-inverted=""{% endif %}>
                                     {% if not st.msg %}
-                                        {{ st.delay_end_date | timeuntil }}
+                                        {{ st.delay_end_date|timeuntil }}
                                     {% else %}
                                         <i class="times red large icon"></i>
                                     {% endif %}

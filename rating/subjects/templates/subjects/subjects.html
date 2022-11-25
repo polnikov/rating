@@ -54,7 +54,7 @@
 							<tr>
 								<td class="collapsing center aligned">{{ forloop.counter }}</td>
 								<td>
-									<a href="{{ subject.get_absolute_url }}">{{ subject.name | truncatechars:80 }}</a>
+									<a href="{{ subject.get_absolute_url }}">{{ subject.name|truncatechars:80 }}</a>
 									{% if subject.is_archived %}<i class="archive brown icon"></i>{% endif %}
 								</td>
 								<td class="collapsing">{{ subject.form_control }}</td>
@@ -70,7 +70,7 @@
 									</td>
 								{% endif %}
 
-								<td class="collapsing">{{ subject.comment | truncatechars:20 }}</td>
+								<td class="collapsing">{{ subject.comment|truncatechars:20 }}</td>
 							</tr>
 						{% endfor %}
 					</tbody>
