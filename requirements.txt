@@ -16,6 +16,7 @@ django-dynamic-breadcrumbs==0.4.2
 django-import-export==2.8.0
 django-semanticui-forms==1.6.5
 django-stronghold==0.4.0
+djangorestframework==3.14.0
 EditorConfig==0.12.3
 et-xmlfile==1.1.0
 flake8==5.0.4
