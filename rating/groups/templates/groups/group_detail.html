@@ -110,7 +110,17 @@
                {% if subjects %}
                   {% for item in subjects %}
                      <th name="formcontrol" class="one wide center aligned tooltip">
-                        {{ item.subjects.form_control|short_form_control }}
+                        <div class="ui circular
+                           {% if item.subjects.form_control == "Экзамен" %}
+                              red
+                           {% elif "Курсов" in item.subjects.form_control %}
+                              blue
+                           {% elif item.subjects.form_control == "Зачет" %}
+                              brown
+                           {% elif item.subjects.form_control == "Диффзачет" %}
+                              grey
+                           {% endif %}
+                           label">{{ item.subjects.form_control|short_form_control }}</div>
                         <div class="tooltiptext">
                            {% if item.att_date %}{{ item.att_date|date:"d.m.y" }}{% else %}{{ item.empty_att_date}}{% endif %}<br>{{ item.empty_teacher }}
                         </div>
