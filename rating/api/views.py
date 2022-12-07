@@ -5,7 +5,7 @@ import re
 from datetime import datetime
 from collections import Counter
 
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, permissions
 from rest_framework.decorators import api_view
 
 from django.http.response import JsonResponse
@@ -27,6 +27,7 @@ from rating.functions import _get_students_group_statistic_and_marks, calculate_
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = serializers.StudentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class StudentLogList(generics.ListAPIView):
