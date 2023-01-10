@@ -1,4 +1,3 @@
-import locale
 import re
 import xlrd
 
@@ -495,18 +494,18 @@ def import_results(request):
             'Неудовл.': '2',
         }
         months = {
-            'Января': 'январь',
-            'Февраля': 'февраль',
-            'Марта': 'март',
-            'Апреля': 'апрель',
-            'Мая': 'май',
-            'Июня': 'июнь',
-            'Июля': 'июль',
-            'Августа': 'август',
-            'Сентября': 'сентябрь',
-            'Октября': 'октябрь',
-            'Ноября': 'ноябрь',
-            'Декабря': 'декабрь',
+            'Января': 'january',
+            'Февраля': 'february',
+            'Марта': 'march',
+            'Апреля': 'april',
+            'Мая': 'may',
+            'Июня': 'june',
+            'Июля': 'july',
+            'Августа': 'august',
+            'Сентября': 'september',
+            'Октября': 'october',
+            'Ноября': 'november',
+            'Декабря': 'december',
         }
         data = {
             'type': '',
@@ -556,7 +555,6 @@ def import_results(request):
                 year = '20' + str(int(raw_data[i + 4][6]))
 
                 raw_att_date = f'{year}-{months[month]}-{day}'
-                locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
                 att_date = datetime.strptime(raw_att_date, '%Y-%B-%d')
                 data['att_date'] = att_date.date()
 
