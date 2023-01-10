@@ -534,13 +534,11 @@ def import_results(request):
 
         for i in range(len(raw_data)):
             if raw_data[i][0].lower().startswith('экзаменационная'):
-                start_row = 13
                 data['form_control'] = 'Экзамен'
                 data['type'] = types.get(raw_data[i + 1][0], False)
 
             elif raw_data[i][0].lower().startswith('зачетная'):
-                start_row = 14
-                data['form_control'] = form_controls.get(raw_data[i + 2][0].split(' ')[-1], False)
+                data['form_control'] = form_controls.get(raw_data[i + 2][0].split('–')[-1].strip(), False)
                 data['type'] = types.get(raw_data[i + 1][0], False)
 
             elif raw_data[i][0].lower().startswith('учебный'):
@@ -571,9 +569,16 @@ def import_results(request):
                 data['teacher'] = ', '.join(teachers)
 
             elif raw_data[i][0].isdigit():
-                st = raw_data[i][1:]
-                st = [st[0], st[1], marks.get(st[2], False)]
-                data['marks'].append(st)
+                if data['form_control'] != 'Диффзачет':
+                    st = raw_data[i][1:]
+                    st = [st[0], st[1], marks.get(st[2], False)]
+                    data['marks'].append(st)
+                else:
+                    st = []
+                    st.extend(raw_data[i][1:3])
+                    st.append(raw_data[i][-1])
+                    st = [st[0], st[1], marks.get(st[-1], False)]
+                    data['marks'].append(st)
 
         try:
             try:
@@ -592,6 +597,10 @@ def import_results(request):
 
             if not subject.cathedra:
                 subject.cathedra = Cathedra.objects.get(name=data['cathedra'])
+                subject.save()
+            if not subject.zet:
+                subject.zet = data['zet']
+                subject.save()
 
             try:
                 groupsubject = GroupSubject.objects.get(Q(groups=group) & Q(subjects=subject))
@@ -600,9 +609,10 @@ def import_results(request):
 
             if not groupsubject.teacher:
                 groupsubject.teacher = data['teacher']
+                groupsubject.save()
             if not groupsubject.att_date:
                 groupsubject.att_date = data['att_date']
-            groupsubject.save()
+                groupsubject.save()
 
             for item in data['marks']:
                 try:
