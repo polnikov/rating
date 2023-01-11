@@ -532,6 +532,9 @@ def import_results(request):
             if row_data:
                 raw_data.append(row_data)
 
+        for i in raw_data:
+            print(i)
+
         for i in range(len(raw_data)):
             if raw_data[i][0].lower().startswith('экзаменационная'):
                 data['form_control'] = 'Экзамен'
@@ -598,7 +601,7 @@ def import_results(request):
             if not subject.cathedra:
                 subject.cathedra = Cathedra.objects.get(name=data['cathedra'])
                 subject.save()
-            if not subject.zet:
+            if data['form_control'] not in ['Курсовая работа', 'Курсовой проект'] and not subject.zet:
                 subject.zet = data['zet']
                 subject.save()
 
