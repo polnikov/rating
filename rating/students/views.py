@@ -571,7 +571,7 @@ def import_results(request):
             elif raw_data[i][0].isdigit():
                 if data['form_control'] != 'Диффзачет':
                     st = raw_data[i][1:]
-                    st = [st[0], st[1], marks.get(st[2], False)]
+                    st = [st[0], st[1], marks.get(st[-1], False)]
                     data['marks'].append(st)
                 else:
                     st = []
