@@ -532,9 +532,6 @@ def import_results(request):
             if row_data:
                 raw_data.append(row_data)
 
-        for i in raw_data:
-            print(i)
-
         for i in range(len(raw_data)):
             if raw_data[i][0].lower().startswith('экзаменационная'):
                 data['form_control'] = 'Экзамен'
@@ -574,7 +571,7 @@ def import_results(request):
             elif raw_data[i][0].isdigit():
                 if data['form_control'] != 'Диффзачет':
                     st = raw_data[i][1:]
-                    st = [st[0], st[1], marks.get(st[2], False)]
+                    st = [st[0], st[1], marks.get(st[-1], False)]
                     data['marks'].append(st)
                 else:
                     st = []
