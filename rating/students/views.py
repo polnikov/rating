@@ -532,9 +532,6 @@ def import_results(request):
             if row_data:
                 raw_data.append(row_data)
 
-        for i in raw_data:
-            print(i)
-
         for i in range(len(raw_data)):
             if raw_data[i][0].lower().startswith('экзаменационная'):
                 data['form_control'] = 'Экзамен'
