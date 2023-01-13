@@ -587,11 +587,18 @@ def import_results(request):
                 errors.append('Ошибка группы - проверьте наименование или что группа существует.')
 
             try:
-                subject = Subject.objects.get(
+                subject = Subject.objects.filter(
                     Q(name=data['subject']) &
                     Q(form_control=data['form_control']) &
                     Q(semester=data['semester'])
                 )
+                if len(subject) > 1:
+                    subject = Subject.objects.get(
+                        Q(name=data['subject']) &
+                        Q(form_control=data['form_control']) &
+                        Q(cathedra=Cathedra.objects.get(name=data['cathedra'])) &
+                        Q(semester=data['semester'])
+                    )
             except Subject.DoesNotExist:
                 errors.append('Ошибка дисциплины - проверьте наименование или что дисциплина существует.')
 
