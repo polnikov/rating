@@ -76,34 +76,29 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
         student = Student.objects.select_related('basis').get(student_id=int(student))
         basis = student.basis.name
 
+        # if basis not in ['Контракт', 'ИГ']:
         if basis == 'Контракт':
             student.money = 'нет'
             student.save()
-            # print('==========', 1)
         elif basis == 'ИГ':
             student.money = '1.0'
             student.save()
-            # print('==========', 2)
-        elif att1 > 0:
-            student.money = 'нет'
-            student.save()
-            # print('==========', 3)
-        elif no_marks_yet or is_C_marks:
-            student.money = 'нет'
-            student.save()
-            # print('==========', 4)
-        elif no_A_marks:
-            student.money = '1.0'
-            student.save()
-            # print('==========', 5)
-        elif no_B_marks:
-            student.money = '1.5'
-            student.save()
-            # print('==========', 6)
         else:
-            student.money = '1.25'
-            student.save()
-            # print('==========', 7)
+            if att1 > 0:
+                student.money = 'нет'
+                student.save()
+            elif no_marks_yet or is_C_marks:
+                student.money = 'нет'
+                student.save()
+            elif no_A_marks:
+                student.money = '1.0'
+                student.save()
+            elif no_B_marks:
+                student.money = '1.5'
+                student.save()
+            else:
+                student.money = '1.25'
+                student.save()
 
         att1 = '' if not cnt1 else cnt1
         att2 = '' if not cnt2 else cnt2
@@ -179,6 +174,13 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
             m.att1 = '' if not cnt1 else cnt1
             m.att2 = '' if not cnt2 else cnt2
             m.att3 = '' if not cnt3 else cnt3
+
+            if m.basis.name == 'Контракт':
+                m.money = 'нет'
+                m.save()
+            elif m.basis.name == 'ИГ':
+                m.money = '1.0'
+                m.save()
 
         return students
 
