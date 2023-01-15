@@ -176,6 +176,11 @@ class Student(CommonArchivedModel, CommonTimestampModel):
             #: Если студент получает статус <АО> - отправляем его в архив без сброса тэга
             if self.status == 'Академический отпуск':
                 self.is_archived = True
+            #: Если студент имеет основу обучения <ИГ> или <Контракт> - устанавливаем для него стипендию
+            if self.basis.name == 'ИГ':
+                self.money = '1.0'
+            elif self.basis.name == 'Контракт':
+                self.money = 'нет'
 
         super(Student, self).save(*args, **kwargs)
 
