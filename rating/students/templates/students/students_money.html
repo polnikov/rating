@@ -64,6 +64,8 @@
 
 								{% if item.basis.name == 'Контракт' %}
 									<td class="center aligned negative">{{ item.basis }}</td>
+								{% elif item.basis.name == 'ИГ' %}
+									<td class="center aligned blue">{{ item.basis }}</td>
 								{% else %}
 									<td class="center aligned">{{ item.basis }}</td>
 								{% endif %}
