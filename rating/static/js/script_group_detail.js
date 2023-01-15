@@ -424,8 +424,12 @@ function transferStudents() {
 function addHightlightBasis() {
    let negativeElements  = document.getElementsByName("has-negative");
    for (let i = 0; i < negativeElements.length; i++) {
-      if (negativeElements[i].textContent == "К") {
-         negativeElements[i].classList.add("negative")
+      switch (negativeElements[i].textContent) {
+         case "К":
+            negativeElements[i].classList.add("negative");
+            break
+         case "И":
+            negativeElements[i].classList.add("blue");
       };
    };
 };
