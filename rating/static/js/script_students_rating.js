@@ -86,16 +86,16 @@ function getCookie(name) {
 function getDataFromServer(semStart, semStop, groups) {
     const url = window.location.origin + "/students/json/rating/";
     $.ajax({
-    url: url,
-    type: "GET",
-    dataType: "JSON",
-    contentType: "application/json",
-    data: {
-        semStart: semStart,
-        semStop: semStop,
-        groups: groups,
-        csrfmiddlewaretoken: csrftoken,
-    },
+        url: url,
+        type: "GET",
+        dataType: "JSON",
+        contentType: "application/json",
+        data: {
+            semStart: semStart,
+            semStop: semStop,
+            groups: groups,
+            csrfmiddlewaretoken: csrftoken,
+        },
     })
     .done(function(response) {
         console.log('Запрос данных выполнен успешно');
@@ -130,9 +130,10 @@ function getDataFromServer(semStart, semStop, groups) {
             // вставляем массив в таблицу
             tableBody.insertAdjacentHTML('afterbegin', result.join(""));
         });
+        document.querySelector(".ui.active.dimmer").style.display = "none"//stop the load
     })
     .fail(function() {
-    alert("Данные недоступны!")
+        alert("Данные недоступны!")
     });
 };
 
