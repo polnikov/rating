@@ -599,11 +599,17 @@ def import_results(request):
                         Q(cathedra=Cathedra.objects.get(name=data['cathedra'])) &
                         Q(semester=data['semester'])
                     )
+                else:
+                    subject = Subject.objects.get(
+                        Q(name=data['subject']) &
+                        Q(form_control=data['form_control']) &
+                        Q(semester=data['semester'])
+                    )
             except Subject.DoesNotExist:
                 errors.append('Ошибка дисциплины - проверьте наименование или что дисциплина существует.')
 
             if not subject.cathedra:
-                subject.cathedra = Cathedra.objects.get(name=data['cathedra'])
+                subject.cathedra.name = Cathedra.objects.get(name=data['cathedra'])
                 subject.save()
             if data['form_control'] not in ['Курсовая работа', 'Курсовой проект'] and not subject.zet:
                 subject.zet = data['zet']
