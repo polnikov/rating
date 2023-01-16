@@ -12,15 +12,12 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['www.fiegh-raiting.ru', 'fiegh-raiting.ru', '188.225.79.76', 'localhost']
+ALLOWED_HOSTS = [os.getenv('HOST_GASU'), os.getenv('HOST_IP'), 'localhost']
 
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = True
+# SECURE_BROWSER_XSS_FILTER = True
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_COOKIE_SECURE = True
-CSRF_TRUSTED_ORIGINS = ['www.fiegh-raiting.ru', 'fiegh-raiting.ru', '188.225.79.76']
+CSRF_TRUSTED_ORIGINS = [os.getenv('HOST_GASU'), os.getenv('HOST_IP')]
 
 INSTALLED_APPS = [
     'django.contrib.auth',
