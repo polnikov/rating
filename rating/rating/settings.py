@@ -113,10 +113,6 @@ LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'Europe/Moscow'
 
-LOCALE_PATHS = (
-    os.path.join(os.path.dirname(__file__), "locale"),
-)
-
 USE_I18N = True
 
 USE_L10N = True
