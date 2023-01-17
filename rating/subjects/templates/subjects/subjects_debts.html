@@ -48,7 +48,7 @@
 							<tr>
 								<td class="collapsing center aligned">{{ forloop.counter }}</td>
 								<td class="collapsing">
-									<a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name|truncatechars:30 }}</a>
+									<a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name|truncatechars:50 }}</a>
 								</td>
 								<td class="collapsing">{{ item.subjects.form_control }}</td>
 								<td class="collapsing center aligned">
