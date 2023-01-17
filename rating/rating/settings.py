@@ -12,12 +12,12 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = [os.getenv('HOST_GASU'), os.getenv('HOST_IP'), 'localhost']
+ALLOWED_HOSTS = [os.getenv('HOST_IP'), 'localhost']
 
 # SECURE_BROWSER_XSS_FILTER = True
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_COOKIE_SECURE = True
-CSRF_TRUSTED_ORIGINS = [os.getenv('HOST_GASU'), os.getenv('HOST_IP')]
+CSRF_TRUSTED_ORIGINS = [os.getenv('HOST_IP')]
 
 INSTALLED_APPS = [
     'django.contrib.auth',
