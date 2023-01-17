@@ -61,7 +61,7 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
 
         att1, att2, att3 = cnt1, cnt2, cnt3
 
-    ######### подсчет оценок для определения стипендии
+        ######### подсчет оценок для определения стипендии
 
         # извлекаем все первые оценки в единый список
         first_marks = list(map(lambda x: x[0], marks))
@@ -171,16 +171,49 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
                             if marks[2] in negative:
                                 cnt3 += 1
 
+            m.att1, m.att2, m.att3 = cnt1, cnt2, cnt3
+
+            basis = m.basis.name
+            if basis == 'Контракт':
+                m.money = 'нет'
+                m.save()
+            elif basis == 'ИГ':
+                m.money = '1.0'
+                m.save()
+            else:
+                ######### подсчет оценок для определения стипендии
+                # исключаем все "-" из оценок
+                all_marks = list(filter(lambda x: isinstance(x, tuple), m.marks.values()))
+                # извлекаем все первые оценки в единый список
+                all_marks = list(map(lambda x: x[1][0], all_marks))
+                # считем количество каждого типа оценки
+                all_marks = dict(Counter(all_marks))
+
+                # условные критерии для определения типа стипендии
+                no_marks_yet = not bool(len(all_marks))     # нет ни одной оценки
+                is_C_marks = '3' in all_marks               # есть хотя бы одна 3-ка
+                no_A_marks = not ('5' in all_marks)         # нет ни одной 5-ки
+                no_B_marks = not ('4' in all_marks)         # нет ни одной 4-ки
+
+                if m.att1 > 0:
+                    m.money = 'нет'
+                    m.save()
+                elif no_marks_yet or is_C_marks:
+                    m.money = 'нет'
+                    m.save()
+                elif no_A_marks:
+                    m.money = '1.0'
+                    m.save()
+                elif no_B_marks:
+                    m.money = '1.5'
+                    m.save()
+                else:
+                    m.money = '1.25'
+                    m.save()
+
             m.att1 = '' if not cnt1 else cnt1
             m.att2 = '' if not cnt2 else cnt2
             m.att3 = '' if not cnt3 else cnt3
-
-            if m.basis.name == 'Контракт':
-                m.money = 'нет'
-                m.save()
-            elif m.basis.name == 'ИГ':
-                m.money = '1.0'
-                m.save()
 
         return students
 
