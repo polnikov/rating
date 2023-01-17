@@ -181,11 +181,6 @@ IMPORT_DELIMITER = ';'
 
 SITE_ID = 1
 
-# debug_toolbar
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
-
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
