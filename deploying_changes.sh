@@ -35,7 +35,7 @@ else
     python3 -m venv env
 fi
 
-cd /home/code/rating/rating/
+cd /home/code/rating/rating
 echo "[-------------] Target folder: $(pwd)"
 
 sed -i "/psycopg2==2.9.3/d" requirements.txt
