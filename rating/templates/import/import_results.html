@@ -24,7 +24,7 @@
                <form method="post" enctype="multipart/form-data">
                   {% csrf_token %}
                   <div class="description">
-                     <input name="import_file" type="file" style="width: 400px">
+                     <input name="import_file" type="file" multiple style="width: 400px">
                   </div>
             </div>
 
@@ -32,14 +32,18 @@
                <!-- Button's -->
                <a href="javascript:history.go(-1)">
                   <button id="back-button" class="ui circular button center aligned" type="button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
-                  </a>
+               </a>
                <button id="download-button" class="ui primary circular button center aligned" type="submit" style="font-family: Hack"><i class="icon download"></i>Загрузить</button>
             </div>
             </form>
 
-            {% if file_validation == False %}
+            {% if file_validation_exist == False %}
                <div class="extra content center aligned">
-                  <i class="times red icon"></i><font color="red">Отсутствует файл,<br>или неверный формат!</font>
+                  <i class="times red icon"></i><font color="red">Ничего не выбрано для импорта!</font>
+               </div>
+            {% elif file_validation_format == False %}
+               <div class="extra content center aligned">
+                  <i class="times red icon"></i><font color="red">Проверьте формат импортируемых<br>файлов!</font>
                </div>
             {% elif errors %}
                <div class="extra content center aligned">
