@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = [os.getenv('HOST_IP'), 'localhost']
+ALLOWED_HOSTS = [os.getenv('HOST_IP_EXT'), os.getenv('HOST_IP_INT'), os.getenv('HOST_GASU'), 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.auth',
