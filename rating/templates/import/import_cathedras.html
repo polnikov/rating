@@ -53,7 +53,9 @@
             {% csrf_token %}
             <div class="ui grid">
                <div class="eight wide column middle left aligned">
-                  <input name="import_file" type="file" style="width: 400px">
+                  <div class="ui file input small">
+                     <input name="import_file" type="file" style="width: 400px">
+                  </div>
                </div>
                <div class="eight wide column right aligned">
                   <!-- Button's -->
@@ -67,9 +69,9 @@
                   {% elif request.path == '/subjects/groupsubjects/import/' %}
                      href="{% url 'subjects:groupsubjects' %}"
                   {% endif %}>
-                  <button id="back-button" class="ui circular button center aligned" type="button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                  <button class="ui small button center aligned" type="button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
                   </a>
-                  <button id="download-button" class="ui primary circular button center aligned" type="submit" style="font-family: Hack"><i class="icon download"></i>Загрузить</button>
+                  <button class="ui primary small button center aligned" type="submit" style="font-family: Hack"><i class="icon download"></i>Загрузить</button>
                </div>
             </div>
          </form>
@@ -95,4 +97,8 @@
    </div>
 </div>
 
+<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<script type="text/javascript">
+   changeFileInputFont();
+</script>
 {% endblock %}

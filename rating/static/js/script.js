@@ -18,6 +18,12 @@ function changeDatatableInputFont() {
    };
 };
 
+// изменить шрифт в <input> загрузки CSV
+function changeFileInputFont() {
+   let fileInput = document.querySelectorAll(".ui.segment input")[1];
+   fileInput.style.fontFamily = "Hack";
+};
+
 // убрать боковой отступ ячейки таблицы
 function deleteSidePadding(attr, name) {
    if(attr == "name") {
