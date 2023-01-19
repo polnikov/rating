@@ -23,7 +23,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         # активные студенты
         active_students = current_students.exclude(status='Академический отпуск')
         # в академическом отпуске
-        delay_students = current_students.exclude(status='Является студентом').order_by('last_name')
+        delay_students = current_students.exclude(status='Является студентом')
 
         # количественный блок
         num_students = current_students.count()
@@ -121,8 +121,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                     if 'болеет' in st.comment.lower():
                         sick_students.append(st)
 
-        # список студентов в АО
-        list_of_delay_students = []
         # добавляем дату выхода из АО
         for st in delay_students:
             # извлекаем дату ухода в АО из комментария
@@ -133,11 +131,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 st.delay_start_date = datetime.strptime(delay_start_date_string, '%d.%m.%Y').date()
                 st.delay_end_date = st.delay_start_date + relativedelta(months=12)
                 st.delta_days = (st.delay_end_date - datetime.now().date()).days
-                st_dict = model_to_dict(st)
-                st_dict['delay_end_date'] = st.delay_end_date
-                list_of_delay_students.append(st_dict)
             except AttributeError:
                 st.msg = 'no'
+        delay_students = sorted(delay_students, key=lambda o: (o.delta_days))
 
         # количественный блок
         context['num_students'] = num_students
@@ -184,7 +180,5 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['delay_students'] = delay_students
         context['num_sick_students'] = len(sick_students)
         context['num_delay_students'] = len(delay_students)
-
-        context['current_date'] = datetime.now().date()
 
         return context
