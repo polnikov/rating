@@ -34,8 +34,9 @@
         <!-- Tabs title's -->
         <div class="ui top attached tabular menu" style="font-family: Hack">
             <a class="item active" data-tab="first"><i class="info icon"></i>Сводная информация</a>
-            <a class="item" data-tab="second"><i class="users icon"></i></i>Студенты</a>
-            <a class="item" data-tab="third"><i class="history icon"></i>История изменений</a>
+            <a class="item" data-tab="second"><i class="bullhorn icon"></i></i>Назначения</a>
+            <a class="item" data-tab="third"><i class="users icon"></i></i>Студенты</a>
+            <a class="item" data-tab="fourth"><i class="history icon"></i>История изменений</a>
         </div>
 
         <!-- Tab 1 -->
@@ -118,9 +119,63 @@
         </div>
 
         <!-- Tab 2 -->
-        <!-- Students -->
+        <!-- GroupSubjects -->
         <div class="ui bottom attached tab segment" data-tab="second">
-            <table id="subject-students" class="ui selectable celled table">
+            {% if groups %}
+                <table class="ui selectable celled compact table">
+                    <thead>
+                        <tr class="center aligned">
+                            <th>Группа</th>
+                            <th>Семестр</th>
+                            <th>Преподаватель</th>
+                            <th>Дата аттестации</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for gs in groups %}
+                            <tr>
+                                <td class="center aligned collapsing">
+                                    <a onclick="window.location.href = '{% url 'groups:detail' groupname=gs.groups.name semester=gs.subjects.semester.semester %}'">
+                                        {{ gs.groups.name }}
+                                    </a>
+                                </td>
+                                <td class="center aligned collapsing">{{ gs.subjects.semester.semester }}</td>
+                                {% if gs.teacher %}
+                                    <td>{{ gs.teacher }}</td>
+                                {% else %}
+                                    <td class="negative center aligned"><i class="icon close"></i>
+                                        {{ gs.empty_teacher }}
+                                    </td>
+                                {% endif %}
+
+                                {% if gs.att_date %}
+                                    <td class="center aligned">
+                                        {{ gs.empty_att_date }}
+                                    </td>
+                                {% else %}
+                                    <td class="negative center aligned"><i class="icon close"></i>
+                                        {{ gs.empty_att_date }}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    <tbody>
+                </table>
+            {% else %}
+                <div class="ui one column centered grid">
+                    <div class="one column"></div>
+                    <div class="ui center aligned container">
+                        <p>Назначений пока нет...</p>
+                    </div>
+                    <div class="one column"></div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Tab 3 -->
+        <!-- Students -->
+        <div class="ui bottom attached tab segment" data-tab="third">
+            <table id="subject-students" class="ui selectable celled compact table">
                 <thead>
                     <tr class="center aligned">
                         <th class="collapsing">Семестр</th>
@@ -147,8 +202,7 @@
                                 </a>
                             </td>
                             {% if student.groupsubject.teacher %}
-                                <td class="positive collapsing center aligned">
-                                    <i class="icon checkmark"></i>
+                                <td class="collapsing center aligned">
                                     {{ student.groupsubject.teacher }}
                                 </td>
                             {% else %}
@@ -158,8 +212,7 @@
                                 </td>
                             {% endif %}
                             {% if student.groupsubject.att_date %}
-                                <td class="positive collapsing center aligned">
-                                    <i class="icon checkmark"></i>
+                                <td class="collapsing center aligned">
                                     {{ student.groupsubject.att_date }}
                                 </td>
                             {% else %}
@@ -182,8 +235,9 @@
             </table>
         </div>
 
+        <!-- Tab 4 -->
         <!-- History -->
-        <div class="ui bottom attached tab segment" data-tab="third">
+        <div class="ui bottom attached tab segment" data-tab="fourth">
             <table class="ui unstackable table">
                 <tbody>
                     <tr class="blue">
@@ -193,7 +247,7 @@
                 </tbody>
             </table>
             {% if history %}
-                <table id="subject-history" class="ui selectable celled table">
+                <table id="subject-history" class="ui selectable celled compact table">
                     <thead>
                         <tr class="center aligned">
                             <th>Дата и время</th>
