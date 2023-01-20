@@ -155,7 +155,7 @@
         <!-- Tab 2 -->
         <!-- Marks -->
         <div class="ui bottom attached tab segment" data-tab="second">
-            <table id="student-marks" class="ui selectable celled table">
+            <table id="student-marks" class="ui selectable celled compact table">
                 <thead>
                     <tr class="center aligned">
                         <th class="collapsing">Группа</th>
@@ -164,6 +164,7 @@
                         <th>Форма контроля</th>
                         <th name="mark" class="collapsing">Оценка</th>
                         <th>Дата аттестации</th>
+                        <th>Преподаватель</th>
                     </tr>
                 </thead>
 
@@ -192,7 +193,23 @@
                                 </div>
                             </td>
 
-                            <td class="collapsing center aligned">{{ item.groupsubject.empty_att_date }}</td>
+                            {% if item.groupsubject.att_date %}
+                                <td class="collapsing center aligned">
+                                    {{ item.groupsubject.empty_att_date }}
+                                </td>
+                            {% else %}
+                                <td class="negative collapsing center aligned"><i class="icon close"></i>
+                                    {{ item.groupsubject.empty_att_date }}
+                                </td>
+                            {% endif %}
+
+                            {% if item.groupsubject.teacher %}
+                                <td class="collapsing">{{ item.groupsubject.teacher }}</td>
+                            {% else %}
+                                <td class="negative collapsing center aligned"><i class="icon close"></i>
+                                    {{ item.groupsubject.empty_teacher }}
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -211,7 +228,7 @@
                 </tbody>
             </table>
             {% if history %}
-                <table id="student-history" class="ui selectable celled table">
+                <table id="student-history" class="ui selectable celled compact table">
 
                     <thead>
                         <tr class="center aligned">
