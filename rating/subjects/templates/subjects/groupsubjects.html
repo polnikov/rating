@@ -36,7 +36,7 @@
     <div id="datatable-segment" class="ui basic segment">
         {% if groupsubject_list %}
             <div class="ui segment">
-                <table id="group-subjects" class="ui selectable celled table">
+                <table id="group-subjects" class="ui selectable celled compact table">
                     <thead>
                         <tr class="center aligned">
                             <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
@@ -101,14 +101,14 @@
 
                                 <td class="center aligned collapsing">
                                     <a href="{% url 'subjects:groupsubject_delete' item.id %}">
-                                        <button id="trash-button" class="circular ui red tiny icon button">
+                                        <button id="trash-button" class="circular ui red mini icon button">
                                             <i class="trash alternate outline icon"></i>
                                         </button>
                                     </a>
                                 </td>
                                 <td class="center aligned collapsing">
                                     <a href="{% url 'subjects:groupsubject_update' item.id %}">
-                                        <button id="edit-button" class="circular ui blue tiny icon button">
+                                        <button id="edit-button" class="circular ui blue mini icon button">
                                             <i class="edit icon"></i>
                                         </button>
                                     </a>
