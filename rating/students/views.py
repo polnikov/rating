@@ -17,7 +17,7 @@ from django.views.generic import (
 from groups.models import Group
 from students.forms import ResultForm, StudentForm
 from students.models import Basis, Result, Semester, Student, StudentLog
-from students.validators import validate_mark
+from students.validators import validate_mark, check_mark
 from subjects.models import Cathedra, GroupSubject, Subject
 
 from rating.settings import IMPORT_DELIMITER
@@ -581,12 +581,20 @@ def import_results(request):
                     if data['form_control'] != 'Диффзачет':
                         st = raw_data[i][1:]
                         st = [st[0], st[1], marks.get(st[-1], False)]
+                        if not check_mark(st[-1], data['form_control']):
+                            check_mark_formcontrol = False
+                            context = {'check_mark_formcontrol': check_mark_formcontrol}
+                            return render(request, 'import/import_results.html', context)
                         data['marks'].append(st)
                     else:
                         st = []
                         st.extend(raw_data[i][1:3])
                         st.append(raw_data[i][-1])
                         st = [st[0], st[1], marks.get(st[-1], False)]
+                        if not check_mark(st[-1], data['form_control']):
+                            check_mark_formcontrol = False
+                            context = {'check_mark_formcontrol': check_mark_formcontrol}
+                            return render(request, 'import/import_results.html', context)
                         data['marks'].append(st)
 
             try:

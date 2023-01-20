@@ -33,11 +33,10 @@
             {% if file_validation_exist == False %}
                <i class="times red icon"></i><font color="red">Ничего не выбрано для импорта!</font>
             {% elif file_validation_format == False %}
-               <div class="extra content center aligned">
-                  <i class="times red icon"></i><font color="red">Проверьте формат импортируемых файлов!</font>
-               </div>
+               <i class="times red icon"></i><font color="red">Проверьте формат импортируемых файлов!</font>
+            {% elif check_mark_formcontrol == False %}
+               <i class="times red icon"></i><font color="red">Оценки не соответствуют форме контроля назначенной дисциплины!</font>
             {% elif errors %}
-               <div class="extra content center aligned">
                   <i class="times red icon"></i><font color="red">Возникли следующие ошибки:</font>
                   <div class="ui list left aligned">
                      {% for error in errors %}
@@ -46,7 +45,6 @@
                         </div>
                      {% endfor %}
                   </div>
-               </div>
             {% elif success %}
                <div class="extra content center aligned">
                   <i class="check green icon"></i><font color="green">Все данные были успешно импортированы!</font>
