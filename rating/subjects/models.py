@@ -65,7 +65,7 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
             'cathedra',
         ]
         unique_together = (
-            ('name', 'form_control'),
+            ('name', 'form_control', 'semester', 'cathedra'),
         )
 
 

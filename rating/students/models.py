@@ -95,6 +95,7 @@ class Student(CommonArchivedModel, CommonTimestampModel):
         ('восстановлен', 'восстановлен'),
         ('перевелся на фак-т', 'перевелся на фак-т'),
         ('перевелся с фак-та', 'перевелся с фак-та'),
+        ('целевой', 'целевой'),
     ]
     tag = models.CharField(
         verbose_name='Тэг',
