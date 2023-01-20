@@ -15,3 +15,16 @@ def validate_mark(mark):
             return (False, 'При выставлении третьей оценки, первые две не могут быть положительными')
 
     return True
+
+
+def check_mark(mark, form):
+    """Проверить соответствие оценки форме контроля дисциплины."""
+    form_control_numeric = ['Экзамен', 'Диффзачет', 'Курсовой проект', 'Курсовая работа']
+    set_1 = ['ня', '2', '3', '4', '5']
+    set_2 = ['ня', 'нз', 'зач']
+    mark_types = set_1 if form in form_control_numeric else set_2
+
+    if mark not in mark_types:
+        return False
+    else:
+        return True
