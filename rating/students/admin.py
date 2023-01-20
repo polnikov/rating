@@ -161,6 +161,9 @@ class ResultAdmin(ImportExportActionModelAdmin, admin.ModelAdmin, DynamicArrayMi
     # search_fields = ['students__fullname',]
     list_filter = (
         'groupsubject__groups__name',
+        'groupsubject__subjects__form_control',
+        'groupsubject__subjects__semester',
+        'groupsubject__subjects__name',
         'tag',
         'mark',
     )
