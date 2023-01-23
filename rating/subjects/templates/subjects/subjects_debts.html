@@ -32,6 +32,7 @@
 					<thead>
 						<tr class="center aligned">
 							<th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+							<th class="collapsing">Кафедра</th>
 							<th class="collapsing">Название</th>
 							<th class="collapsing" style="width: 50px">Форма контроля</th>
 							<th class="collapsing">Группа</th>
@@ -47,6 +48,7 @@
 						{% for item in groupsubject_list %}
 							<tr>
 								<td class="collapsing center aligned">{{ forloop.counter }}</td>
+								<td class="collapsing center aligned">{{ item.subjects.cathedra.short_name }}</td>
 								<td class="collapsing">
 									<a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name|truncatechars:50 }}</a>
 								</td>
@@ -150,11 +152,11 @@
          columnDefs: [
             { searchable: false, targets: 0 },
             { width: 10, targets: 0 },
-            { width: 50, targets: 3 },
             { width: 50, targets: 4 },
-            { width: 80, targets: 6 },
+            { width: 50, targets: 5 },
             { width: 80, targets: 7 },
             { width: 80, targets: 8 },
+            { width: 80, targets: 9 },
          ],
       });
 
