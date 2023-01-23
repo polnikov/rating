@@ -12,12 +12,44 @@
 
    <!-- Title & button -->
    <div id="buttons-segment" class="ui basic segment">
-      
-      <table class="ui very basic table">
+      <table class="ui very basic table" id="options">
          <tbody>
                <tr>
                   <td><h2 style="font-family: Hack">Задолженности по студентам</h2></td>
-                  <td class="right aligned"></td>
+                  <td class="two wide right aligned">
+                     <form id="form" action="{% url 'students:debts-to-excel' %}" method="GET">
+                        {% csrf_token %}
+                        <button id="export-button" type="submit" class="ui positive small circular button" style="font-family: Hack"><i class="cloud download alternate icon"></i> Экспорт</button>
+                  </td>
+               </tr>
+               <tr>
+                  <td>
+                  </td>
+                  <td>
+                        <div class="ui small form">
+                           <div class="inline fields">
+                              <div class="field">
+                                 <div class="ui radio checkbox checked">
+                                    <input type="radio" value="att1" name="att" id="att1" checked="" tabindex="0" class="hidden">
+                                    <label>Сессия</label>
+                                 </div>
+                              </div>
+                              <div class="field">
+                                 <div class="ui radio checkbox">
+                                    <input type="radio" value="att2" name="att" id="att2" tabindex="0" class="hidden">
+                                    <label>Пересдача</label>
+                                 </div>
+                              </div>
+                              <div class="field">
+                                 <div class="ui radio checkbox">
+                                    <input type="radio" value="att3" name="att" id="att3" tabindex="0" class="hidden">
+                                    <label>Комиссия</label>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </form>
+                  </td>
                </tr>
          </tbody>
       </table>
@@ -34,7 +66,7 @@
 							<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
                      <th class="collapsing">Группа</th>
                      <th id="semester" class="collapsing">Семестр</th>
-                     <th>Студент</th>
+                     <th>Студент <div id="count-label" class="ui left pointing grey tiny label">{{ student_list.count }}</div></th>
                      <th class="collapsing">Основа обучения</th>
                      <th class="collapsing">Сессия</th>
                      <th class="collapsing">Пересдача</th>
@@ -165,6 +197,8 @@
       });
       changeDatatableInputFont();
    });
+
+   $('.ui.radio.checkbox').checkbox();
 
    deletePaddingBottomForTitleBlock();
    deletePaddingTopForDatatableSegment();

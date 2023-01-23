@@ -716,7 +716,7 @@ class StudentsDebtsListView(LoginRequiredMixin, ListView):
 
         # id всех студентов с отрицательными оценками
         negative_students = Result.objects.select_related('students').filter(
-            mark__contained_by=negative).values('students__student_id')
+            mark__contained_by=negative, is_archived=False).values('students__student_id')
         # студенты
         students = Student.objects.select_related(
             'basis', 'group', 'semester').filter(
@@ -816,3 +816,85 @@ def search_results(request):
         }
 
     return render(request, 'search_results.html', context=context)
+
+
+from django.http import HttpResponse
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill
+
+
+def download_excel_data(request):
+    negative = ['ня', 'нз', '2']
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="Zadolzhennosti FIEGH.xlsx"'
+
+    att_level = request.GET.get('att')
+
+    # id всех назначений с отрицательными оценками
+    match att_level:
+        case 'att1':
+            negative_groupsubjects_ids = Result.objects.select_related().filter(
+                mark__0__in=negative).values('groupsubject__id')
+        case 'att2':
+            negative_groupsubjects_ids = Result.objects.select_related().filter(
+                mark__1__in=negative).values('groupsubject__id')
+        case 'att3':
+            negative_groupsubjects_ids = Result.objects.select_related().filter(
+                mark__2__in=negative).values('groupsubject__id')
+
+    # назначения
+    group_subjects = GroupSubject.objects.select_related().filter(is_archived=False, id__in=negative_groupsubjects_ids)
+    
+    # кафедры
+    cathedras = list(set(group_subjects.values_list('subjects__cathedra__short_name', flat=True)))
+
+    # создаем файл
+    book = Workbook()
+    # названия столбцов заголовка
+    header = ['Дисциплина', 'Форма контроля', 'Группа', 'Семестр', 'Преподаватель', 'Студенты']
+
+    for cathedra in cathedras:
+        # создаем лист с названием = аббревиатура кафедры и делаем активным
+        book.create_sheet(title=cathedra, index=None)
+        sheet = book[cathedra]
+
+        # записываем заголовок на лист
+        for col in range(1, len(header) + 1):
+            cell = sheet.cell(row=1, column=col, value=header[col - 1])
+            sheet[cell.coordinate].font = Font(bold=True)
+            # sheet[cell.coordinate].fill = PatternFill(bgColor="bcbcbc", fill_type="solid")
+
+        # назначения по кафедре
+        cathedra_group_subjects = group_subjects.filter(subjects__cathedra__short_name=cathedra)
+
+        row = 2
+        for gs in cathedra_group_subjects:
+            # отрицательные результаты по каждому назначению кафедры
+            match att_level:
+                case 'att1':
+                    res = gs.result_set.select_related().filter(mark__0__in=negative)
+                case 'att2':
+                    res = gs.result_set.select_related().filter(mark__1__in=negative)
+                case 'att3':
+                    res = gs.result_set.select_related().filter(mark__2__in=negative)
+
+            # фио студентов-должников по назначению
+            students = res.values_list('students__last_name', 'students__first_name', 'students__second_name')
+            students = ', '.join([' '.join(i) for i in students])
+            res_data = [
+                gs.subjects.name,
+                gs.subjects.form_control,
+                gs.groups.name,
+                gs.subjects.semester.semester,
+                gs.teacher,
+            ]
+            res_data.append(students)
+
+            for col, data in enumerate(res_data):
+                sheet.cell(row=row, column=col + 1, value=data)
+            row += 1
+
+    # удаляем по умолчанию созданный лист
+    book.remove(book['Sheet'])
+    book.save(response)
+    return response
