@@ -4,7 +4,7 @@ import xlrd
 from collections import Counter
 from datetime import datetime
 from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill
+from openpyxl.styles import Font
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
@@ -859,12 +859,18 @@ def download_excel_data(request):
             # создаем лист с названием = аббревиатура кафедры и делаем активным
             book.create_sheet(title=cathedra, index=None)
             sheet = book[cathedra]
+            sheet.column_dimensions['A'].width = 75
+            sheet.column_dimensions['B'].width = 20
+            sheet.column_dimensions['C'].width = 15
+            sheet.column_dimensions['D'].width = 15
+            sheet.column_dimensions['E'].width = 30
+            sheet.column_dimensions['F'].width = 150
+            sheet.auto_filter.ref = 'A1:F1'
 
             # записываем заголовок на лист
             for col in range(1, len(header) + 1):
                 cell = sheet.cell(row=1, column=col, value=header[col - 1])
-                sheet[cell.coordinate].font = Font(bold=True)
-                # sheet[cell.coordinate].fill = PatternFill(bgColor="bcbcbc", fill_type="solid")
+                sheet[cell.coordinate].font = Font(bold=True, size=14)
 
             # назначения по кафедре
             cathedra_group_subjects = group_subjects.filter(subjects__cathedra__short_name=cathedra)
@@ -894,9 +900,22 @@ def download_excel_data(request):
 
                 for col, data in enumerate(res_data):
                     sheet.cell(row=row, column=col + 1, value=data)
+                    sheet.cell(row=row, column=col + 1).font = Font(size=12)
                 row += 1
 
-        # удаляем по умолчанию созданный лист
-        book.remove(book['Sheet'])
+        # добавляем оглавление
+        sheet = book['Sheet']
+        sheet.title = 'Оглавление'
+        sheet.column_dimensions['A'].width = 200
+
+        sheets = book.sheetnames
+        sheets = sheets[1:]
+        row = 1
+        for sh in sheets:
+            link = f'#{sh}!A1'
+            sheet.cell(row=row, column=1, value=Cathedra.objects.get(short_name=sh).name).hyperlink = link
+            sheet.cell(row=row, column=1).font = Font(size=14)
+            row += 1
+
         book.save(response)
         return response
