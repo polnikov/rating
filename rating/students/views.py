@@ -3,12 +3,15 @@ import xlrd
 
 from collections import Counter
 from datetime import datetime
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.db.models import Q
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView, View
@@ -818,11 +821,6 @@ def search_results(request):
     return render(request, 'search_results.html', context=context)
 
 
-from django.http import HttpResponse
-from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill
-
-
 def download_excel_data(request):
     negative = ['ня', 'нз', '2']
     response = HttpResponse(content_type='application/ms-excel')
@@ -842,59 +840,63 @@ def download_excel_data(request):
             negative_groupsubjects_ids = Result.objects.select_related().filter(
                 mark__2__in=negative).values('groupsubject__id')
 
-    # назначения
-    group_subjects = GroupSubject.objects.select_related().filter(is_archived=False, id__in=negative_groupsubjects_ids)
-    
-    # кафедры
-    cathedras = list(set(group_subjects.values_list('subjects__cathedra__short_name', flat=True)))
+    if not negative_groupsubjects_ids:
+        url = reverse('students:debts')
+        return HttpResponseRedirect(url)
+    else:
+        # назначения
+        group_subjects = GroupSubject.objects.select_related().filter(is_archived=False, id__in=negative_groupsubjects_ids)
+        
+        # кафедры
+        cathedras = list(set(group_subjects.values_list('subjects__cathedra__short_name', flat=True)))
 
-    # создаем файл
-    book = Workbook()
-    # названия столбцов заголовка
-    header = ['Дисциплина', 'Форма контроля', 'Группа', 'Семестр', 'Преподаватель', 'Студенты']
+        # создаем файл
+        book = Workbook()
+        # названия столбцов заголовка
+        header = ['Дисциплина', 'Форма контроля', 'Группа', 'Семестр', 'Преподаватель', 'Студенты']
 
-    for cathedra in cathedras:
-        # создаем лист с названием = аббревиатура кафедры и делаем активным
-        book.create_sheet(title=cathedra, index=None)
-        sheet = book[cathedra]
+        for cathedra in cathedras:
+            # создаем лист с названием = аббревиатура кафедры и делаем активным
+            book.create_sheet(title=cathedra, index=None)
+            sheet = book[cathedra]
 
-        # записываем заголовок на лист
-        for col in range(1, len(header) + 1):
-            cell = sheet.cell(row=1, column=col, value=header[col - 1])
-            sheet[cell.coordinate].font = Font(bold=True)
-            # sheet[cell.coordinate].fill = PatternFill(bgColor="bcbcbc", fill_type="solid")
+            # записываем заголовок на лист
+            for col in range(1, len(header) + 1):
+                cell = sheet.cell(row=1, column=col, value=header[col - 1])
+                sheet[cell.coordinate].font = Font(bold=True)
+                # sheet[cell.coordinate].fill = PatternFill(bgColor="bcbcbc", fill_type="solid")
 
-        # назначения по кафедре
-        cathedra_group_subjects = group_subjects.filter(subjects__cathedra__short_name=cathedra)
+            # назначения по кафедре
+            cathedra_group_subjects = group_subjects.filter(subjects__cathedra__short_name=cathedra)
 
-        row = 2
-        for gs in cathedra_group_subjects:
-            # отрицательные результаты по каждому назначению кафедры
-            match att_level:
-                case 'att1':
-                    res = gs.result_set.select_related().filter(mark__0__in=negative)
-                case 'att2':
-                    res = gs.result_set.select_related().filter(mark__1__in=negative)
-                case 'att3':
-                    res = gs.result_set.select_related().filter(mark__2__in=negative)
+            row = 2
+            for gs in cathedra_group_subjects:
+                # отрицательные результаты по каждому назначению кафедры
+                match att_level:
+                    case 'att1':
+                        res = gs.result_set.select_related().filter(mark__0__in=negative)
+                    case 'att2':
+                        res = gs.result_set.select_related().filter(mark__1__in=negative)
+                    case 'att3':
+                        res = gs.result_set.select_related().filter(mark__2__in=negative)
 
-            # фио студентов-должников по назначению
-            students = res.values_list('students__last_name', 'students__first_name', 'students__second_name')
-            students = ', '.join([' '.join(i) for i in students])
-            res_data = [
-                gs.subjects.name,
-                gs.subjects.form_control,
-                gs.groups.name,
-                gs.subjects.semester.semester,
-                gs.teacher,
-            ]
-            res_data.append(students)
+                # фио студентов-должников по назначению
+                students = res.values_list('students__last_name', 'students__first_name', 'students__second_name')
+                students = ', '.join([' '.join(i) for i in students])
+                res_data = [
+                    gs.subjects.name,
+                    gs.subjects.form_control,
+                    gs.groups.name,
+                    gs.subjects.semester.semester,
+                    gs.teacher,
+                ]
+                res_data.append(students)
 
-            for col, data in enumerate(res_data):
-                sheet.cell(row=row, column=col + 1, value=data)
-            row += 1
+                for col, data in enumerate(res_data):
+                    sheet.cell(row=row, column=col + 1, value=data)
+                row += 1
 
-    # удаляем по умолчанию созданный лист
-    book.remove(book['Sheet'])
-    book.save(response)
-    return response
+        # удаляем по умолчанию созданный лист
+        book.remove(book['Sheet'])
+        book.save(response)
+        return response
