@@ -20,6 +20,7 @@ urlpatterns = [
 
     # Students debts
     path('debts/', views.StudentsDebtsListView.as_view(), name='debts'),
+    path('debts/debts-to-excel/', views.download_excel_data, name='debts-to-excel'),
 
     # Students rating
     path('rating/', views.StudentRatingTableView.as_view(), name='rating'),
