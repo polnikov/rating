@@ -8,71 +8,69 @@
 
 {% block content %}
 
-<div class="ui container" style="width: 80%">
-    <div class="ui basic segments">
+<div id="segments" class="ui basic segments">
 
-        <!-- Title & button -->
-        <div class="ui basic segment" style="padding-bottom: 0">
-            <table class="ui very basic table">
-                <tbody>
-                    <tr>
-                        <td><h2 style="font-family: Hack">Группы</h2></td>
-                        <td class="right aligned">
-                            <a href="{% url 'groups:add' %}">
-                                <button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
-                            </a>
-                        </td>
+    <!-- Title & button -->
+    <div class="ui basic segment" style="padding-bottom: 0">
+        <table class="ui very basic table">
+            <tbody>
+                <tr>
+                    <td><h2 style="font-family: Hack">Группы</h2></td>
+                    <td class="right aligned">
+                        <a href="{% url 'groups:add' %}">
+                            <button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Table -->
+    <div class="ui basic segment">
+        {% if group_list %}
+            <table class="ui selectable celled table">
+                <thead>
+                    <tr class="center aligned">
+                        <th><i class="hashtag small icon"></i></th>
+                        <th>Название</th>
+                        <th>Направление</th>
+                        <th>Профиль|Специализация</th>
+                        <th>Шифр</th>
+                        <th class="collapsing">Удалить</th>
+                        <th class="collapsing">Изменить</th>
                     </tr>
+                </thead>
+
+                <tbody>
+                    {% for group in group_list %}
+                        <tr>
+                            <td class="center aligned" data-tooltip="{{ group.level }}" data-position="left center" data-inverted="">{{ forloop.counter }}</td>
+                            <td class="collapsing">{{ group.name }} {% if group.is_archived %}<i class="archive brown icon"></i>{% endif %}</td>
+                            <td>{{ group.direction }}</td>
+                            <td>{{ group.profile }}</td>
+                            <td class="center aligned">{{ group.code }}</td>
+                            <td class="center aligned collapsing">
+                                <a href="{% url 'groups:delete' group.id %}">
+                                    <button id="trash-button" class="circular ui red mini icon button">
+                                        <i class="trash alternate outline icon"></i>
+                                    </button>
+                                </a>
+                            </td>
+                            <td class="center aligned collapsing">
+                                <a href="{% url 'groups:update' group.id %}">
+                                    <button id="edit-button" class="circular ui blue mini icon button">
+                                        <i class="edit icon"></i>
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
-        </div>
-
-        <!-- Table -->
-        <div class="ui basic segment">
-            {% if group_list %}
-                <table class="ui selectable celled table">
-                    <thead>
-                        <tr class="center aligned">
-                            <th><i class="hashtag small icon"></i></th>
-                            <th>Название</th>
-                            <th>Направление</th>
-                            <th>Профиль|Специализация</th>
-                            <th>Шифр</th>
-                            <th class="collapsing">Удалить</th>
-                            <th class="collapsing">Изменить</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for group in group_list %}
-                            <tr>
-                                <td class="center aligned" data-tooltip="{{ group.level }}" data-position="left center" data-inverted="">{{ forloop.counter }}</td>
-                                <td class="collapsing">{{ group.name }} {% if group.is_archived %}<i class="archive brown icon"></i>{% endif %}</td>
-                                <td>{{ group.direction }}</td>
-                                <td>{{ group.profile }}</td>
-                                <td class="center aligned">{{ group.code }}</td>
-                                <td class="center aligned collapsing">
-                                    <a href="{% url 'groups:delete' group.id %}">
-                                        <button id="trash-button" class="circular ui red tiny icon button">
-                                            <i class="trash alternate outline icon"></i>
-                                        </button>
-                                    </a>
-                                </td>
-                                <td class="center aligned collapsing">
-                                    <a href="{% url 'groups:update' group.id %}">
-                                        <button id="edit-button" class="circular ui blue tiny icon button">
-                                            <i class="edit icon"></i>
-                                        </button>
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                {% include 'empty_records.html' %}
-            {% endif %}
-        </div>
+        {% else %}
+            {% include 'empty_records.html' %}
+        {% endif %}
     </div>
 </div>
 
