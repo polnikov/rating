@@ -106,6 +106,14 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
             except Exception as subject_log_ex:
                 print(f'Не удалось записать изменения по дисциплинам:')
                 print('[!] ---> Ошибка:', subject_log_ex)
+
+        #: Если форма контроля дисциплины КП или КР, то указываем это в ЗЕТ
+        match self.form_control:
+            case 'Курсовая работа':
+                self.zet = 'КР'
+            case 'Курсовой проект':
+                self.zet = 'КП'
+
         super(Subject, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

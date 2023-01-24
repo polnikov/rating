@@ -24,6 +24,7 @@ from students.validators import validate_mark, check_mark
 from subjects.models import Cathedra, GroupSubject, Subject
 
 from rating.settings import IMPORT_DELIMITER
+from rating.functions import calculate_rating
 
 
 class StudentListView(LoginRequiredMixin, ListView):
@@ -618,6 +619,13 @@ def import_results(request):
                 if data['form_control'] not in ['Курсовая работа', 'Курсовой проект'] and not subject.zet:
                     subject.zet = data['zet']
                     subject.save()
+                else:
+                    if data['form_control'] == 'Курсовая работа':
+                        subject.zet = 'КР'
+                        subject.save()
+                    if data['form_control'] == 'Курсовой проект':
+                        subject.zet = 'КП'
+                        subject.save()
 
                 try:
                     groupsubject = GroupSubject.objects.get(Q(groups=group) & Q(subjects=subject))
@@ -726,51 +734,6 @@ class StudentsDebtsListView(LoginRequiredMixin, ListView):
             st.att3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
 
         return students
-
-########################################################################################################################
-
-
-def calculate_rating(student, start, stop=False):
-    '''Рассчитать средний балл студента за семестр или период.'''
-    if start and stop:
-        # все оценки студента за указанный период
-        marks = Result.objects.select_related().filter(
-            students=student.student_id).filter(
-            Q(groupsubject__subjects__semester__semester__gte=start) &
-            Q(groupsubject__subjects__semester__semester__lte=stop)).filter(
-            ~Q(groupsubject__subjects__form_control__exact='Зачет')).values('mark')
-        # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
-        atts = GroupSubject.objects.select_related('subjects').filter(
-            groups=student.group,
-            is_archived=False
-        ).filter(Q(subjects__semester__semester__gte=start) & Q(subjects__semester__semester__lte=stop)
-        ).filter(~Q(subjects__form_control__exact='Зачет'))
-    elif start and not stop:
-        # все оценки студента в указанном семестре
-        marks = Result.objects.select_related().filter(
-            students=student.student_id,
-            groupsubject__subjects__semester__semester=start
-        ).filter(~Q(groupsubject__subjects__form_control__exact='Зачет')).values('mark')
-        # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
-        atts = GroupSubject.objects.select_related('subjects').filter(
-            groups=student.group,
-            subjects__semester__semester=start,
-            is_archived=False
-        ).filter(~Q(subjects__form_control__exact='Зачет'))
-
-    # вычисление среднего балла за семестр или период
-    # берем только последнюю оценку и исключаем <ня> и <2>
-    marks = list(filter(lambda x: x not in ['ня', '2'], [i['mark'][-1] for i in marks]))
-    # количество аттестаций с оценками в семестре или за период
-    num_atts = atts.count()
-    # количество каждой из оценок <3 | 4 | 5>
-    count_marks = dict(Counter(marks))
-    try:
-        rating = round(sum([int(k) * v for k, v in count_marks.items()]) / num_atts, 2)
-    except ZeroDivisionError:
-        rating = 0
-
-    return rating
 
 ########################################################################################################################
 
