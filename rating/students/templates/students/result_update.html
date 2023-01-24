@@ -17,7 +17,7 @@
       </div>
 
       <!-- Form -->
-   <div class="ui left aligned segment">
+      <div class="ui left aligned segment">
          <form id="form" method="post">
                {% csrf_token %}
                <div class="ui large form">
@@ -63,7 +63,10 @@
 
       <!-- Button's -->
       <div class="ui right aligned secondary segment">
-         <a href="{% url 'students:results' %}">
+         <a href="{% url 'students:result_delete' form.id %}">
+            <button id="trash-button" class="circular ui red tiny icon button"><i class="trash alternate outline icon"></i></button>
+         </a>
+         <a href="javascript:history.go(-1)">
             <button type="button" class="ui circular button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
          </a>
          <a href="{% url 'students:results' %}">

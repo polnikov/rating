@@ -2,6 +2,8 @@
 
 {% extends "base.html" %}
 
+{% load static %}
+
 {% load customfilters %}
 
 {% block title %}{{ subject.name }}{% endblock %}
@@ -14,7 +16,7 @@
         <table class="ui very basic table">
             <tbody>
                 <tr>
-                    <td><h3 style="font-family: Hack">{% if subject.is_archived %}<i class="archive brown icon"></i>{% endif %}{{ subject.name|truncatechars:70 }}</h3></td>
+                    <td><h3 style="font-family: Hack">{% if subject.is_archived %}<i class="archive brown icon"></i>{% endif %}{{ subject.name|truncatechars:85 }}</h3></td>
                     <td class="right aligned">
                         <a href="{% url 'subjects:delete' subject.id %}">
                             <button id="trash-button" type="button" class="ui red small circular button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button></a>
@@ -31,7 +33,7 @@
     <!-- Tabs -->
     <div id="tabs-segment" class="ui basic segment">
 
-        <!-- Tabs title's -->
+        <!-- Tab's titles -->
         <div class="ui top attached tabular menu" style="font-family: Hack">
             <a class="item active" data-tab="first"><i class="info icon"></i>Сводная информация</a>
             <a class="item" data-tab="second"><i class="bullhorn icon"></i></i>Назначения</a>
@@ -125,8 +127,8 @@
                 <table class="ui selectable celled compact table">
                     <thead>
                         <tr class="center aligned">
-                            <th>Группа</th>
-                            <th>Семестр</th>
+                            <th class="one wide">Группа</th>
+                            <th class="one wide">Семестр</th>
                             <th>Преподаватель</th>
                             <th>Дата аттестации</th>
                         </tr>
@@ -135,7 +137,7 @@
                         {% for gs in groups %}
                             <tr>
                                 <td class="center aligned collapsing">
-                                    <a onclick="window.location.href = '{% url 'groups:detail' groupname=gs.groups.name semester=gs.subjects.semester.semester %}'">
+                                    <a onclick="window.location.href='{% url 'groups:detail' groupname=gs.groups.name semester=gs.subjects.semester.semester %}'">
                                         {{ gs.groups.name }}
                                     </a>
                                 </td>
@@ -175,6 +177,18 @@
         <!-- Tab 3 -->
         <!-- Students -->
         <div class="ui bottom attached tab segment" data-tab="third">
+            <table class="ui very basic table">
+                <tbody>
+                    <tr>
+                        <td><h4 style="font-family: Hack">{{ subject.get_form_control_display }}</h4></td>
+                        <td class="right aligned">
+                            <a href="{% url 'students:result_add' %}">
+                                <button class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <table id="subject-students" class="ui selectable celled compact table">
                 <thead>
                     <tr class="center aligned">
@@ -222,11 +236,13 @@
                                 </td>
                             {% endif %}
                             <td class="two wide center aligned">
-                                <div class="ui equal width grid center aligned">
+                                <a href="{% url 'students:result_update' student.id %}">
+                                    <div class="ui equal width grid center aligned">
                                         <div name="mark" class="column">{{ student.mark|slice:":1"|unpack_mark }}</div>
                                         <div name="mark" class="column">{{ student.mark|slice:"1:2"|unpack_mark }}</div>
                                         <div name="mark" class="column">{{ student.mark|slice:"2:3"|unpack_mark }}</div>
-                                </div>
+                                    </div>
+                                </a>
                             </td>
 
                         </tr>
@@ -288,12 +304,46 @@
     </div>
 </div>
 
-<script>
+<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<script type="text/javascript">
     // tabs
     $('.menu .item').tab();
 
     // datatables
     $(document).ready(function () {
+        $('#subject-students').DataTable({
+            language: {
+                lengthMenu: '_MENU_ записей на страницу',
+                zeroRecords: 'Записей нет...',
+                info: 'Всего записей: _MAX_',
+                infoEmpty: '',
+                infoFiltered: 'Найдено: _TOTAL_',
+                search: '',
+                searchPlaceholder: 'поиск',
+                paginate: {
+                    first:    '«',
+                    previous: '‹',
+                    next:     '›',
+                    last:     '»'
+                }
+            },
+            lengthMenu: [
+                [20, 50, -1],
+                [20, 50, 'Все']
+            ],
+            pageLength: 20,
+            autoWidth: false,
+            fixedColumns: true,
+            columnDefs: [
+                { width: '8%', targets: 0 },
+                { width: '10%', targets: 1 },
+                { width: '45%', targets: 2 },
+                { width: '13%', targets: 3 },
+                { width: '12%', targets: 4 },
+                { width: '13%', targets: 5 },
+            ],
+        });
+
         $('#subject-history').DataTable({
             language: {
                 lengthMenu: '_MENU_ записей на страницу',
@@ -324,55 +374,9 @@
             ],
             order: [[0, 'desc']]
         });
+        deleteTitleBlockPaddingBottom();
+        deleteTabsBlockPaddingBottom();
     });
-
-    // datatables
-    $(document).ready(function () {
-        $('#subject-students').DataTable({
-            language: {
-                lengthMenu: '_MENU_ записей на страницу',
-                zeroRecords: 'Записей нет...',
-                info: 'Всего записей: _MAX_',
-                infoEmpty: '',
-                infoFiltered: 'Найдено: _TOTAL_',
-                search: '',
-                searchPlaceholder: 'поиск',
-                paginate: {
-                    first:    '«',
-                    previous: '‹',
-                    next:     '›',
-                    last:     '»'
-                }
-            },
-            lengthMenu: [
-                [20, 50, -1],
-                [20, 50, 'Все']
-            ],
-            pageLength: 20,
-            autoWidth: false,
-            fixedColumns: true,
-            columnDefs: [
-                { width: 50, targets: 0 },
-                { width: 50, targets: 1 },
-                { width: 150, targets: 5 },
-            ],
-        });
-    });
-
-    // убрать боковой отступ для ячеек с оценками
-    let thElements = document.getElementsByName("mark");
-    thElements.forEach(element => {
-        element.style.paddingLeft = '0';
-        element.style.paddingRight = '0';
-    });
-
-    // убрать нижний отступ сегмента с заголовком и кнопками
-    let segments = document.getElementById("segments");
-    segments.style.paddingBottom = '0';
-
-    // убрать верхний отступ сегмента с вкладками
-    let tabsSegment = document.getElementById("tabs-segment");
-    tabsSegment.style.paddingTop = '0';
 </script>
 
 {% endblock %}

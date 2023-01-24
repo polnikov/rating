@@ -68,6 +68,7 @@
         <li><a class="header" href="{% url 'groups:cards' %}"><i class="users icon"></i> Группы</a>
         <li><a class="header" href="{% url 'dashboard:dashboard' %}"><i class="calculator icon"></i> Статистика</a>
         <li><a class="header" href="{% url 'students:money' %}"><i class="hand holding usd icon"></i> Стипендия</a>
+        <li><a class="header" href="{% url 'students:rating' %}"><i class="star yellow icon"></i> Средний балл</a>
 
         <div class="ui horizontal red divider">
 
@@ -77,13 +78,7 @@
 
         <div class="ui horizontal red divider">
 
-        <li><div class="header"><i class="thumbtack blue icon"></i> Оценки</div>
-            <li><a class="item" href="{% url 'students:results' %}"><i class="chevron right icon"></i>Студенты</a>
-            <li><a class="item" href="{% url 'students:rating' %}"><i class="star yellow icon"></i>Средний балл</a>
-
-        <div class="ui horizontal red divider">
-
-        <li><div class="header"><i class="list ul green icon"></i> Списки</div>
+            <li><div class="header"><i class="list ul green icon"></i> Списки</div>
             <li><a class="item" href="{% url 'students:students' %}"><i class="plus green icon"></i>Студенты</a>
             <li><a class="item" href="{% url 'subjects:subjects' %}"><i class="plus green icon"></i>Дисциплины</a>
             <li><a class="item" href="{% url 'subjects:groupsubjects' %}"><i class="plus green icon"></i>Назначения дисциплин</a>

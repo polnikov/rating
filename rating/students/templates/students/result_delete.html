@@ -60,8 +60,9 @@
         </div>
             <!-- Button's -->
             <div class="ui right aligned secondary segment">
-                <a href="{% url 'students:results' %}">
-                    <button type="button" class="ui circular button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button></a>
+                <a href="javascript:history.go(-1)">
+                    <button type="button" class="ui circular button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                </a>
                 <button type="submit" class="ui red circular button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button>
             </div>
         </form>
