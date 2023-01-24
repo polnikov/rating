@@ -34,7 +34,7 @@
     <!-- Tabs -->
     <div id="tabs-segment" class="ui basic segment">
 
-        <!-- Tabs title's -->
+        <!-- Tab's titles -->
         <div class="ui top attached tabular menu" style="font-family: Hack">
             <a class="item active" data-tab="first"><i class="info icon"></i>Сводная информация</a>
             <a class="item" data-tab="second"><i class="graduation cap icon"></i>Оценки</a>
@@ -155,28 +155,40 @@
         <!-- Tab 2 -->
         <!-- Marks -->
         <div class="ui bottom attached tab segment" data-tab="second">
+            <table class="ui very basic table">
+                <tbody>
+                    <tr>
+                        <td class="right aligned">
+                            <a href="{% url 'students:result_add' %}">
+                                <button class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <table id="student-marks" class="ui selectable celled compact table">
                 <thead>
                     <tr class="center aligned">
-                        <th class="collapsing">Группа</th>
                         <th id="semester" class="collapsing">Семестр</th>
+                        <th class="collapsing">Группа</th>
                         <th>Дисциплина</th>
                         <th>Форма контроля</th>
-                        <th name="mark" class="collapsing">Оценка</th>
-                        <th>Дата аттестации</th>
                         <th>Преподаватель</th>
+                        <th>Дата аттестации</th>
+                        <th name="mark" class="collapsing">Оценка</th>
+                        <th class="collapsing"></th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {% for item in marks %}
-                        <tr style="padding-right: 0">
+                        <tr>
+                            <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
                             <td class="collapsing center aligned">
                                 <a href="{% url 'groups:detail' groupname=item.groupsubject.groups semester=item.groupsubject.subjects.semester.semester %}">
                                     {{ item.groupsubject.groups }}
                                 </a>
                             </td>
-                            <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
                             <td>
                                 {% if item.groupsubject.subjects.is_archived %}<i class="archive brown icon"></i>{% endif %}
                                 <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
@@ -185,13 +197,13 @@
                             </td>
                             <td class="collapsing">{{ item.groupsubject.subjects.form_control }}</td>
 
-                            <td class="collapsing center aligned">
-                                <div class="ui equal width grid collapsing center aligned">
-                                        <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
-                                        <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
-                                        <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
-                                </div>
-                            </td>
+                            {% if item.groupsubject.teacher %}
+                                <td class="collapsing">{{ item.groupsubject.teacher }}</td>
+                            {% else %}
+                                <td class="negative collapsing center aligned"><i class="icon close"></i>
+                                    {{ item.groupsubject.empty_teacher }}
+                                </td>
+                            {% endif %}
 
                             {% if item.groupsubject.att_date %}
                                 <td class="collapsing center aligned">
@@ -203,13 +215,23 @@
                                 </td>
                             {% endif %}
 
-                            {% if item.groupsubject.teacher %}
-                                <td class="collapsing">{{ item.groupsubject.teacher }}</td>
-                            {% else %}
-                                <td class="negative collapsing center aligned"><i class="icon close"></i>
-                                    {{ item.groupsubject.empty_teacher }}
-                                </td>
-                            {% endif %}
+                            <td class="collapsing center aligned">
+                                <a href="{% url 'students:result_update' item.id %}">
+                                    <div class="ui equal width grid collapsing center aligned">
+                                        <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
+                                        <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
+                                        <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
+                                    </div>
+                                </a>
+                            </td>
+
+                            <td class="center aligned collapsing">
+                                <a href="{% url 'students:result_delete' item.id %}">
+                                    <button id="trash-button" class="circular ui red mini icon button">
+                                        <i class="trash alternate outline icon"></i>
+                                    </button>
+                                </a>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -270,7 +292,8 @@
     </div>
 </div>
 
-<script>
+<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<script type="text/javascript">
     // tabs
     $('.menu .item').tab();
     
@@ -299,17 +322,21 @@
             autoWidth: false,
             fixedColumns: true,
             columnDefs: [
-                { width: 50, targets: 0 },
-                { width: 50, targets: 1 },
-                { width: 150, targets: 4 },
+                { width: '7%', targets: 0 },
+                { width: '7%', targets: 1 },
+                { width: '40%', targets: 2 },
+                { width: '10%', targets: 3 },
+                { width: '12%', targets: 4 },
+                { width: '10%', targets: 5 },
+                { width: '11%', targets: 6 },
+                { width: '3%', targets: 7 },
+                { searchable: false, targets: 7 },
+                { orderable: false, targets: 7 },
             ],
             pageLength: 20,
             order: [[0, 'desc']],
         });
-    });
 
-    // datatables
-    $(document).ready(function () {
         $('#student-history').DataTable({
             language: {
                 lengthMenu: '_MENU_ записей на страницу',
@@ -340,22 +367,9 @@
             pageLength: 20,
             order: [[0, 'desc']],
         });
+        deleteTitleBlockPaddingBottom();
+        deleteTabsBlockPaddingBottom();
     });
-
-    // убрать боковой отступ для ячеек с оценками
-    let thElements = document.getElementsByName("mark");
-    thElements.forEach(element => {
-        element.style.paddingLeft = '0';
-        element.style.paddingRight = '0';
-    });
-
-    // убрать нижний отступ сегмента с заголовком и кнопками
-    let segments = document.getElementById("segments");
-    segments.style.paddingBottom = '0';
-
-    // убрать верхний отступ сегмента с вкладками
-    let tabsSegment = document.getElementById("tabs-segment");
-    tabsSegment.style.paddingTop = '0';
 </script>
 
 {% endblock %}

@@ -33,7 +33,6 @@ urlpatterns = [
     path('search/', views.search_results, name='search'),
 
     # Results
-    path('results/', views.ResultListView.as_view(), name='results'),
     path('results/add/', views.ResultCreateView.as_view(), name='result_add'),
     path('results/<int:pk>/delete/', views.ResultDeleteView.as_view(), name='result_delete'),
     path('results/<int:pk>/update/', views.ResultUpdateView.as_view(), name='result_update'),

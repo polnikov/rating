@@ -18,6 +18,14 @@ function changeDatatableInputFont() {
    };
 };
 
+// изменить шрифт в полях <input> на вкладках (tabs)
+function changeDatatableTabsInputFont() {
+   let dataInputs = document.querySelectorAll(".ui.input");
+   for (let i = 0; i < dataInputs.length; i++) {
+      dataInputs[i].style.fontFamily = "Hack";
+   };
+};
+
 // изменить шрифт в <input> загрузки CSV
 function changeFileInputFont() {
    let fileInput = document.querySelectorAll(".ui.segment input")[1];
@@ -64,6 +72,18 @@ function shineLinks(id) {
          el[i].classList.remove("active")
       };
    };
+};
+
+// убрать нижний отступ сегмента с заголовком и кнопками
+function deleteTitleBlockPaddingBottom() {
+   let titleSegment = document.getElementById("segments");
+   titleSegment.style.paddingBottom = '0';
+};
+
+// убрать верхний отступ сегмента с вкладками
+function deleteTabsBlockPaddingBottom() {
+   let tabsSegment = document.getElementById("tabs-segment");
+   tabsSegment.style.paddingTop = '0';
 };
 
 // отобразить инфо по текущим занятиям
