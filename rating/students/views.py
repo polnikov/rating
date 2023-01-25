@@ -419,7 +419,7 @@ class ResultCreateView(LoginRequiredMixin, CreateView):
                                 'tag': tag})
         if form.is_valid():
             form.save()
-            return redirect('students:results')
+            return redirect('groups:cards')
 
         return super().post(request, *args, **kwargs)
 
@@ -428,14 +428,14 @@ class ResultUpdateView(LoginRequiredMixin, UpdateView):
     model = Result
     form_class = ResultForm
     template_name = 'students/result_update.html'
-    success_url = '/students/results'
+    success_url = '/groups/cards'
 
 
 class ResultDeleteView(LoginRequiredMixin, DeleteView):
     """Удалить оценку."""
     model = Result
     template_name = 'students/result_delete.html'
-    success_url = '/students/results'
+    success_url = '/groups/cards'
 
 
 def import_results(request):
