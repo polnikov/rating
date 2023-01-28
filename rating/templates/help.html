@@ -6,8 +6,23 @@
 
 {% block content %}
 
-<div class="ui container" style="margin-top: 50px; margin-bottom: 50px; width: 1300px">
-    <div id="help" class="ui styled fluid accordion">
+<div class="ui container" style="margin-top: 15px; margin-bottom: 50px; width: 1300px">
+    <img class="ui centered big image" src="{% static 'img/faq.jpg' %}"><br>
+    <div class="ui styled fluid accordion">
+
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Главная (домашняя страница) рейтинга
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div class="item">Это страница с карточками групп, для перехода к ней есть два способа, через нажатие на иконку <i class="home icon"></i> в левом верхнем углу или через меню <mark>Группы</mark></div>
+                <div class="item">На карточках групп выделены текущие семестры</div>
+                <img class="ui fluid image" src="{% static 'img/main_page.jpg' %}">
+            </div>
+        </div>
 
         <div class="title" style="font-family: Hack">
             <i class="dropdown icon"></i>
@@ -18,426 +33,19 @@
             </div>
             <div class="content">
                 <div id="list" class="ui list">
-                    <div class="item">Кнопка меню находится в надписи <a class="ui large circular label">Рейтинг успеваемости ФИЭиГХ</a>, кликнув на которую, откроется боковое меню</div>
+                    <div class="item">Кнопка меню находится в надписи <mark>Рейтинг успеваемости ФИЭиГХ</mark>, кликнув на которую, откроется боковое меню</div>
                     <div class="item">Пока курсор находится на меню или на кнопке - оно не закроется</div>
                     <div class="item">Чтобы меню закрылось - уберите курсор с него в любое место экрана</div>
                 </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="title" style="font-family: Hack">
-                    <i class="dropdown icon"></i>
-                    Видео
-                </div>
-                <div class="content">
-                    <center>
-                        <video width="1200" height="700" controls="controls" preload="preload">
-                            <source src="{% static 'video/1_open_menu.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                            Ваш браузер не поддерживает элемент "видео".
-                        </video>
-                    </center>
-                </div>
-            </div>
-        </div>
-        
-        <div class="title" style="font-family: Hack">
-            <i class="dropdown icon"></i>
-            Как добавить группу | кафедру | факультет | студента | дисциплину?
-        </div>
-        <div class="content">
-            <div class="title" style="font-family: Hack">
-            </div>
-            <div class="content">
-                <div id="list" class="ui list">
-                    <div class="item">Открываем меню, ищем раздел <a class="ui large circular label"><i class="list ul green icon"></i>Списки</a>, выбираем то, что хотим добавить</div>
-                    <div class="item">На открывшейся странице нажимаем кнопку <a class="ui circular green large label"><i class="icon plus circle"></i>Добавить</a></div>
-                    <div class="item">Заполняем открывшуюся форму</div>
-                    <div class="item">Если какие то данные будут некорректными - появится подсказка при сохранении</div>
-                </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="title" style="font-family: Hack">
-                    <i class="dropdown icon"></i>
-                    Видео
-                </div>
-                <div class="content">
-                    <center>
-                        <video width="1200" height="700" controls="controls" preload="preload">
-                            <source src="{% static 'video/2_add_group.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                            Ваш браузер не поддерживает элемент "видео".
-                        </video>
-                    </center>
-                </div>
-            </div>
-        </div>
-        
-        <div class="title" style="font-family: Hack">
-            <i class="dropdown icon"></i>
-            Как быстро посмотреть информацию о группе (направление | профиль | специализация | шифр)?
-        </div>
-        <div class="content">
-            <div class="title" style="font-family: Hack">
-            </div>
-            <div class="content">
-                <div id="list" class="ui list">
-                    <div class="item">В разделе <a class="ui large circular label"><i class="users icon"></i>Группы</a> нужно нажать на название (обозначение) группы</div>
-                    <div class="item">Появится всплывающее окно с необходимой информацией</div>
-                    <div class="item">Чтобы закрыть его - кликните мышкой в любом месте экрана</div>
-                </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="title" style="font-family: Hack">
-                    <i class="dropdown icon"></i>
-                    Видео
-                </div>
-                <div class="content">
-                    <center>
-                        <video width="1200" height="700" controls="controls" preload="preload">
-                            <source src="{% static 'video/3_info_about_group.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                            Ваш браузер не поддерживает элемент "видео".
-                        </video>
-                    </center>
-                </div>
-            </div>
-        </div>
-        
-        <div class="title" style="font-family: Hack">
-            <i class="dropdown icon"></i>
-            Как добавить оценку студенту в карточке группы?
-        </div>
-        <div class="content">
-                <div class="title" style="font-family: Hack">
-                </div>
-                <div class="content">
-                    <div id="list" class="ui list">
-                        <div class="item">На странице <a class="ui large circular label"><i class="users icon"></i>Группы</a> выбираем нужный семестр группы</div>
-                        <div class="item">Для того чтобы внести оценку студенту - необходимо сделать двойной клик мышкой по нужной ячейке</div>
-                        <div class="item">Вписать оценку в соответствии с формой контроля дисциплины</div>
-                        <div class="item">Для сохранения оценки - нажмите клавишу <a class="ui basic label">Enter</a></div>
-                        <div class="item">Для отмены сохранения - нажмите клавишу <a class="ui basic label">Esc</a></div><br>
-                    </div>
-                    
-                    <div class="ui visible warning message">
-                        <div class="content">
-                            <div class="header" style="font-family: Hack">
-                                Внимание!
-                            </div>
-                            <div class="ui list">
-                                <div class="item">Вводить можно только те оценки, которые соответствуют форме контроля дисциплины, в противном случае будет сообщение об ошибке</div>
-                                <div class="item">Несколько оценок указываются через пробел</div>
-                                <div class="item">Вписывать несколько оценок можно только, если предыдущая - отрицательная</div>
-                                <div class="item">Все оценки в ячейке - удалить нельзя. Можно только изменить сами оценки или их количество</div>
-                                <div class="item">Для удаления всех оценок в ячейке, нужно перейти в раздел <a class="ui large circular label"><i class="thumbtack blue icon"></i> Оценки</a> и далее <a class="ui large circular label"><i class="chevron right icon"></i>Студенты</a></div>
-                                <div class="item">Там найти нужную оценку и удалить</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-            <div class="accordion">
-                <div class="title" style="font-family: Hack">
-                    <i class="dropdown icon"></i>
-                    Видео
-                </div>
-                <div class="content">
-                    <center>
-                        <video width="1200" height="700" controls="controls" preload="preload">
-                            <source src="{% static 'video/4_add_mark_in_group.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                            Ваш браузер не поддерживает элемент "видео".
-                        </video>
-                    </center>
-                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/1_open_menu.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        Ваш браузер не поддерживает элемент "видео".
+                    </video>
+                </center>
             </div>
         </div>
 
-        <div class="title" style="font-family: Hack">
-            <i class="dropdown icon"></i>
-            Как посмотреть дату аттестации (основной) и преподавателя по дисциплине в карточке группы?
-        </div>
-        <div class="content">
-            <div class="title" style="font-family: Hack">
-            </div>
-            <div class="content">
-                <div id="list" class="ui list">
-                    <div class="item">Наведите курсор мышки на ячейку с формой контроля дисциплины - появится всплывающая подсказка</div>
-                    <div class="item">Чтобы добавить | изменить данные - можно кликнуть мышкой по названию дисциплины</div>
-                    <div class="item">В карточке дисциплины выберите <a class="ui circular large green label"><i class="sync alternate icon"></i>Обновить</a></div>
-                    <div class="item">Внесите или измените данные и сохраните</div>
-                </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="title" style="font-family: Hack">
-                    <i class="dropdown icon"></i>
-                    Видео
-                </div>
-                <div class="content">
-                    <center>
-                        <video width="1200" height="700" controls="controls" preload="preload">
-                            <source src="{% static 'video/5_info_about_att-date_teacher.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                            Ваш браузер не поддерживает элемент "видео".
-                        </video>
-                    </center>
-                </div>
-            </div>
-        </div>
-        
-        <div class="title" style="font-family: Hack">
-            <i class="dropdown icon"></i>
-            Как импортировать списочные данные (студенты | дисциплины | кафедры | факультеты | назначения дисциплин)?
-        </div>
-        <div class="content">
-            <div class="title" style="font-family: Hack">
-            </div>
-            <div class="content">
-                <div id="list" class="ui list">
-                    <div class="item">В разделе меню <a class="ui large circular label"><i class="list ul green icon"></i>Списки</a> выбираем нужную категорию</div>
-                    <div class="item">Нажмите кнопку <a class="ui circular large orange label"><i class="icon download"></i>Импорт CSV</a></div>
-                    <div class="item">Знакомимся с памяткой по формированию CSV файла для ипорта</div>
-                    <div class="item">Формируем файл, выбираем и загружаем</div>
-                    <div class="item">После загрузки появится соответствующее сообщение о результатах загрузки и возможные ошибки импорта</div>
-                </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="title" style="font-family: Hack">
-                    <i class="dropdown icon"></i>
-                    Видео
-                </div>
-                <div class="content">
-                    <center>
-                        <video width="1200" height="700" controls="controls" preload="preload">
-                            <source src="{% static 'video/6_import_data.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                            Ваш браузер не поддерживает элемент "видео".
-                        </video>
-                    </center>
-                </div>
-            </div>
-        </div>
-        
-        <div class="title" style="font-family: Hack">
-            <i class="dropdown icon"></i>
-            Как импортировать оценки группы по дисциплине?
-        </div>
-        <div class="content">
-            <div class="title" style="font-family: Hack">
-            </div>
-            <div class="content">
-                <div id="list" class="ui list">
-                    <div class="item">В разделе меню <a class="ui large circular label"><i class="list ul green icon"></i>Списки</a> выбираем нужную категорию</div>
-                    <div class="item">Нажмите кнопку <a class="ui circular large orange label"><i class="icon download"></i>Импорт CSV</a></div>
-                    <div class="item">Знакомимся с памяткой по формированию CSV файла для ипорта</div>
-                    <div class="item">Формируем файл, выбираем и загружаем</div>
-                    <div class="item">После загрузки появится соответствующее сообщение о результатах загрузки и возможные ошибки импорта</div>
-                </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="title" style="font-family: Hack">
-                    <i class="dropdown icon"></i>
-                    Видео
-                </div>
-                <div class="content">
-                    <center>
-                        <video width="1200" height="700" controls="controls" preload="preload">
-                            <source src="{% static 'video/7_import_marks.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                            Ваш браузер не поддерживает элемент "видео".
-                        </video>
-                    </center>
-                </div>
-            </div>
-        </div>
-        
-        <div class="title" style="font-family: Hack">
-            <i class="dropdown icon"></i>
-            Как пользоваться таблицами списков (студенты | дисциплины | кафедры | назначения дисциплин)?
-        </div>
-        <div class="content">
-            <div class="title" style="font-family: Hack">
-            </div>
-            <div class="content">
-                <div id="list" class="ui list">
-                    <div class="item">Практически во всех таблицах есть фильтрация по столбцам</div>
-                    <div class="item">Есть также глобальный поиск по таблице</div>
-                    <div class="item">Чтобы быстро очистить поле поиска или поля фильтров - сделайте двойной клик мышкой по области левее поля поиска</div>
-                    <div class="item">По каждому столбцу есть возможность сортировки</div>
-                    <div class="item">Таблицы, по умолчанию, отображают первые 20 строк - доступны варианты отображения на одной странице, или переход на следующую страницу</div>
-                </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="title" style="font-family: Hack">
-                    <i class="dropdown icon"></i>
-                    Видео
-                </div>
-                <div class="content">
-                    <center>
-                        <video width="1200" height="700" controls="controls" preload="preload">
-                            <source src="{% static 'video/8_tables.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                            Ваш браузер не поддерживает элемент "видео".
-                        </video>
-                    </center>
-                </div>
-            </div>
-        </div>
-        
-        <div class="title" style="font-family: Hack">
-            <i class="dropdown icon"></i>
-            Как отметить, что студент болеет и контролировать это?
-        </div>
-        <div class="content">
-            <div class="title" style="font-family: Hack">
-            </div>
-            <div class="content">
-                <div id="list" class="ui list">
-                    <div class="item">Открываете карточку студента - из группы или из категории меню <a class="ui large circular label"><i class="chevron right icon"></i>Студенты</a></div>
-                    <div class="item">Нажмите кнопку <a class="ui circular large green label"><i class="sync alternate icon"></i>Обновить</a></div>
-                    <div class="item">В поле <a class="ui circular large label">Примечание</a> вписываете слово <a class="ui circular large label">болеет</a></div>
-                    <div class="item">Сохраняете изменения</div>
-                    <div class="item">Теперь, рядом с ФИО студента везде будет отображаться метка <i class="heart broken red icon"></i></div>
-                    <div class="item">Чтобы убрать метку - удалите слово из примечания</div>
-                    <div class="item">После того, как студент отмечен болеющим - в меню <a class="ui large circular label"><i class="calculator icon"></i>Статистика</a> он появится в таблице <a class="ui large circular label">НА БОЛЬНИЧНОМ</a></div>
-                    <div class="item">Чтобы напротив каждого болеющего указать период болезни - нужно в комментариях студента изменить запись на: <a class="ui large circular label">Болеет:ДД.ММ.ГГГГ</a></div>
-                </div>
-                <br>
-                <div class="ui visible warning message">
-                    <div class="content">
-                        <div class="header" style="font-family: Hack">
-                            Внимание!
-                        </div>
-                        <div class="item">Слово <a class="ui circular large label">болеет</a> можно указывать независимо от регистра, а также в составе любого другого текста. Например:<br>
-                            Болеет с 15.02.22 по 22.02.22</div>
-                        <div class="item">Запись <a class="ui circular large label">Болеет:ДД.ММ.ГГГГ</a> указывается без пробелов</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="title" style="font-family: Hack">
-                    <i class="dropdown icon"></i>
-                    Видео
-                </div>
-                <div class="content">
-                    <center>
-                        <video width="1200" height="700" controls="controls" preload="preload">
-                            <source src="{% static 'video/9_set_sick_student.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                            Ваш браузер не поддерживает элемент "видео".
-                        </video>
-                    </center>
-                </div>
-            </div>
-        </div>
-        
-        <div class="title" style="font-family: Hack">
-            <i class="dropdown icon"></i>
-            Как перевести студента на следующий семестр?
-        </div>
-        <div class="content">
-            <div class="title" style="font-family: Hack">
-            </div>
-            <div class="content">
-                <div id="list" class="ui list">
-                    <div class="item">Заходим в карточку группы и нажимаем кнопку<a class="ui violet circular large label"><i class="level up alternate icon"></i>Перевод</a></div>
-                    <div class="item">На месте нумерации студентов появятся чекбоксы - отмечаем студентов, которых нужно перевести на следующий семестр. Есть возможность выбрать всех сразу - чекбокс в шапке таблицы</div>
-                    <div class="item">Затем нажимаем кнопку <a class="ui green circular large label"><i class="level up alternate icon"></i>Перевести</a></div>
-                    <div class="item">Если перевод прошел успешно - появится соответствующее сообщение и отмеченные студенты переместятся из текущей таблицы группы</div>
-                </div>
-                <div class="ui visible warning message">
-                    <div class="content">
-                        <div class="header" style="font-family: Hack">
-                            Внимание!
-                        </div>
-                        <div class="ui list">
-                            <div class="item">Перевод студентов нужно осуществлять только после завершения второй повторной аттестации (комиссии), начиная с последних семестров</div>
-                            <div class="item">Студенты последних семестров при переводе автоматически помещаются в архив со статусом "Выпускник"</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="title" style="font-family: Hack">
-                    <i class="dropdown icon"></i>
-                    Видео
-                </div>
-                <div class="content">
-                    <center>
-                        <video width="1200" height="700" controls="controls" preload="preload">
-                            <source src="{% static 'video/10_transfer_students_to_next_semester.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                            Ваш браузер не поддерживает элемент "видео".
-                        </video>
-                    </center>
-                </div>
-            </div>
-        </div>
-        
-        <div class="title" style="font-family: Hack">
-            <i class="dropdown icon"></i>
-            Как добавить оценку по служебной записке?
-        </div>
-        <div class="content">
-            <div class="title" style="font-family: Hack">
-            </div>
-            <div class="content">
-                <div id="list" class="ui list">
-                    <div class="item">Переходим в раздел меню <a class="ui large circular label"><i class="thumbtack blue icon"></i> Оценки</a> и далее <a class="ui large circular label"><i class="chevron right icon"></i>Студенты</a></div>
-                    <div class="item">Если оценка новая - то нажимаем кнопку <a class="ui circular green large label"><i class="icon plus circle"></i>Добавить</a> и в открывшейся форме устанавливаем тэг <a class="ui tiny circular label">СЗ</a> и нажимаем <a class="ui circular tiny green label"><i class="save icon"></i>Сохранить</a></div>
-                    <div class="item">Если оценка уже существует - то в таблице оценок находим нужную, в столбце "Оценка" нажимаем мышкой на оценку и попадаем на страницу редактирования оценок по дисциплине - устанавливаем тэг <a class="ui large circular label">СЗ</a> и нажимаем <a class="ui circular large green label"><i class="sync alternate icon"></i>Обновить</a></div>
-                </div>
-                <div class="ui visible warning message">
-                    <div class="content">
-                        <div class="header" style="font-family: Hack">
-                            Внимание!
-                        </div>
-                        <div class="ui list">
-                            <div class="item">Данный тэг не привязан к какой то конкретной оценке из трех возможных, он привязан к дисциплине + преподавателю</div>
-                            <div class="item">Все оценки с данной меткой отображаются на отдельной вкладке данного раздела меню</div>
-                            <div class="item">В общем списке оценок у таких оценок слева от названия дисципилины появляется метка <i class="exclamation circle red icon"></i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="accordion">
-                <div class="title" style="font-family: Hack">
-                    <i class="dropdown icon"></i>
-                    Видео
-                </div>
-                <div class="content">
-                    <center>
-                        <video width="1200" height="700" controls="controls" preload="preload">
-                            <source src="{% static 'video/11_set_tag_for_mark.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                            Ваш браузер не поддерживает элемент "видео".
-                        </video>
-                    </center>
-                </div>
-            </div>
-        </div>
-
-        <div class="title" style="font-family: Hack">
-            <i class="dropdown icon"></i>
-            Что такое архивные записи (архив)?
-        </div>
-        <div class="content">
-            <div class="content">
-                <div id="list" class="ui list">
-                    <div class="item">Все категории записей (кроме факультетов и кафедр) в свойствах имеют чекбокс <a class="ui large circular label">Архив</a></div>
-                    <div class="item">Отмечая данный чекбокс в какой-либо записи - эта запись исключается из текущих таблиц и статистики и перемещается в отдельные списки соответствующего раздела меню <a class="ui large circular label"><i class="archive brown icon"></i> Архив</a></div>
-                    <div class="item">При необходимости вернуть ту или иную запись - найдите её в архиве и снимите чекбокс</div>
-                </div>
-                <div class="ui visible warning message">
-                    <div class="content">
-                        <div class="header" style="font-family: Hack">
-                            Внимание!
-                        </div>
-                        Отчисленные студенты и выпускники - автоматически отправляются в архив
-                    </div>
-                </div>
-            </div>
-        </div>
-        
         <div class="title" style="font-family: Hack">
             <i class="dropdown icon"></i>
             Карточка студента
@@ -448,18 +56,22 @@
                 <img class="ui bordered fluid image" src="{% static 'img/student_card_properties.jpg' %}">
             </center>
             <div class="ui list">
-                <div class="item"><div name="point" class="ui red circular small label">1</div> Полное ФИО и метка студента (болееи или в архиве)</div>
+                <div class="item"><div name="point" class="ui red circular small label">1</div> Полное ФИО и метка студента (болеет или в архиве)</div>
                 <div class="item"><div name="point" class="ui red circular small label">2</div> Основные реквизиты студента</div>
                 <div class="item"><div name="point" class="ui red circular small label">3</div> Средний балл студента по семестрам и суммарный, за все время обучения</div>
             </div>
             
             <div class="ui divider"></div>
             
-            
             <center>
                 <div class="ui circular large label">Список оценок студента за все время обучения</div><div class="ui hidden divider"></div>
                 <img class="ui bordered fluid image" src="{% static 'img/student_card_marks.jpg' %}">
             </center>
+            <div class="ui list">
+                <div class="item"><div name="point" class="ui red circular small label">1</div> Добавить оценку аттестации</div>
+                <div class="item"><div name="point" class="ui red circular small label">2</div> Изменить оценку аттестации</div>
+                <div class="item"><div name="point" class="ui red circular small label">3</div> Удалить полность резуьтат аттестации</div>
+            </div>
 
             <br>
             
@@ -474,6 +86,349 @@
             </div>
         </div>
 
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как отметить, что студент болеет и контролировать это?
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">Открываете карточку студента - из группы или из категории меню <mark>Студенты</mark></div>
+                    <div class="item">Нажмите кнопку <mark>Обновить</mark></div>
+                    <div class="item">В поле <mark>Примечание</mark> вписываете слово <mark>болеет</mark></div>
+                    <div class="item">Сохраняете изменения</div>
+                    <div class="item">Теперь, рядом с ФИО студента везде будет отображаться метка <i class="heart broken red icon"></i></div>
+                    <div class="item">Чтобы убрать метку - удалите слово из примечания</div>
+                    <div class="item">После того, как студент отмечен болеющим - в меню <mark>Статистика</mark> он появится в таблице <mark>НА БОЛЬНИЧНОМ</mark></div>
+                    <div class="item">Чтобы напротив каждого болеющего указать период болезни - нужно в комментариях студента изменить запись на: <mark>Болеет:ДД.ММ.ГГГГ</mark></div>
+                </div>
+                <br>
+                <div class="ui visible warning message">
+                    <div class="content">
+                        <div class="header" style="font-family: Hack">
+                            Внимание!
+                        </div>
+                        <div class="item">Слово <mark>болеет</mark> можно указывать независимо от регистра, а также в составе любого другого текста. Например:<br>
+                            Болеет с 15.02.22 по 22.02.22</div>
+                        <div class="item">Запись <mark>Болеет:ДД.ММ.ГГГГ</mark> указывается без пробелов</div>
+                    </div>
+                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/9_set_sick_student.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        Ваш браузер не поддерживает элемент "видео".
+                    </video>
+                </center>
+            </div>
+        </div>
+
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как отметить, что студент ушел в академический отпуск и контролировать это?
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">Открываете карточку студента - из группы или из категории меню <mark>Студенты</mark></div>
+                    <div class="item">Нажимаете кнопку <mark>Обновить</mark></div>
+                    <div class="item">Изменяете статуст студента на <mark>Академический отпуск</mark> и в поле <mark>Примечание</mark> вписываете запись: <mark>АО:ДД.ММ.ГГГГ</mark></div>
+                    <div class="item">Сохраняете изменения</div>
+                    <div class="item">После этого - в меню <mark>Статистика</mark> он появится в таблице студентов, находящихся в академическом отпуске, где будет указано оставшееся время до выхода из АО, от указанной даты</div>
+                </div>
+                <br>
+                <div class="ui visible warning message">
+                    <div class="content">
+                        <div class="header" style="font-family: Hack">
+                            Внимание!
+                        </div>
+                        <div class="item">Срок АО для отсчета времени = 12 месяцам</div>
+                        <div class="item">Запись <mark>АО:ДД.ММ.ГГГГ</mark> указывается без пробелов</div>
+                    </div>
+                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/12_set_delay_student.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                    </video>
+                </center>
+            </div>
+        </div>
+        
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как добавить группу | кафедру | факультет | студента | дисциплину?
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">Открываем меню, ищем раздел <mark>Списки</mark>, выбираем то, что хотим добавить</div>
+                    <div class="item">На открывшейся странице нажимаем кнопку <mark>Добавить</mark></div>
+                    <div class="item">Заполняем открывшуюся форму</div>
+                    <div class="item">Если какие то данные будут некорректными - появится подсказка при сохранении</div>
+                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/2_add_group.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        Ваш браузер не поддерживает элемент "видео".
+                    </video>
+                </center>
+            </div>
+        </div>
+        
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как быстро посмотреть информацию о группе (направление | профиль | специализация | шифр)?
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">В разделе <mark>Группы</mark> нужно нажать на название (обозначение) группы</div>
+                    <div class="item">Появится всплывающее окно с необходимой информацией</div>
+                    <div class="item">Чтобы закрыть его - кликните мышкой в любом месте экрана</div>
+                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/3_info_about_group.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        Ваш браузер не поддерживает элемент "видео".
+                    </video>
+                </center>
+            </div>
+        </div>
+        
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как добавить оценку студенту в карточке группы?
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">На странице <mark>Группы</mark> выбираем нужный семестр группы</div>
+                    <div class="item">Для того чтобы внести оценку студенту - необходимо сделать двойной клик мышкой по нужной ячейке</div>
+                    <div class="item">Вписать оценку в соответствии с формой контроля дисциплины</div>
+                    <div class="item">Для сохранения оценки - нажмите клавишу <mark>Enter</mark></div>
+                    <div class="item">Для отмены сохранения - нажмите клавишу <mark>Esc</mark></div><br>
+                </div>
+                
+                <div class="ui visible warning message">
+                    <div class="content">
+                        <div class="header" style="font-family: Hack">
+                            Внимание!
+                        </div>
+                        <div class="ui list">
+                            <div class="item">Вводить можно только те оценки, которые соответствуют форме контроля дисциплины, в противном случае будет сообщение об ошибке</div>
+                            <div class="item">Несколько оценок указываются через пробел</div>
+                            <div class="item">Вписывать несколько оценок можно только, если предыдущая - отрицательная</div>
+                            <div class="item">Все оценки в ячейке - удалить нельзя. Можно только изменить сами оценки или их количество</div>
+                            <div class="item">Для полного удаления оценки, нужно перейти в карточку студента, на вкладке <mark>Оценки</mark> найти нужную и удалить</div>
+                            <div class="item">Там же можно её изменить или добавить другие результаты аттестации для данного студента</div>
+                        </div>
+                    </div>
+                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/4_add_mark_in_group.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        Ваш браузер не поддерживает элемент "видео".
+                    </video>
+                </center>
+            </div>
+        </div>
+
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как посмотреть дату аттестации (основной) и преподавателя по дисциплине в карточке группы?
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">Наведите курсор мышки на ячейку с формой контроля дисциплины - появится всплывающая подсказка</div>
+                    <div class="item">Чтобы добавить | изменить данные - можно кликнуть мышкой по названию дисциплины, вы будете перенаправлены на соответствующее <mark>Назначение</mark></div>
+                    <div class="item">Внесите или измените необходимые данные и сохраните</div>
+                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/5_info_about_att-date_teacher.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        Ваш браузер не поддерживает элемент "видео".
+                    </video>
+                </center>
+            </div>
+        </div>
+        
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как импортировать списочные данные (студенты | дисциплины | кафедры | факультеты | назначения дисциплин)?
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">В разделе меню <mark>Списки</mark> выбираем нужную категорию</div>
+                    <div class="item">Нажмите кнопку <mark>Импорт CSV</mark></div>
+                    <div class="item">Знакомимся с памяткой по формированию CSV файла для ипорта</div>
+                    <div class="item">Формируем файл, выбираем и загружаем</div>
+                    <div class="item">После загрузки появится соответствующее сообщение о результатах загрузки и возможные ошибки импорта</div>
+                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/6_import_data.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        Ваш браузер не поддерживает элемент "видео".
+                    </video>
+                </center>
+            </div>
+        </div>
+        
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как импортировать оценки группы по дисциплине?
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">Переходим в карточку нужной группы</div>
+                    <div class="item">Нажмите кнопку <mark>Импорт ведомости</mark>, выберите нужную ведомость</div>
+                    <div class="item">Можно загружать сразу несколько файлов ведомостей за раз</div>
+                    <div class="item">После загрузки появится соответствующее сообщение о результатах загрузки и возможные ошибки импорта</div>
+                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/7_import_marks.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        Ваш браузер не поддерживает элемент "видео".
+                    </video>
+                </center>
+            </div>
+        </div>
+        
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как пользоваться таблицами списков (студенты | дисциплины | кафедры | назначения дисциплин | оценки)?
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">Практически во всех таблицах есть фильтрация по столбцам</div>
+                    <div class="item">Есть также глобальный поиск по таблице</div>
+                    <div class="item">Чтобы быстро очистить поле поиска или поля фильтров - сделайте двойной клик мышкой по области левее поля поиска</div>
+                    <div class="item">По каждому столбцу есть возможность сортировки</div>
+                    <div class="item">Таблицы, по умолчанию, отображают первые 20 строк - доступны варианты отображения на одной странице, или переход на следующую страницу</div>
+                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/8_tables.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        Ваш браузер не поддерживает элемент "видео".
+                    </video>
+                </center>
+            </div>
+        </div>
+        
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как перевести студента на следующий семестр?
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">Заходим в карточку группы и нажимаем кнопку <mark>Перевод</mark></div>
+                    <div class="item">На месте нумерации студентов появятся чекбоксы - отмечаем студентов, которых нужно перевести на следующий семестр. Есть возможность выбрать всех сразу - чекбокс в шапке таблицы</div>
+                    <div class="item">Затем нажимаем кнопку <mark>Перевести</mark></div>
+                    <div class="item">Если перевод прошел успешно - появится соответствующее сообщение и отмеченные студенты переместятся из текущей таблицы семестра группы на следующий</div>
+                </div>
+                <div class="ui visible warning message">
+                    <div class="content">
+                        <div class="header" style="font-family: Hack">
+                            Внимание!
+                        </div>
+                        <div class="ui list">
+                            <div class="item">Перевод студентов нужно осуществлять только после завершения второй повторной аттестации (комиссии), начиная с последних семестров</div>
+                            <div class="item">Предварительно нужно отчислить студентов, которые подлежат отчислению по итогам аттестации</div>
+                            <div class="item">Студенты последних семестров при переводе автоматически помещаются в архив со статусом <mark>Выпускник</mark></div>
+                        </div>
+                    </div>
+                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/10_transfer_students_to_next_semester.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        Ваш браузер не поддерживает элемент "видео".
+                    </video>
+                </center>
+            </div>
+        </div>
+        
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Как добавить оценку по служебной записке?
+        </div>
+        <div class="content">
+            <div class="title" style="font-family: Hack">
+            </div>
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">Переходим в карточку студента или в карточку дисципилны</div>
+                    <div class="item">Если оценка новая - то на соответствующей вкладке нажимаем кнопку <mark>Добавить</mark> и в открывшейся форме устанавливаем тэг <mark>СЗ</mark> и нажимаем <mark>Сохранить</mark></div>
+                    <div class="item">Если оценка уже существует - то на соответствующей вкладке в таблице оценок находим нужную, в столбце <mark>Оценка</mark> нажимаем мышкой на оценку и попадаем на страницу редактирования оценок по дисциплине - устанавливаем тэг <mark>СЗ</mark> и нажимаем <mark>Обновить</mark></div>
+                </div>
+                <div class="ui visible warning message">
+                    <div class="content">
+                        <div class="header" style="font-family: Hack">
+                            Внимание!
+                        </div>
+                        <div class="ui list">
+                            <div class="item">Данный тэг не привязан к какой то конкретной оценке из трех возможных, он привязан к дисциплине + преподавателю</div>
+                            <div class="item">Все оценки с данной меткой отображаются на отдельной вкладке данного раздела меню</div>
+                            <div class="item">В общем списке оценок у таких оценок слева от названия дисципилины появляется метка <i class="exclamation circle red icon"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <center>
+                    <video width="1200" height="700" controls="controls" preload="preload">
+                        <source src="{% static 'video/11_set_tag_for_mark.mp4' %}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                        Ваш браузер не поддерживает элемент "видео".
+                    </video>
+                </center>
+            </div>
+        </div>
+
+        <div class="title" style="font-family: Hack">
+            <i class="dropdown icon"></i>
+            Что такое архивные записи (архив)?
+        </div>
+        <div class="content">
+            <div class="content">
+                <div id="list" class="ui list">
+                    <div class="item">Все категории записей (кроме факультетов и кафедр) в свойствах имеют чекбокс <mark>Архив</mark></div>
+                    <div class="item">Отмечая данный чекбокс в какой-либо записи - эта запись исключается из текущих таблиц и статистики и перемещается в отдельные списки соответствующего раздела меню <mark>Архив</mark></div>
+                    <div class="item">При необходимости вернуть ту или иную запись - найдите её в архиве и снимите чекбокс</div>
+                </div>
+                <div class="ui visible warning message">
+                    <div class="content">
+                        <div class="header" style="font-family: Hack">
+                            Внимание!
+                        </div>
+                        <div class="ui list">
+                            <div class="item">У объектов отправленных в архив появится метка <i class="archive brown icon"></i></div>
+                            <div class="item">Отчисленные студенты и выпускники - автоматически отправляются в архив</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     </div>
 
 </div>
