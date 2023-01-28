@@ -6,22 +6,24 @@ from rating.abstracts import CommonArchivedModel, CommonModelLog, CommonTimestam
 
 class Subject(CommonArchivedModel, CommonTimestampModel):
     """Модель <Дисциплина>."""
+
+    class Formcontrol(models.TextChoices):
+        EXAM = 'Экзамен', 'Экзамен'
+        DIF = 'Диффзачет', 'Диффзачет'
+        ZACH = 'Зачет', 'Зачет'
+        KP = 'Курсовой проект', 'Курсовой проект'
+        KR = 'Курсовая работа', 'Курсовая работа'
+
+
     name = models.CharField(
         verbose_name='Дисциплина',
         max_length=150,
         blank=False,
         unique=False,
     )
-    FORMCONTROL = (
-        ('Экзамен', 'Экзамен'),
-        ('Диффзачет', 'Диффзачет'),
-        ('Зачет', 'Зачет'),
-        ('Курсовой проект', 'Курсовой проект'),
-        ('Курсовая работа', 'Курсовая работа'),
-    )
     form_control = models.CharField(
         verbose_name='Форма контроля',
-        choices=FORMCONTROL,
+        choices=Formcontrol.choices,
         blank=False,
         max_length=15,
     )
