@@ -6,6 +6,12 @@ from rating.abstracts import CommonArchivedModel, CommonTimestampModel
 
 class Group(CommonTimestampModel, CommonArchivedModel):
     """Модель <Группа>."""
+    
+    class Level(models.TextChoices):
+        BAC = 'Бакалавриат', 'Бакалавриат'
+        MAG = 'Магистратура', 'Магистратура'
+
+
     name = models.CharField(
         verbose_name='Группа',
         max_length=10,
@@ -20,14 +26,10 @@ class Group(CommonTimestampModel, CommonArchivedModel):
         max_length=100,
         default='-',
     )
-    LEVEL = [
-        ('Бакалавриат', 'Бакалавриат'),
-        ('Магистратура', 'Магистратура'),
-    ]
     level = models.CharField(
         verbose_name='Уровень обучения',
-        choices=LEVEL,
-        default=LEVEL[0][1],
+        choices=Level.choices,
+        default=Level.BAC,
         blank=False,
         max_length=15,
     )
