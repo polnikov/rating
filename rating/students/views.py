@@ -1,5 +1,6 @@
 import re
 import xlrd
+import logging
 
 from collections import Counter
 from datetime import datetime
@@ -22,9 +23,11 @@ from students.forms import ResultForm, StudentForm
 from students.models import Basis, Result, Semester, Student, StudentLog
 from students.validators import validate_mark, check_mark
 from subjects.models import Cathedra, GroupSubject, Subject
-
 from rating.settings import IMPORT_DELIMITER
 from rating.functions import calculate_rating
+
+
+logger = logging.getLogger(__name__)
 
 
 class StudentListView(LoginRequiredMixin, ListView):
@@ -69,7 +72,8 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         try:
             history = StudentLog.objects.select_related('user').filter(
                 record_id=student.student_id).order_by('-timestamp').values()
-        except:
+        except Exception as ex:
+            logger.info(f'История изменений по студенту {student} отсутствует', extra={'Exception': ex})
             history = 'Error'
 
         # все оценки студента
@@ -101,10 +105,10 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         }
         all_num_marks = []
         all_marks = []
-        if student.level == 'Бакалавриат':
+        if student.level == Student.Level.BAC:
             semesters = range(1, 9)
             rating_by_semester = rating_by_semester_bac
-        elif student.level == 'Магистратура':
+        elif student.level == Student.Level.MAG:
             semesters = range(1, 5)
             rating_by_semester = rating_by_semester_mag
 
@@ -121,17 +125,19 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             all_num_marks.append(num_atts)
             # количество каждой из оценок <3 | 4 | 5>
             count_marks = dict(Counter(sem_marks))
+
             # определяем средний балл за семестр
-            try:
+            if num_atts:
                 sem_rating = round(sum([int(k)*v for k, v in count_marks.items()]) / num_atts, 2)
-            except ZeroDivisionError:
+            else:
                 sem_rating = 0
+
             rating_by_semester[i] = sem_rating
 
         # определяем суммарный средний балл
-        try:
+        if sum(all_num_marks):
             rating = round(sum(list(map(int, (all_marks)))) / sum(all_num_marks), 2)
-        except ZeroDivisionError:
+        else:
             rating = 0
 
         marks = Result.objects.select_related().filter(students=student.student_id).order_by(
@@ -187,6 +193,7 @@ class StudentRatingApiView(LoginRequiredMixin, View):
         flag_4 = sem_start and sem_stop == '-'
 
         if flag_1 or flag_2 or flag_3 or flag_4:
+            logger.info(f'Расчет среднего балла за семестр {start} для студентов группы {groups}')
             # средний балл за указанный семестр. по умолчанию - за 1ый
             for student in students:
                 rating = calculate_rating(student, start)
@@ -203,6 +210,7 @@ class StudentRatingApiView(LoginRequiredMixin, View):
                     'tag': student.tag,
                 })
         else:
+            logger.info(f'Расчет среднего балла за период с {start} по {stop} семестр для студентов группы {groups}')
             # средний балл за указанный период
             start, stop = sem_start, sem_stop
 
@@ -269,6 +277,7 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
 
 def import_students(request):
     '''Импортировать студентов из CSV файла.'''
+    logger.info('Импорт студентов')
     success = False
     errors = []  # список студентов, которые не были импортированы
     file_validation = date_validation = ''
@@ -280,6 +289,7 @@ def import_students(request):
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}
+            logger.error('Файл не выбран или неверный формат')
             return render(request, 'import/import_students.html', context)
 
         for n, line in enumerate(import_file):
@@ -322,15 +332,15 @@ def import_students(request):
                     group = Group.objects.get(name=group).id
                     semester = Semester.objects.get(id=row[8]).id
                 else:
-                    print('[!] ---> Ошибка импорта студента:', [is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag, is_money])
                     errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
+                    logger.error(f'Ошибка импорта студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
                     break
 
                 # проверка формата даты зачисления
                 pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
                 if not re.match(pattern, row[9]):
                     date_validation = False
-                    print('[!] ---> Неверный формат даты зачисления.')
+                    logger.error(f'Неверный формат даты зачисления: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
                     break
                 else:
                     # преобразование даты к формату поля модели
@@ -356,8 +366,9 @@ def import_students(request):
                     )
                     if not created:
                         errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-                except Exception as import_students_error:
-                    print('[!] ---> Ошибка импорта студента:', import_students_error, sep='\n')
+                        logger.error(f'Не удалось создать объект студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
+                except Exception as ex:
+                    logger.error(f'Не удалось создать объект студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}', extra={'Exception': ex})
             if not errors:
                 success = True
 
@@ -374,6 +385,7 @@ def transfer_students(request):
     '''Перевести студентов на следующий семестр. В случае последнего семестра студент отправляется в <Архив> со сменой
     статуса на <Выпускник>.
     '''
+    logger.info('Перевод студентов на следующий семестр')
     students_for_transfer = request.POST.getlist('checkedStudents[]', False)
     students_id = list(map(int, students_for_transfer))
 
@@ -382,17 +394,18 @@ def transfer_students(request):
         current_semester = student.semester.semester
         level = student.level
 
-        if (level == 'Бакалавриат' and current_semester != 8) or (level == 'Магистратура' and current_semester != 4):
+        if (level == Student.Level.BAC and current_semester != 8) or (level == Student.Level.MAG and current_semester != 4):
             next_semester = current_semester + 1
             semester_obj = Semester.objects.get(semester=next_semester)
             student.semester = semester_obj
             student.save()
         else:
             # меняем статус студента на <Выпускник> и отправляем в <Архив>
-            student.status = 'Выпускник'
+            student.status = Student.Status.GRADUATED
             student.is_archived = True
             student.save()
 
+    logger.info('Перевод студентов на следующий семестр успешно выполнен')
     return JsonResponse({"success": "Updated"})
 
 ########################################################################################################################
@@ -440,6 +453,7 @@ class ResultDeleteView(LoginRequiredMixin, DeleteView):
 
 def import_results(request):
     '''Импортировать оценки из EXCEL файла.'''
+    logger.info('Импорт оценок')
     success = False
     errors = []  # список студентов, по которым оценки не были импортированы
 
@@ -457,6 +471,7 @@ def import_results(request):
             if str(file).split('.')[-1] != 'xls':
                 file_validation_format = False
                 context = {'file_validation_format': file_validation_format}
+                logger.error('Неверный формат файла')
                 return render(request, 'import/import_results.html', context)
 
         semesters = {
@@ -572,6 +587,7 @@ def import_results(request):
                         if not check_mark(st[-1], data['form_control']):
                             check_mark_formcontrol = False
                             context = {'check_mark_formcontrol': check_mark_formcontrol}
+                            logger.error('Оценки не соответствуют форме контроля')
                             return render(request, 'import/import_results.html', context)
                         data['marks'].append(st)
                     else:
@@ -582,14 +598,17 @@ def import_results(request):
                         if not check_mark(st[-1], data['form_control']):
                             check_mark_formcontrol = False
                             context = {'check_mark_formcontrol': check_mark_formcontrol}
+                            logger.error('Оценки не соответствуют форме контроля')
                             return render(request, 'import/import_results.html', context)
                         data['marks'].append(st)
 
             try:
+                logger.info('Запись оценок в БД...')
                 try:
                     group = Group.objects.get(name=data['group'])
                 except Group.DoesNotExist:
                     errors.append(f'{file}: Ошибка группы - проверьте наименование или что группа существует.')
+                    logger.error('Группа {0} отсутствует в БД'.format(data['group']))
 
                 try:
                     subject = Subject.objects.filter(
@@ -612,6 +631,7 @@ def import_results(request):
                         )
                 except Subject.DoesNotExist:
                     errors.append(f'{file}: Ошибка дисциплины - проверьте наименование или что дисциплина существует.')
+                    logger.error('Предмет {0} отсутствует в БД'.format(data['subject']))
 
                 if not subject.cathedra:
                     subject.cathedra.name = Cathedra.objects.get(name=data['cathedra'])
@@ -631,6 +651,7 @@ def import_results(request):
                     groupsubject = GroupSubject.objects.get(Q(groups=group) & Q(subjects=subject))
                 except GroupSubject.DoesNotExist:
                     errors.append(f'{file}: Ошибка назначения - проверьте, что назначение существует.')
+                    logger.error(f'Назначение предмета {subject} группе {group} отсутствует в БД')
 
                 if not groupsubject.teacher:
                     groupsubject.teacher = data['teacher']
@@ -640,10 +661,12 @@ def import_results(request):
                     groupsubject.save()
 
                 for item in data['marks']:
+                    logger.info('Поиск студентов в БД по номеру зачетной книжки')
                     try:
                         student = Student.objects.get(student_id=int(item[1]))
                     except Student.DoesNotExist:
                         errors.append(f'{file}: ID студента [{item[0]}] в ведомости не корректно.')
+                        logger.error('Студент {0} отсутствует в БД'.format(item[0]))
 
                     sheet_type = data['type']
                     match sheet_type:
@@ -667,6 +690,7 @@ def import_results(request):
                                     result.save()
                                 else:
                                     errors.append(f'{file}: {student.fullname}: {validation[-1]}')
+                                    logger.error(f'Оценка не проходит валидацию. {file}: {student.fullname}: {validation[-1]}')
                         case 2:
                             try:
                                 result = Result.objects.get(students=student, groupsubject=groupsubject)
@@ -679,11 +703,13 @@ def import_results(request):
                                     result.save()
                                 else:
                                     errors.append(f'{file}: {student.fullname}: {validation[-1]}')
+                                    logger.error(f'Оценка не проходит валидацию. {file}: {student.fullname}: {validation[-1]}')
                 if not errors:
                     success = True
+                logger.info('Запись оценок в БД успешно выполнена')
 
             except Exception as ex:
-                print('----- ERROR >>>', ex)
+                logger.error(f'Запись оценок из файла {file} в БД не удалась', extra={'Exception': ex})
 
     context = {'errors': errors, 'success': success}
 
@@ -774,6 +800,7 @@ def download_excel_data(request):
     response['Content-Disposition'] = 'attachment; filename="Zadolzhennosti FIEGH.xlsx"'
 
     att_level = request.GET.get('att')
+    logger.info(f'Формирование excel файла с задолженностями за {att_level} период аттестации...')
 
     # id всех назначений с отрицательными оценками
     match att_level:
@@ -789,6 +816,7 @@ def download_excel_data(request):
 
     if not negative_groupsubjects_ids:
         url = reverse('students:debts')
+        logger.info(f'Задолженностей за {att_level} период аттестации нет')
         return HttpResponseRedirect(url)
     else:
         # назначения
@@ -865,4 +893,5 @@ def download_excel_data(request):
             row += 1
 
         book.save(response)
+        logger.info(f'Файл с задолженностями за {att_level} период аттестации успешно сформирован')
         return response
