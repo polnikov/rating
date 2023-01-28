@@ -6,10 +6,14 @@ from django.shortcuts import get_object_or_404
 register = template.Library()
 
 
-@register.filter(name='get_username')
-def get_username(id):
-    """Возвращает фамилию и имя пользователя по id."""
-    return get_object_or_404(User, id=id)
+@register.filter(name='get_user_last_name')
+def get_user_last_name(id):
+    """Возвращает фамилию пользователя по id. Если фамилия отсутствует - username"""
+    user = get_object_or_404(User, id=id)
+    if user.last_name:
+        return user.last_name
+    else:
+        return user
 
 
 @register.filter(name='date_or_else')
