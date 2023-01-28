@@ -1,4 +1,6 @@
+import logging
 from dateutil.relativedelta import relativedelta
+
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -8,19 +10,19 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from rating.abstracts import CommonArchivedModel, CommonTimestampModel, CommonModelLog
 
 
+logger = logging.getLogger(__name__)
+
+
 class Student(CommonArchivedModel, CommonTimestampModel):
     """Модель <Студент>."""
-    
-    
+
     class Citizenship(models.TextChoices):
         RUS = 'Россия', 'Россия'
         INT = 'Иностранец', 'Иностранец'
 
-
     class Level(models.TextChoices):
         BAC = 'Бакалавриат', 'Бакалавриат'
         MAG = 'Магистратура', 'Магистратура'
-
 
     class Status(models.TextChoices):
         ACTIVE = 'Является студентом', 'Является студентом'
@@ -28,14 +30,12 @@ class Student(CommonArchivedModel, CommonTimestampModel):
         FIRED = 'Отчислен', 'Отчислен'
         GRADUATED = 'Выпускник', 'Выпускник'
 
-
     class Tag(models.TextChoices):
         FROM_DELAY = 'из АО', 'из АО'
         RETURNED = 'восстановлен', 'восстановлен'
         TRANSFER_IN = 'перевелся на фак-т', 'перевелся на фак-т'
         TRANSFER_OUT = 'перевелся с фак-та', 'перевелся с фак-та'
         GOV = 'целевой', 'целевой'
-
 
     class Money(models.TextChoices):
         D = 'нет', 'нет'
@@ -147,7 +147,7 @@ class Student(CommonArchivedModel, CommonTimestampModel):
     def save(self, *args, **kwargs):
         # Проверяем, существует ли объект
         if Student.objects.filter(student_id=self.pk).exists():
-            #: Отправляем информацию по изменениям в модель <StudentLog>
+            # Отправляем информацию по изменениям в модель <StudentLog>
             if self.pk is not None:
                 # берем текущий объект
                 old_object = Student.objects.get(pk=self.pk)
@@ -162,7 +162,7 @@ class Student(CommonArchivedModel, CommonTimestampModel):
                                 getattr(old_object, field_name), getattr(self, field_name))
                             update_fields['student_id'] = self.student_id
                     except Exception as ex:
-                        print('[!] ---> Ошибка лога Student', ex)
+                        logger.error(f'Изменения поля {old_object} студента {self.student_id} не удалось сохранить', extra={'Exception': ex})
             # добавляем записи в таблицу
             try:
                 for key in update_fields:
@@ -173,22 +173,21 @@ class Student(CommonArchivedModel, CommonTimestampModel):
                             new_value=update_fields[key][1],
                             record_id=update_fields['student_id'],
                         )
-            except Exception as student_log_ex:
-                print('Не удалось записать изменения по студентам:')
-                print('[!] ---> Ошибка:', student_log_ex)
+            except Exception as ex:
+                logger.error(f'Не удалось сохранить изменения студента {self.student_id}', extra={'Exception': ex})
 
-        #: Если студент получает статус <Отчислен> или <Выпускник> - отправляем его в архив со сбросом тэга
+        # Если студент получает статус <Отчислен> или <Выпускник> - отправляем его в архив со сбросом тэга
         if self.status in [Student.Status.FIRED, Student.Status.GRADUATED]:
             self.is_archived = True
             self.tag = ''
         else:
             self.is_archived = False
-        #: Если студент получает статус <АО> - отправляем его в архив без сброса тэга
+        # Если студент получает статус <АО> - отправляем его в архив без сброса тэга
         if self.status == Student.Status.DELAY:
             self.is_archived = True
         else:
             self.is_archived = False
-        #: Если студент имеет основу обучения <ИГ> или <Контракт> - устанавливаем для него стипендию
+        # Если студент имеет основу обучения <ИГ> или <Контракт> - устанавливаем для него стипендию
         if self.basis.name == 'Контракт':
             self.money = 'нет'
 
@@ -226,24 +225,24 @@ class Student(CommonArchivedModel, CommonTimestampModel):
     @property
     def graduate_year(self):
         """Возвращает год выпуска студента."""
-        if self.status == 'Выпускник':
+        if self.status == Student.Status.GRADUATED:
             match self.level:
-                case 'Бакалавриат':
+                case Student.Level.BAC:
                     return self.start_date + relativedelta(years=4)
-                case 'Магистратура':
+                case Student.Level.MAG:
                     return self.start_date + relativedelta(years=2)
 
     @property
     def money_rate(self):
         """Возвращает уровень стипендии."""
         match self.money:
-            case 'нет':
+            case Student.Money.D:
                 return 0
-            case '1.0':
+            case Student.Money.C:
                 return 1
-            case '1.25':
+            case Student.Money.B:
                 return 2
-            case '1.5':
+            case Student.Money.A:
                 return 3
 
 
