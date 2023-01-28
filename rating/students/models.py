@@ -10,6 +10,40 @@ from rating.abstracts import CommonArchivedModel, CommonTimestampModel, CommonMo
 
 class Student(CommonArchivedModel, CommonTimestampModel):
     """Модель <Студент>."""
+    
+    
+    class Citizenship(models.TextChoices):
+        RUS = 'Россия', 'Россия'
+        INT = 'Иностранец', 'Иностранец'
+
+
+    class Level(models.TextChoices):
+        BAC = 'Бакалавриат', 'Бакалавриат'
+        MAG = 'Магистратура', 'Магистратура'
+
+
+    class Status(models.TextChoices):
+        ACTIVE = 'Является студентом', 'Является студентом'
+        DELAY = 'Академический отпуск', 'Академический отпуск'
+        FIRED = 'Отчислен', 'Отчислен'
+        GRADUATED = 'Выпускник', 'Выпускник'
+
+
+    class Tag(models.TextChoices):
+        FROM_DELAY = 'из АО', 'из АО'
+        RETURNED = 'восстановлен', 'восстановлен'
+        TRANSFER_IN = 'перевелся на фак-т', 'перевелся на фак-т'
+        TRANSFER_OUT = 'перевелся с фак-та', 'перевелся с фак-та'
+        GOV = 'целевой', 'целевой'
+
+
+    class Money(models.TextChoices):
+        D = 'нет', 'нет'
+        C = '1.0', '1.0'
+        B = '1.25', '1.25'
+        A = '1.5', '1.5'
+
+
     student_id = models.IntegerField(
         verbose_name='Зачетная книжка',
         primary_key=True,
@@ -44,24 +78,16 @@ class Student(CommonArchivedModel, CommonTimestampModel):
         default=1,
         blank=False,
     )
-    CITIZENSHIP = [
-        ('Россия', 'Россия'),
-        ('Иностранец', 'Иностранец'),
-    ]
     citizenship = models.CharField(
         verbose_name='Гражданство',
         max_length=20,
-        choices=CITIZENSHIP,
-        default=CITIZENSHIP[0][1],
+        choices=Citizenship.choices,
+        default=Citizenship.RUS,
         blank=False,
     )
-    LEVEL = [
-        ('Бакалавриат', 'Бакалавриат'),
-        ('Магистратура', 'Магистратура'),
-    ]
     level = models.CharField(
         verbose_name='Уровень обучения',
-        choices=LEVEL,
+        choices=Level.choices,
         default='Бакалавриат',
         blank=False,
         max_length=15,
@@ -77,30 +103,17 @@ class Student(CommonArchivedModel, CommonTimestampModel):
         auto_now=False,
         auto_now_add=False,
     )
-    STATUS = [
-        ('Является студентом', 'Является студентом'),
-        ('Академический отпуск', 'Академический отпуск'),
-        ('Отчислен', 'Отчислен'),
-        ('Выпускник', 'Выпускник'),
-    ]
     status = models.CharField(
         verbose_name='Текущий статус',
         max_length=25,
-        choices=STATUS,
-        default=STATUS[0][1],
+        choices=Status.choices,
+        default=Status.ACTIVE,
         blank=False,
     )
-    TAG = [
-        ('из АО', 'из АО'),
-        ('восстановлен', 'восстановлен'),
-        ('перевелся на фак-т', 'перевелся на фак-т'),
-        ('перевелся с фак-та', 'перевелся с фак-та'),
-        ('целевой', 'целевой'),
-    ]
     tag = models.CharField(
         verbose_name='Тэг',
         max_length=25,
-        choices=TAG,
+        choices=Tag.choices,
         blank=True,
         default='',
     )
@@ -111,18 +124,12 @@ class Student(CommonArchivedModel, CommonTimestampModel):
         unique=False,
         default='',
     )
-    MONEY = [
-        ('нет', 'нет'),
-        ('1.0', '1.0'),
-        ('1.25', '1.25'),
-        ('1.5', '1.5'),
-    ]
     money = models.CharField(
         verbose_name='Стипендия',
         max_length=5,
         blank=False,
-        choices=MONEY,
-        default=MONEY[0][1]
+        choices=Money.choices,
+        default=Money.D
     )
 
     class Meta:
@@ -171,13 +178,13 @@ class Student(CommonArchivedModel, CommonTimestampModel):
                 print('[!] ---> Ошибка:', student_log_ex)
 
         #: Если студент получает статус <Отчислен> или <Выпускник> - отправляем его в архив со сбросом тэга
-        if self.status in ['Отчислен', 'Выпускник']:
+        if self.status in [Student.Status.FIRED, Student.Status.GRADUATED]:
             self.is_archived = True
             self.tag = ''
         else:
             self.is_archived = False
         #: Если студент получает статус <АО> - отправляем его в архив без сброса тэга
-        if self.status == 'Академический отпуск':
+        if self.status == Student.Status.DELAY:
             self.is_archived = True
         else:
             self.is_archived = False
