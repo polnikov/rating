@@ -10,53 +10,23 @@
 
 {% block content %}
 
-<!-- Title & button -->
 <div id="segments" class="ui basic segment" style="padding-bottom: 0">
    <table class="ui very basic table">
       <tbody>
          <tr>
             <!-- Group info -->
-            <td class="collapsing">
-               <div class="ui steps">
-                  <div id="group-info-label" class="active step">
-                     <div class="content">
-
-                        <table id="group-info" class="ui very basic small table left aligned">
-                           <tbody>
-                              <tr>
-                                 <td rowspan="3" class="top aligned">
-                                    <div id="groupname" class="title"><h2 style="font-family: Hack">{{ group }}</h2></div>
-                                    <font size="2px">
-                                       {{ group.code }}<br>
-                                       {{ group.direction }}<br>
-                                       {{ group.profile }}
-                                    </font>
-                                 </td>
-                                 <td name="info-td" class="right aligned">Курс</td>
-                                 <td name="info-td" class="right aligned"><div id="info" class="ui grey circular label">
-                                    {{ course }}
-                                 </div></td>
-                              </tr>
-                              <tr>
-                                 <td name="info-td" class="right aligned">Семестр</td>
-                                 <td name="info-td" class="right aligned"><div id="info" class="ui grey circular label">
-                                    <div id="semester">{{ semester }}</div>
-                                 </div></td>
-                              </tr>
-                              <tr>
-                                 <td name="info-td" class="right aligned">Численность</td>
-                                 <td name="info-td" class="right aligned"><div id="info" class="ui grey circular label">
-                                    {{ students.count }}
-                                 </div></td>
-                              </tr>
-                           </tbody>
-                        </table>
-
-                     </div>
+            <td class="seven wide top aligned">
+               <div class="ui accordion">
+                  <div class="title"><i class="dropdown icon"></i>
+                     <h2 id="groupname" style="font-family: Hack; display:inline;">{{ group }}</h2>
+                  </div>
+                  <div class="content">
+                     {{ group.code }} | {{ group.direction }}<br>
+                     {{ group.profile }}
                   </div>
                </div>
             </td>
-
+            <!-- Buttons -->
             <td id="back-button-cell" class="top aligned" colspan="2">
                <button id="transfer" class="ui green small circular button" style="font-family: Hack; ; display: none" onclick="transferStudents()"><i class="level up alternate icon"></i>Перевести</button>
                <button id="cancel-button" class="ui red small circular button" style="font-family: Hack; display: none" onclick="closeCheckboxColumn()"><i class="times circle icon"></i></i>Отмена</button>
@@ -67,14 +37,31 @@
                   <button id="back-button" class="ui grey small circular button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
             </td>
          </tr>
+         <tr>
+            <!-- Group counts -->
+            <td name="info-td" class="collapsing top aligned">
+               Курс
+               <div id="info" class="ui grey circular label">
+                  {{ course }}
+               </div>
+               Семестр
+               <div id="info" class="ui grey circular label">
+                  <div id="semester">{{ semester }}</div>
+               </div>
+               Численность
+               <div id="info" class="ui grey circular label">
+                  {{ students.count }}
+               </div>
+            </td>
+         </tr>
       </tbody>
    </table>
 </div>
 
-<div class="ui basic segment">
+<div class="ui basic segment" style="margin-top: 0px; padding-top: 0px">
    {% if students or subjects %}
 
-   <!-- Table -->
+      <!-- Table -->
       <table id="group-detail-table" class="ui structured selectable small compact table">
          <!-- Head -->
          <thead>
@@ -156,17 +143,15 @@
 
 <script type="text/javascript">
    /* on page ************************************************************************************************************/
-
    $('.ui.checkbox').checkbox();
+   $('.ui.accordion').accordion();
 
    /* script *************************************************************************************************************/
-
    deleteSidePadding("name", "formcontrol");
    deleteSidePadding("name", "subjects");
    deletePaddingBottomForTitleBlock();
 
    /* script_group_detail ************************************************************************************************/
-
    addHighlightMarks();
    addHightlightBasis();
    addColorForAttCells();
