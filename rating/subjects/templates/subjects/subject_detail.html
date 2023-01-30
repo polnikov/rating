@@ -240,7 +240,7 @@
                                 </td>
                             {% endif %}
                             <td class="two wide center aligned">
-                                <a href="{% url 'students:result_update' student.id %}">
+                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'students:result_update' student.id %}{% else %}#{% endif %}">
                                     <div class="ui equal width grid center aligned">
                                         <div name="mark" class="column">{{ student.mark|slice:":1"|unpack_mark }}</div>
                                         <div name="mark" class="column">{{ student.mark|slice:"1:2"|unpack_mark }}</div>
