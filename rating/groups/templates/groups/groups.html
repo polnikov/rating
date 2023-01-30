@@ -4,6 +4,8 @@
 
 {% load static %}
 
+{% load customfilters %}
+
 {% block title %}Группы{% endblock %}
 
 {% block content %}
@@ -16,11 +18,13 @@
             <tbody>
                 <tr>
                     <td><h2 style="font-family: Hack">Группы</h2></td>
-                    <td class="right aligned">
-                        <a href="{% url 'groups:add' %}">
-                            <button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
-                        </a>
-                    </td>
+                    {% if request.user|has_group:"Сотрудники" %}
+                        <td class="right aligned">
+                            <a href="{% url 'groups:add' %}">
+                                <button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
+                            </a>
+                        </td>
+                    {% endif %}
                 </tr>
             </tbody>
         </table>
@@ -51,14 +55,14 @@
                             <td>{{ group.profile }}</td>
                             <td class="center aligned">{{ group.code }}</td>
                             <td class="center aligned collapsing">
-                                <a href="{% url 'groups:delete' group.id %}">
+                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'groups:delete' group.id %}{% else %}#{% endif %}">
                                     <button id="trash-button" class="circular ui red mini icon button">
                                         <i class="trash alternate outline icon"></i>
                                     </button>
                                 </a>
                             </td>
                             <td class="center aligned collapsing">
-                                <a href="{% url 'groups:update' group.id %}">
+                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'groups:update' group.id %}{% else %}#{% endif %}">
                                     <button id="edit-button" class="circular ui blue mini icon button">
                                         <i class="edit icon"></i>
                                     </button>
