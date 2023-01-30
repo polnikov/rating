@@ -28,11 +28,13 @@
             </td>
             <!-- Buttons -->
             <td id="back-button-cell" class="top aligned" colspan="2">
-               <button id="transfer" class="ui green small circular button" style="font-family: Hack; ; display: none" onclick="transferStudents()"><i class="level up alternate icon"></i>Перевести</button>
-               <button id="cancel-button" class="ui red small circular button" style="font-family: Hack; display: none" onclick="closeCheckboxColumn()"><i class="times circle icon"></i></i>Отмена</button>
-               <button id="transfer-button" class="ui violet small circular button" style="font-family: Hack" onclick="openCheckboxColumn()"><i class="level up alternate icon"></i>Перевод</button>
-               <a href="{% url 'students:results_import' %}">
-                  <button id="import-button" class="ui orange small circular button" style="font-family: Hack"><i class="icon download"></i>Импорт ведомости</button></a>
+               {% if request.user|has_group:"Сотрудники" %}
+                  <button id="transfer" class="ui green small circular button" style="font-family: Hack; ; display: none" onclick="transferStudents()"><i class="level up alternate icon"></i>Перевести</button>
+                  <button id="cancel-button" class="ui red small circular button" style="font-family: Hack; display: none" onclick="closeCheckboxColumn()"><i class="times circle icon"></i></i>Отмена</button>
+                  <button id="transfer-button" class="ui violet small circular button" style="font-family: Hack" onclick="openCheckboxColumn()"><i class="level up alternate icon"></i>Перевод</button>
+                  <a href="{% url 'students:results_import' %}">
+                     <button id="import-button" class="ui orange small circular button" style="font-family: Hack"><i class="icon download"></i>Импорт ведомости</button></a>
+               {% endif %}
                <a href="{% url 'groups:cards' %}">
                   <button id="back-button" class="ui grey small circular button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
             </td>
@@ -86,7 +88,7 @@
                {% if subjects %}
                   {% for item in subjects %}
                      <th name="subjects" class="center aligned" style="width: 10px">
-                        <span class="rotated-text left aligned"><a style="color: black" href="{% url 'subjects:groupsubject_update' item.id %}">
+                        <span class="rotated-text left aligned"><a style="color: black" href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:groupsubject_update' item.id %}{% else %}#{% endif %}">
                               {{ item.subjects.name|truncatewords:10 }}
                         </a></span>
                      </th>

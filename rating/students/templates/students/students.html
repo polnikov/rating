@@ -18,14 +18,16 @@
 			<tbody>
 				<tr>
 					<td><h2 style="font-family: Hack">Студенты</h2></td>
-					<td class="right aligned">
-						<a href="{% url 'students:import' %}">
-							<button id="import-button" class="ui orange small circular button" style="font-family: Hack"><i class="icon download"></i>Импорт CSV</button>
-						</a>
-						<a href="{% url 'students:add' %}">
-							<button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
-						</a>
-					</td>
+					{% if request.user|has_group:"Сотрудники" %}
+						<td class="right aligned">
+							<a href="{% url 'students:import' %}">
+								<button id="import-button" class="ui orange small circular button" style="font-family: Hack"><i class="icon download"></i>Импорт CSV</button>
+							</a>
+							<a href="{% url 'students:add' %}">
+								<button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
+							</a>
+						</td>
+					{% endif %}
 				</tr>
 			</tbody>
 		</table>

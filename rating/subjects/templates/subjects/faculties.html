@@ -17,11 +17,13 @@
             <tbody>
                 <tr>
                     <td><h2 style="font-family: Hack">Факультеты</h2></td>
-                    <td class="right aligned">
-                        <a href="{% url 'subjects:faculty_add' %}">
-                            <button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
-                        </a>
-                    </td>
+                    {% if request.user|has_group:"Сотрудники" %}
+                        <td class="right aligned">
+                            <a href="{% url 'subjects:faculty_add' %}">
+                                <button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
+                            </a>
+                        </td>
+                    {% endif %}
                 </tr>
             </tbody>
         </table>
@@ -46,14 +48,14 @@
                             <td class="collapsing">{{ faculty.short_name }}</td>
                             <td>{{ faculty.name }}</td>
                             <td class="center aligned collapsing">
-                                <a href="{% url 'subjects:faculty_delete' faculty.id %}">
+                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:faculty_delete' faculty.id %}{% else %}#{% endif %}">
                                     <button id="trash-button" class="circular ui red mini icon button">
                                         <i class="trash alternate outline icon"></i>
                                     </button>
                                 </a>
                             </td>
                             <td class="center aligned collapsing">
-                                <a href="{% url 'subjects:faculty_update' faculty.id %}">
+                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:faculty_update' faculty.id %}{% else %}#{% endif %}">
                                     <button id="edit-button" class="circular ui blue mini icon button">
                                         <i class="edit icon"></i>
                                     </button>

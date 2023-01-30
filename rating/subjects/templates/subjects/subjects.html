@@ -4,6 +4,8 @@
 
 {% load static %}
 
+{% load customfilters %}
+
 {% block title %}Дисциплины{% endblock %}
 
 {% block content %}
@@ -17,14 +19,16 @@
 			<tbody>
 				<tr>
 					<td><h2 style="font-family: Hack">Дисциплины</h2></td>
-					<td class="right aligned">
-						<a href="{% url 'subjects:subjects_import' %}">
-							<button id="import-button" class="ui orange small circular button" style="font-family: Hack"><i class="icon download"></i>Импорт CSV</button>
-						</a>
-						<a href="{% url 'subjects:add' %}">
-							<button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
-						</a>
-					</td>
+					{% if request.user|has_group:"Сотрудники" %}
+						<td class="right aligned">
+							<a href="{% url 'subjects:subjects_import' %}">
+								<button id="import-button" class="ui orange small circular button" style="font-family: Hack"><i class="icon download"></i>Импорт CSV</button>
+							</a>
+							<a href="{% url 'subjects:add' %}">
+								<button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
+							</a>
+						</td>
+					{% endif %}
 				</tr>
 			</tbody>
 		</table>

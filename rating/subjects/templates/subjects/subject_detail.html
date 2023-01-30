@@ -18,12 +18,14 @@
                 <tr>
                     <td><h3 style="font-family: Hack">{% if subject.is_archived %}<i class="archive brown icon"></i>{% endif %}{{ subject.name|truncatechars:85 }}</h3></td>
                     <td class="right aligned">
-                        <a href="{% url 'subjects:delete' subject.id %}">
-                            <button id="trash-button" type="button" class="ui red small circular button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button></a>
+                        {% if request.user|has_group:"Сотрудники" %}
+                            <a href="{% url 'subjects:delete' subject.id %}">
+                                <button id="trash-button" type="button" class="ui red small circular button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button></a>
+                            <a href="{% url 'subjects:update' subject.id %}">
+                                <button id="update-button" type="submit" class="positive ui small circular button" style="font-family: Hack"><i class="sync alternate icon"></i>Обновить</button></a>
+                        {% endif %}
                         <a href="{% url 'subjects:subjects' %}">
                             <button id="back-button" class="ui grey small circular button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
-                        <a href="{% url 'subjects:update' subject.id %}">
-                            <button id="update-button" type="submit" class="positive ui small circular button" style="font-family: Hack"><i class="sync alternate icon"></i>Обновить</button></a>
                     </td>
                 </tr>
             </tbody>
@@ -177,18 +179,20 @@
         <!-- Tab 3 -->
         <!-- Students -->
         <div class="ui bottom attached tab segment" data-tab="third">
-            <table class="ui very basic table">
-                <tbody>
-                    <tr>
-                        <td><h4 style="font-family: Hack">{{ subject.get_form_control_display }}</h4></td>
-                        <td class="right aligned">
-                            <a href="{% url 'students:result_add' %}">
-                                <button class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            {% if request.user|has_group:"Сотрудники" %}
+                <table class="ui very basic table">
+                    <tbody>
+                        <tr>
+                            <td><h4 style="font-family: Hack">{{ subject.get_form_control_display }}</h4></td>
+                            <td class="right aligned">
+                                <a href="{% url 'students:result_add' %}">
+                                    <button class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% endif %}
             <table id="subject-students" class="ui selectable celled compact table">
                 <thead>
                     <tr class="center aligned">

@@ -59,3 +59,9 @@ def short_form_control(value):
         'Курсовая работа': 'КР'
     }
     return FORMCONTROL.get(value)
+
+
+@register.filter(name='has_group')
+def has_group(user, group_name):
+    """Проверяет принадлежность пользователя к группе."""
+    return user.groups.filter(name=group_name).exists()
