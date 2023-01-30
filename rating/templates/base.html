@@ -40,8 +40,9 @@
             <!-- Right side header -->
             <div class="right menu">
                 <!-- Job time info -->
-                <div class="item"><a data-tooltip="Справка" data-position="bottom center" data-variation="tiny" href="{% url 'archive:help' %}"><i class="question circle outline large icon"></i></a></div>
                 <div id="job-time" class="item"></div>
+                <!-- FAQ -->
+                <a class="item" href="{% url 'archive:help' %}">Справка</a>
                 <!-- Search -->
                 <div class="item">
                     <form action="{% url 'students:search' %}" method="GET">
