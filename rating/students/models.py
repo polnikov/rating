@@ -259,8 +259,6 @@ class StudentLog(CommonModelLog):
     def __str__(self):
         return f'{self.id}'
 
-########################################################################################################################
-
 
 class Result(CommonArchivedModel, CommonTimestampModel, DynamicArrayMixin):
     """Модель <Результат>."""
@@ -328,8 +326,6 @@ class Result(CommonArchivedModel, CommonTimestampModel, DynamicArrayMixin):
         else:
             return self.mark
 
-########################################################################################################################
-
 
 class Basis(CommonTimestampModel):
     """Модель <Основа обучения>."""
@@ -345,8 +341,6 @@ class Basis(CommonTimestampModel):
 
     def __str__(self):
         return f'{self.name}'
-
-########################################################################################################################
 
 
 class Semester(models.Model):

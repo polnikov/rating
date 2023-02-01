@@ -81,10 +81,9 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             students=student.student_id).filter(
             ~Q(groupsubject__subjects__form_control__exact='Зачет'))
         # все аттестации для данного направления (группы), исключая зачеты
-        atts = GroupSubject.objects.select_related('subjects').filter(
-            groups=student.group,
-            is_archived=False
-        ).filter(~Q(subjects__form_control__exact='Зачет'))
+        atts = GroupSubject.objects.select_related('subjects'
+            ).filter(groups=student.group
+            ).filter(~Q(subjects__form_control__exact='Зачет'))
 
         # вычисление среднего балла по семестрам и суммарного
         rating_by_semester_bac = {

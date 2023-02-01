@@ -230,7 +230,7 @@ def calculate_rating(student, start, stop=False):
         # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
         atts = GroupSubject.objects.select_related('subjects').filter(
             groups=student.group,
-            is_archived=False
+            # is_archived=False
         ).filter(Q(subjects__semester__semester__gte=start) & Q(subjects__semester__semester__lte=stop)
         ).filter(~Q(subjects__form_control__exact='Зачет'))
     elif start and not stop:
@@ -243,7 +243,6 @@ def calculate_rating(student, start, stop=False):
         atts = GroupSubject.objects.select_related('subjects').filter(
             groups=student.group,
             subjects__semester__semester=start,
-            is_archived=False
         ).filter(~Q(subjects__form_control__exact='Зачет'))
 
     # вычисление среднего балла за семестр или период
