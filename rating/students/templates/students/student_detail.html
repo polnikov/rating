@@ -194,7 +194,7 @@
                                 </a>
                             </td>
                             <td>
-                                {% if item.groupsubject.subjects.is_archived %}<i class="archive brown icon"></i>{% endif %}
+                                {% if item.groupsubject.is_archived %}<i class="archive brown icon"></i>{% endif %}
                                 <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
                                     {{ item.groupsubject.subjects.name|truncatechars:80 }}
                                 </a>

@@ -70,7 +70,8 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
         students = Student.objects.select_related('basis', 'group').filter(
             group__name=groupname,
             semester=semester,
-            is_archived=False
+            is_archived=False,
+            status='Является студентом'
         ).order_by('last_name')
         # дисциплины, назначенные текущей группе в соответствующем семестре
         subjects = GroupSubject.objects.select_related('subjects').filter(
