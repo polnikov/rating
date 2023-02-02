@@ -13,5 +13,4 @@ urlpatterns = [
     path('cards/', views.GroupCardsView.as_view(), name='cards'),
     path('cards/<str:groupname>-<int:semester>/', views.GroupDetailListView.as_view(), name='detail'),
     path('json/groupmarks/', views.GroupMarksApiView.as_view(), name='groupmarks'),
-
 ]

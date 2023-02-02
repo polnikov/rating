@@ -30,8 +30,8 @@ class GroupResource(resources.ModelResource):
 class GroupAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     resource_class = GroupResource
     list_display = (
-        'id',
         'name',
+        'id',
         'is_archived',
         'direction',
         'profile',
@@ -41,6 +41,7 @@ class GroupAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'updated_date',
     )
     list_display_links = ('name',)
+    list_filter = ('is_archived', 'level', 'code')
     fields = [
         'name',
         'direction',
@@ -48,8 +49,6 @@ class GroupAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'level',
         'code',
         'is_archived',
-        'created_date',
-        'updated_date',
     ]
     ordering = [
         'level',

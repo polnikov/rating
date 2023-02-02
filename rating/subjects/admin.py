@@ -1,7 +1,9 @@
 from django.contrib import admin
-from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
 from import_export import resources
 from import_export.admin import ImportExportActionModelAdmin
+
+from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
+from subjects.forms import GroupSubjectForm
 
 
 class SubjectResource(resources.ModelResource):
@@ -27,19 +29,21 @@ class SubjectResource(resources.ModelResource):
 class SubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     resource_class = SubjectResource
     list_display = (
-        'id',
         'name',
+        'id',
         'is_archived',
         'form_control',
         'zet',
         'semester',
-        'cathedra',
         'comment',
+        'cathedra',
+        'get_faculty',
         'updated_date',
         'created_date',
     )
     list_display_links = ('name',)
     list_filter = (
+        'cathedra__faculty__short_name',
         'is_archived',
         'cathedra',
         'form_control',
@@ -56,14 +60,15 @@ class SubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'name',
         'cathedra',
         'form_control',
-    ]
-    list_editable = [
-        'comment',
-        'is_archived',
+        'cathedra__faculty__short_name',
     ]
     ordering = [
         'name',
     ]
+
+    def get_faculty(self, obj):
+        return f'{obj.cathedra.faculty.short_name}'
+    get_faculty.short_description = 'Факультет'
 
 
 @admin.register(SubjectLog)
@@ -105,14 +110,11 @@ class CathedraResource(resources.ModelResource):
 class CathedraAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     resource_class = CathedraResource
     list_display = (
-        'id',
         'name',
+        'id',
         'short_name',
         'faculty',
     )
-    list_editable = [
-        'faculty',
-    ]
     ordering = [
         'faculty',
         'name',
@@ -169,12 +171,12 @@ class GroupSubjectResource(resources.ModelResource):
 class GroupSubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     resource_class = GroupSubjectResource
     list_display = (
-        'id',
-        'subjects',
-        'is_archived',
+        # 'subjects',
         'get_subject_name',
-        'groups',
         'get_semester',
+        'groups',
+        'id',
+        'is_archived',
         'get_subject_form_control',
         'teacher',
         'att_date',
@@ -182,6 +184,9 @@ class GroupSubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     fields = [
         'subjects',
         'groups',
+        'teacher',
+        'att_date',
+        'comment',
         'is_archived',
     ]
     ordering = [
@@ -195,10 +200,8 @@ class GroupSubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     search_fields = [
         'subjects',
     ]
-    list_editable = [
-        'is_archived',
-    ]
-    list_display_links = ('id',)
+    list_display_links = ('get_subject_name',)
+    form_class = GroupSubjectForm
 
     def get_subject_name(self, obj):
         return f'{obj.subjects.name}'
