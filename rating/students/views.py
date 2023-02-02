@@ -401,7 +401,6 @@ def transfer_students(request):
         else:
             # меняем статус студента на <Выпускник> и отправляем в <Архив>
             student.status = Student.Status.GRADUATED
-            student.is_archived = True
             student.save()
 
     logger.info('Перевод студентов на следующий семестр успешно выполнен')

@@ -176,17 +176,12 @@ class Student(CommonArchivedModel, CommonTimestampModel):
             except Exception as ex:
                 logger.error(f'Не удалось сохранить изменения студента {self.student_id}', extra={'Exception': ex})
 
-        # Если студент получает статус <Отчислен> или <Выпускник> - отправляем его в архив со сбросом тэга
-        if self.status in [Student.Status.FIRED, Student.Status.GRADUATED]:
-            self.is_archived = True
-            self.tag = ''
-        else:
-            self.is_archived = False
-        # Если студент получает статус <АО> - отправляем его в архив без сброса тэга
-        if self.status == Student.Status.DELAY:
+        # Если студент получает статус <Отчислен>, <АО> или <Выпускник> - отправляем его в архив
+        if self.status in [Student.Status.FIRED, Student.Status.GRADUATED] or self.status == Student.Status.DELAY:
             self.is_archived = True
         else:
             self.is_archived = False
+
         # Если студент имеет основу обучения <ИГ> или <Контракт> - устанавливаем для него стипендию
         if self.basis.name == 'Контракт':
             self.money = 'нет'
