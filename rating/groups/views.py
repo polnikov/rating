@@ -1,18 +1,16 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
-from django.views.generic import (CreateView, DeleteView, ListView,
-                                  TemplateView, UpdateView, View)
+from django.views.generic import (CreateView, DeleteView, ListView, TemplateView, UpdateView, View)
 
 from groups.forms import GroupForm
 from groups.models import Group
 from students.models import Result, Student
 from subjects.models import GroupSubject
-
 from rating.functions import _get_students_group_statistic_and_marks
 
 
 class GroupListView(LoginRequiredMixin, ListView):
-    """Отобразить все группы."""
+    """Отобразить все активные группы."""
     model = Group
     template_name = 'groups/groups.html'
 
@@ -72,7 +70,7 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
         subjects = GroupSubject.objects.select_related('subjects').filter(
             groups__name=groupname,
             subjects__semester=semester,
-            is_archived=False
+            is_archived=False,
         ).order_by('subjects__form_control', 'subjects__name')
         # текущий курс группы
         course = students[0].course if students else '-'

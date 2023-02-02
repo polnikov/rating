@@ -1,6 +1,6 @@
-from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportActionModelAdmin
+from django.contrib import admin
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 
 from students.forms import ResultForm
@@ -46,6 +46,7 @@ class StudentAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'group',
         'semester',
         'status',
+        'level',
         'tag',
         'start_date',
         'money',
@@ -65,7 +66,7 @@ class StudentAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     )
     fields = [
         'student_id',
-        ('last_name', 'first_name', 'second_name'),
+        ('last_name', 'second_name', 'first_name'),
         'citizenship',
         'basis',
         'level',
@@ -83,9 +84,6 @@ class StudentAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'last_name',
         'student_id',
         'comment',
-    ]
-    list_editable = [
-        'is_archived',
     ]
     ordering = [
         'level',
@@ -140,8 +138,8 @@ class ResultResource(resources.ModelResource):
 class ResultAdmin(ImportExportActionModelAdmin, admin.ModelAdmin, DynamicArrayMixin):
     resource_class = ResultResource
     list_display = [
-        'id',
         'get_student_name',
+        'id',
         'get_student_group',
         'get_student_semester',
         'get_subject_name',
@@ -156,7 +154,12 @@ class ResultAdmin(ImportExportActionModelAdmin, admin.ModelAdmin, DynamicArrayMi
         'tag',
         'is_archived',
     ]
-    # search_fields = ['students__fullname',]
+    search_fields = [
+        'students__last_name',
+        'students__group__name',
+        'groupsubject__subjects__name',
+        'groupsubject__subjects__form_control'
+    ]
     list_filter = (
         'groupsubject__groups__name',
         'groupsubject__subjects__form_control',
