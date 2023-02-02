@@ -42,8 +42,6 @@ class GroupUpdateView(LoginRequiredMixin, UpdateView):
     form_class = GroupForm
     success_url = '/groups/'
 
-########################################################################################################################
-
 
 class GroupCardsView(LoginRequiredMixin, ListView):
     """Отобразить карточки групп."""
@@ -53,8 +51,6 @@ class GroupCardsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Group.objects.filter(is_archived=False).values('id', 'name', 'direction', 'profile', 'level', 'code')
-
-########################################################################################################################
 
 
 class GroupDetailListView(LoginRequiredMixin, TemplateView):

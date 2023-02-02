@@ -112,8 +112,6 @@ class StudentLog(admin.ModelAdmin):
         'field',
     )
 
-########################################################################################################################
-
 
 class ResultResource(resources.ModelResource):
 
@@ -186,15 +184,11 @@ class ResultAdmin(ImportExportActionModelAdmin, admin.ModelAdmin, DynamicArrayMi
         return f'{obj.students.semester}'
     get_student_semester.short_description = 'Семестр'
 
-########################################################################################################################
-
 
 @admin.register(Basis)
 class BasisAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     ordering = ['id']
-
-########################################################################################################################
 
 
 @admin.register(Semester)

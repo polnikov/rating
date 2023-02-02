@@ -23,7 +23,6 @@ from rating.functions import _get_students_group_statistic_and_marks, calculate_
 
 
 # Students
-########################################################################################################################
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = serializers.StudentSerializer
@@ -237,7 +236,6 @@ def student_rating(request):
 
 
 # Results
-########################################################################################################################
 class ResultViewSet(viewsets.ModelViewSet):
     queryset = Result.objects.all()
     serializer_class = serializers.ResultSerializer
@@ -451,7 +449,6 @@ def import_results(request):
 
 
 # Groups
-########################################################################################################################
 class GroupsViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = serializers.GroupSerializer
@@ -574,33 +571,19 @@ def students_debts(request):
     return JsonResponse({'data': data})
 
 
-
-
-
-
-
-
-
-
-
-
-
 # Faculties
-########################################################################################################################
 class FacultyViewSet(viewsets.ModelViewSet):
     queryset = Faculty.objects.all()
     serializer_class = serializers.FacultySerializer
 
 
 # Cathedras
-########################################################################################################################
 class CathedraViewSet(viewsets.ModelViewSet):
     queryset = Cathedra.objects.all()
     serializer_class = serializers.CathedraSerializer
 
 
 # Subjects
-########################################################################################################################
 class SubjectViewSet(viewsets.ModelViewSet):
     queryset = Subject.objects.all()
     serializer_class = serializers.SubjectSerializer
@@ -612,21 +595,18 @@ class SubjectLogList(generics.ListAPIView):
 
 
 # GroupSubjects
-########################################################################################################################
 class GroupSubjectViewSet(viewsets.ModelViewSet):
     queryset = GroupSubject.objects.all()
     serializer_class = serializers.GroupSubjectSerializer
 
 
 # Semesters
-########################################################################################################################
 class SemesterViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Semester.objects.all()
     serializer_class = serializers.SemesterSerializer
 
 
 # Search
-########################################################################################################################
 # @api_view(['GET'])
 def search(request):
     if request.method == 'GET':

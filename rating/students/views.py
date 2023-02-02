@@ -406,8 +406,6 @@ def transfer_students(request):
     logger.info('Перевод студентов на следующий семестр успешно выполнен')
     return JsonResponse({"success": "Updated"})
 
-########################################################################################################################
-
 
 class ResultCreateView(LoginRequiredMixin, CreateView):
     model = Result
@@ -713,16 +711,12 @@ def import_results(request):
 
     return render(request, 'import/import_results.html', context)
 
-########################################################################################################################
-
 
 class StudentsMoneyListView(LoginRequiredMixin, ListView):
     """Отобразить студентов с указанием стипендии."""
     model = Student
     template_name = 'students/students_money.html'
     queryset = Student.objects.select_related('basis', 'group', 'semester').filter(is_archived=False)
-
-########################################################################################################################
 
 
 class StudentsDebtsListView(LoginRequiredMixin, ListView):
@@ -758,8 +752,6 @@ class StudentsDebtsListView(LoginRequiredMixin, ListView):
             st.att3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
 
         return students
-
-########################################################################################################################
 
 
 def search_results(request):

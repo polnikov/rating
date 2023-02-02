@@ -151,8 +151,6 @@ class SubjectLog(CommonModelLog):
     def __str__(self):
         return f'{self.id}'
 
-########################################################################################################################
-
 
 class GroupSubject(CommonArchivedModel, CommonTimestampModel):
     """Модель <Назначение дисциплины группе>."""
@@ -231,8 +229,6 @@ class GroupSubject(CommonArchivedModel, CommonTimestampModel):
         else:
             return f'{self.teacher}'
 
-########################################################################################################################
-
 
 class Cathedra(CommonTimestampModel):
     """Модель <Кафедра>."""
@@ -287,8 +283,6 @@ class Cathedra(CommonTimestampModel):
             return 'Нет'
         else:
             return self.faculty
-
-########################################################################################################################
 
 
 class Faculty(CommonTimestampModel):

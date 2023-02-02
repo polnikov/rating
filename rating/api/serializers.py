@@ -11,7 +11,6 @@ from groups.models import Group
 
 
 # Students
-########################################################################################################################
 class StudentSerializer(serializers.ModelSerializer):
     group = serializers.SlugRelatedField(slug_field='name', queryset=Group.objects)
     basis = serializers.SlugRelatedField(slug_field='name', queryset=Basis.objects)
@@ -160,10 +159,6 @@ class StudentLogSerializer(serializers.ModelSerializer):
 # ! TODO: API for students debts
 
 
-
-
-
-
 class StudentMoneySerializer(serializers.ModelSerializer):
     group = serializers.SlugRelatedField(slug_field='name', queryset=Group.objects)
     basis = serializers.SlugRelatedField(slug_field='name', queryset=Basis.objects)
@@ -173,11 +168,7 @@ class StudentMoneySerializer(serializers.ModelSerializer):
         fields = ('student_id', 'fullname', 'group', 'semester', 'money', 'basis',)
 
 
-
-
-
 # GroupSubjects
-########################################################################################################################
 class GroupSubjectSerializer(serializers.ModelSerializer):
     groups = serializers.SlugRelatedField(slug_field='name', queryset=Group.objects)
     subjects = serializers.SlugRelatedField(slug_field='name', queryset=Subject.objects)
@@ -188,7 +179,6 @@ class GroupSubjectSerializer(serializers.ModelSerializer):
 
 
 # Results
-########################################################################################################################
 class ResultSerializer(serializers.ModelSerializer):
     students = serializers.SlugRelatedField(slug_field='fullname', queryset=Student.objects)
     groupsubject = GroupSubjectSerializer()
@@ -200,7 +190,6 @@ class ResultSerializer(serializers.ModelSerializer):
 
 
 # Groups
-########################################################################################################################
 class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -209,7 +198,6 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 # Subjects
-########################################################################################################################
 class SubjectSerializer(serializers.ModelSerializer):
     cathedra = serializers.SlugRelatedField(slug_field='name', queryset=Cathedra.objects)
     history = serializers.SerializerMethodField(read_only=True)
@@ -241,7 +229,6 @@ class SubjectLogSerializer(serializers.ModelSerializer):
 
 
 # Cathedras
-########################################################################################################################
 class CathedraSerializer(serializers.ModelSerializer):
     faculty = serializers.SlugRelatedField(slug_field='name', queryset=Faculty.objects)
 
@@ -251,7 +238,6 @@ class CathedraSerializer(serializers.ModelSerializer):
 
 
 # Faculties
-########################################################################################################################
 class FacultySerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -260,7 +246,6 @@ class FacultySerializer(serializers.ModelSerializer):
 
 
 # Semesters
-########################################################################################################################
 class SemesterSerializer(serializers.ModelSerializer):
 
     class Meta:
