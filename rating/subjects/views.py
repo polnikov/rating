@@ -3,14 +3,11 @@ from collections import Counter
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, render, redirect
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
-                                  UpdateView)
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView, UpdateView)
 from groups.models import Group
 from students.models import Result, Semester
-from subjects.forms import (CathedraForm, FacultyForm, GroupSubjectForm,
-                            SubjectForm)
-from subjects.models import (Cathedra, Faculty, GroupSubject, Subject,
-                             SubjectLog)
+from subjects.forms import (CathedraForm, FacultyForm, GroupSubjectForm, SubjectForm)
+from subjects.models import (Cathedra, Faculty, GroupSubject, Subject, SubjectLog)
 
 from rating.settings import IMPORT_DELIMITER
 
@@ -168,8 +165,6 @@ def import_subjects(request):
     }
     return render(request, 'import/import_subjects.html', context)
 
-########################################################################################################################
-
 
 class CathedraListView(LoginRequiredMixin, ListView):
     """Отобразить все кафедры."""
@@ -253,8 +248,6 @@ def import_cathedras(request):
     }
     return render(request, 'import/import_cathedras.html', context)
 
-########################################################################################################################
-
 
 class FacultyListView(LoginRequiredMixin, ListView):
     """Отобразить все факультеты."""
@@ -283,8 +276,6 @@ class FacultyDeleteView(LoginRequiredMixin, DeleteView):
     model = Faculty
     template_name = 'subjects/faculty_delete.html'
     success_url = '/subjects/faculties'
-
-########################################################################################################################
 
 
 class GroupSubjectListView(LoginRequiredMixin, ListView):
@@ -426,7 +417,6 @@ def import_groupsubjects(request):
     }
     return render(request, 'import/import_groupsubjects.html', context)
 
-########################################################################################################################
 
 
 class SubjectsDebtsListView(LoginRequiredMixin, ListView):

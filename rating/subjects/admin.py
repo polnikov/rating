@@ -65,8 +65,6 @@ class SubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'name',
     ]
 
-########################################################################################################################
-
 
 @admin.register(SubjectLog)
 class SubjectLog(admin.ModelAdmin):
@@ -85,8 +83,6 @@ class SubjectLog(admin.ModelAdmin):
         'user',
         'field',
     )
-
-########################################################################################################################
 
 
 class CathedraResource(resources.ModelResource):
@@ -126,8 +122,6 @@ class CathedraAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     )
     list_display_links = ('name',)
 
-########################################################################################################################
-
 
 class FacultyResource(resources.ModelResource):
 
@@ -152,8 +146,6 @@ class FacultyAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'short_name',
     )
     list_display_links = ('name',)
-
-########################################################################################################################
 
 
 class GroupSubjectResource(resources.ModelResource):
