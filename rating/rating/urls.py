@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.urls import include, path
 from django.views.generic.base import RedirectView
+from django.shortcuts import render
 
 
 urlpatterns = [
@@ -19,3 +20,10 @@ urlpatterns += [
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include('api.urls', namespace='api')),
 ]
+
+
+def custom_404(request, exception=None):
+    return render(request, '404.html', status=404)
+
+
+handler404 = custom_404

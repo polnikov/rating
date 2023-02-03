@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.db.models import Q
 from django.http import Http404, JsonResponse, HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.generic import (
@@ -67,7 +67,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
     model = Student
 
     def get(self, request, pk, **kwargs):
-        student = Student.objects.select_related('group', 'semester', 'basis').get(student_id__exact=pk)
+        student = get_object_or_404(Student.objects.select_related('group', 'semester', 'basis'), student_id__exact=pk)
 
         try:
             history = StudentLog.objects.select_related('user').filter(
