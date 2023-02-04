@@ -12,7 +12,7 @@ class ArchiveDataView(LoginRequiredMixin, ListView):
     def get(self, request):
         students = Student.archived_objects.select_related('group', 'semester')
         marks = Result.objects.select_related().filter(is_archived=True)
-        subjects = Subject.objects.select_related('semester', 'cathedra').filter(is_archived=True)
+        subjects = Subject.archived_objects.select_related('semester', 'cathedra')
         groupsubjects = GroupSubject.objects.select_related().filter(is_archived=True)
         groups = Group.objects.filter(is_archived=True)
 

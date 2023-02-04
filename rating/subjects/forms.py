@@ -70,7 +70,7 @@ class GroupSubjectForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(GroupSubjectForm, self).__init__(*args, **kwargs)
         self.fields['groups'].queryset = Group.objects.filter(is_archived=False)
-        self.fields['subjects'].queryset = Subject.objects.filter(is_archived=False).order_by('semester')
+        self.fields['subjects'].queryset = Subject.active_objects.order_by('semester')
 
     subjects = Input()
 
