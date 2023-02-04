@@ -810,7 +810,7 @@ def download_excel_data(request):
         return HttpResponseRedirect(url)
     else:
         # назначения
-        group_subjects = GroupSubject.objects.select_related().filter(is_archived=False, id__in=negative_groupsubjects_ids)
+        group_subjects = GroupSubject.active_objects.select_related().filter(id__in=negative_groupsubjects_ids)
         
         # кафедры
         cathedras = list(set(group_subjects.values_list('subjects__cathedra__short_name', flat=True)))

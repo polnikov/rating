@@ -83,9 +83,8 @@ class StudentSerializer(serializers.ModelSerializer):
             students=student.student_id).filter(
             ~Q(groupsubject__subjects__form_control__exact='Зачет'))
         # все аттестации для данного направления (группы), исключая зачеты
-        atts = GroupSubject.objects.select_related('subjects').filter(
+        atts = GroupSubject.active_objects.select_related('subjects').filter(
             groups=student.group,
-            is_archived=False
         ).filter(~Q(subjects__form_control__exact='Зачет'))
 
         # вычисление среднего балла по семестрам и суммарного
