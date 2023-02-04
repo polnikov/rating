@@ -67,10 +67,9 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
             status='Является студентом'
         ).order_by('last_name')
         # дисциплины, назначенные текущей группе в соответствующем семестре
-        subjects = GroupSubject.objects.select_related('subjects').filter(
+        subjects = GroupSubject.active_objects.select_related('subjects').filter(
             groups__name=groupname,
             subjects__semester=semester,
-            is_archived=False,
         ).order_by('subjects__form_control', 'subjects__name')
         # текущий курс группы
         course = students[0].course if students else '-'

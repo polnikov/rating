@@ -15,8 +15,8 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
     return if student: `list`
     '''
     # дисциплины, назначенные текущей группе в соответствующем семестре
-    subjects = GroupSubject.objects.select_related().filter(
-        groups__name=groupname, subjects__semester=semester, is_archived=False).order_by(
+    subjects = GroupSubject.active_objects.select_related().filter(
+        groups__name=groupname, subjects__semester=semester).order_by(
         'subjects__form_control', 'subjects__name')
 
     # добавляем порядковую нумерацию дисциплин
@@ -230,7 +230,6 @@ def calculate_rating(student, start, stop=False):
         # все аттестации для данного направления (группы) в указанном семестре, исключая зачеты
         atts = GroupSubject.objects.select_related('subjects').filter(
             groups=student.group,
-            # is_archived=False
         ).filter(Q(subjects__semester__semester__gte=start) & Q(subjects__semester__semester__lte=stop)
         ).filter(~Q(subjects__form_control__exact='Зачет'))
     elif start and not stop:

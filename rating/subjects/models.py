@@ -165,8 +165,22 @@ class SubjectLog(CommonModelLog):
         return f'{self.id}'
 
 
+class ArchivedGroupSubjectManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_archived=True)
+
+
+class ActiveGroupSubjectManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_archived=False)
+
+
 class GroupSubject(CommonArchivedModel, CommonTimestampModel):
     """Модель <Назначение дисциплины группе>."""
+    objects = models.Manager()
+    archived_objects = ArchivedGroupSubjectManager()
+    active_objects = ActiveGroupSubjectManager()
+
     groups = models.ForeignKey(
         'groups.Group',
         on_delete=models.CASCADE,

@@ -35,9 +35,7 @@ class SubjectDetailView(LoginRequiredMixin, DetailView):
         # текущая дисциплина
         subject = get_object_or_404(Subject, id=pk)
         # группы, которым назначена текущая дисциплина в соответствующем семестре
-        groups = GroupSubject.objects.filter(
-            subjects=subject.id, is_archived=False).order_by(
-            'groups__code', 'groups__name')
+        groups = GroupSubject.active_objects.filter(subjects=subject.id).order_by('groups__code', 'groups__name')
         # выборка студентов, сдававших дисциплину в соответствующем семестре
         students = Result.objects.select_related().filter(groupsubject__subjects=subject.id)
 
@@ -285,7 +283,7 @@ class GroupSubjectListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        groupsubjects = GroupSubject.objects.select_related('subjects__semester', 'groups').filter(is_archived=False)
+        groupsubjects = GroupSubject.active_objects.select_related('subjects__semester', 'groups')
         context['groupsubjects_list'] = groupsubjects.order_by('subjects__semester', 'groups', '-subjects__form_control')
         context['empty_date'] = groupsubjects.filter(att_date__exact=None).count()
         context['empty_teacher'] = groupsubjects.filter(teacher__exact='').count()
@@ -430,8 +428,8 @@ class SubjectsDebtsListView(LoginRequiredMixin, ListView):
         negative_subjects = Result.objects.select_related('groupsubject__subjects').filter(
             mark__contained_by=negative).values('groupsubject__id')
         # назначения
-        group_subjects = GroupSubject.objects.select_related('subjects__semester', 'groups').filter(
-            is_archived=False, id__in=negative_subjects).order_by('-subjects__semester')
+        group_subjects = GroupSubject.active_objects.select_related('subjects__semester', 'groups').filter(
+            id__in=negative_subjects).order_by('-subjects__semester')
 
         for gsub in group_subjects:
             all_marks = [
