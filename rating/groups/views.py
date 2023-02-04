@@ -62,10 +62,9 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
         # текущая группа
         group = get_object_or_404(Group, name=groupname)
         # студенты текущей группы
-        students = Student.objects.select_related('basis', 'group').filter(
+        students = Student.active_objects.select_related('basis', 'group').filter(
             group__name=groupname,
             semester=semester,
-            is_archived=False,
             status='Является студентом'
         ).order_by('last_name')
         # дисциплины, назначенные текущей группе в соответствующем семестре

@@ -18,8 +18,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(*args, **kwargs)
 
         # текущие студенты
-        current_students = Student.objects.select_related('group', 'semester').filter(
-            Q(is_archived=False) & Q(status='Является студентом') | Q(status='Академический отпуск'))
+        current_students = Student.active_objects.select_related('group', 'semester').filter(
+            Q(status='Является студентом') | Q(status='Академический отпуск'))
         # активные студенты
         active_students = current_students.exclude(status='Академический отпуск')
         # в академическом отпуске

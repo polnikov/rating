@@ -13,8 +13,21 @@ from rating.abstracts import CommonArchivedModel, CommonTimestampModel, CommonMo
 logger = logging.getLogger(__name__)
 
 
+class ArchivedStudentManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_archived=True)
+
+
+class ActiveStudentManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_archived=False)
+
+
 class Student(CommonArchivedModel, CommonTimestampModel):
     """Модель <Студент>."""
+    objects = models.Manager()
+    archived_objects = ArchivedStudentManager()
+    active_objects = ActiveStudentManager()
 
     class Citizenship(models.TextChoices):
         RUS = 'Россия', 'Россия'
