@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views.generic import (CreateView, DeleteView, ListView, TemplateView, UpdateView, View)
+from django.shortcuts import get_object_or_404
 
 from groups.forms import GroupForm
 from groups.models import Group
@@ -58,7 +59,7 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
     def get(self, request, groupname, semester, **kwargs):
         context = self.get_context_data(**kwargs)
         # текущая группа
-        group = Group.objects.get(name=groupname)
+        group = get_object_or_404(Group, name=groupname)
         # студенты текущей группы
         students = Student.objects.select_related('basis', 'group').filter(
             group__name=groupname,
