@@ -50,7 +50,7 @@
                 <tbody>
                     <tr>
                         <td>Семестр</td>
-                        <td><div class="ui circular label">{{ subject.semester.semester }}</div></td>
+                        <td><div class="ui circular grey inverted label">{{ subject.semester.semester }}</div></td>
                     </tr>
                     <tr>
                         <td class="three wide">Группы</td>
@@ -58,11 +58,11 @@
                             <td class="left aligned">
                                 {% for group in groups %}
                                     {% if group.groups.is_archived == True %}
-                                        <a class="ui circular brown label" onclick="window.location.href = '{% url 'groups:detail' groupname=group.groups semester=subject.semester.semester %}'">
+                                        <a class="ui circular brown inverted label" onclick="window.location.href = '{% url 'groups:detail' groupname=group.groups semester=subject.semester.semester %}'">
                                             {{ group.groups }}-{{ subject.semester.semester }}
                                         </a>
                                     {% else %}
-                                        <a class="ui circular label" onclick="window.location.href = '{% url 'groups:detail' groupname=group.groups semester=subject.semester.semester %}'">
+                                        <a class="ui circular grey inverted label" onclick="window.location.href = '{% url 'groups:detail' groupname=group.groups semester=subject.semester.semester %}'">
                                             {{ group.groups }}-{{ subject.semester.semester }}
                                         </a>
                                     {% endif %}
