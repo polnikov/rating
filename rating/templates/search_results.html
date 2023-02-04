@@ -33,7 +33,7 @@
                         <div class="ui negative message"><div class="header" style="font-family: Hack">Пустой поиск</div></div>
                     </div>
                 </div>
-            {% elif students or subjects or groupsubjects %}
+            {% elif students or subjects %}
 
                 <div class="row">
                     <div class="column">
@@ -73,21 +73,6 @@
                                 {% endfor %}
                             {% endif %}
 
-                            <!-- GroupSubjects -->
-                            {% if groupsubjects %}
-                                {% for gsub in groupsubjects %}
-                                    <div class="ui middle aligned selection list">
-                                        <div class="item">
-                                            <div class="content">
-                                                <div class="header" style="font-family: Hack">
-                                                    <i class="book icon"></i> <a href="{{ gsub.get_absolute_url }}">{{ gsub }}</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
-                            
                         </div>
                     </div>
                 </div>
