@@ -16,7 +16,7 @@ class SubjectListView(LoginRequiredMixin, ListView):
     """Отобразить все предметы."""
     model = Subject
     template_name = 'subjects/subjects.html'
-    queryset = Subject.objects.select_related('semester', 'cathedra').filter(is_archived=False)
+    queryset = Subject.active_objects.select_related('semester', 'cathedra')
 
 
 class SubjectCreateView(LoginRequiredMixin, CreateView):

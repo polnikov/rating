@@ -4,8 +4,21 @@ from django.urls import reverse
 from rating.abstracts import CommonArchivedModel, CommonModelLog, CommonTimestampModel
 
 
+class ArchivedSubjectManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_archived=True)
+
+
+class ActiveSubjectManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_archived=False)
+
+
 class Subject(CommonArchivedModel, CommonTimestampModel):
     """Модель <Дисциплина>."""
+    objects = models.Manager()
+    archived_objects = ArchivedSubjectManager()
+    active_objects = ActiveSubjectManager()
 
     class Formcontrol(models.TextChoices):
         EXAM = 'Экзамен', 'Экзамен'
