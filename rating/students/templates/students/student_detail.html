@@ -70,14 +70,14 @@
                                 <tr>
                                     <td>Группа</td>
                                     <td>
-                                        <a href="{% url 'groups:detail' groupname=student.group semester=student.semester.semester %}" class="ui circular label">
+                                        <a href="{% url 'groups:detail' groupname=student.group semester=student.semester.semester %}" class="ui circular grey inverted label">
                                             {{ student.group }}
                                         </a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Семестр</td>
-                                    <td><div class="ui circular label">{{ student.semester.semester }}</div></td>
+                                    <td><div class="ui circular grey inverted label">{{ student.semester.semester }}</div></td>
                                 </tr>
                                 <tr>
                                     <td>Дата зачисления</td>
