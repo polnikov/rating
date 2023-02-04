@@ -418,7 +418,6 @@ def import_groupsubjects(request):
     return render(request, 'import/import_groupsubjects.html', context)
 
 
-
 class SubjectsDebtsListView(LoginRequiredMixin, ListView):
     """Отобразить задолженности всех студентов."""
     model = GroupSubject
