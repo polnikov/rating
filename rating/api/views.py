@@ -34,7 +34,7 @@ class StudentLogList(generics.ListAPIView):
 
 
 class StudentMoneyList(generics.ListAPIView):
-    queryset = Student.objects.select_related('basis', 'group', 'semester').filter(is_archived=False)
+    queryset = Student.active_objects.select_related('basis', 'group', 'semester')
     serializer_class = serializers.StudentMoneySerializer
 
 
@@ -183,12 +183,12 @@ def student_rating(request):
         start = 1
 
     if groups:
-        students = Student.objects.select_related('group', 'semester', 'basis').filter(
-            is_archived=False, group__name__in=groups, semester__semester__gte=start)
+        students = Student.active_objects.select_related('group', 'semester', 'basis').filter(
+            group__name__in=groups, semester__semester__gte=start)
     else:
-        students = Student.objects.select_related(
+        students = Student.active_objects.select_related(
             'group', 'semester', 'basis').filter(
-            is_archived=False, semester__semester__gte=start)
+            semester__semester__gte=start)
 
     flag_1 = not sem_start and not sem_stop
     flag_2 = sem_start and not sem_stop
@@ -536,9 +536,7 @@ def students_debts(request):
     negative_students = Result.objects.select_related('students').filter(
         mark__contained_by=negative).values('students__student_id')
     # студенты
-    students = Student.objects.select_related(
-        'basis', 'group', 'semester').filter(
-        is_archived=False, student_id__in=negative_students)
+    students = Student.active_objects.select_related('basis', 'group', 'semester').filter(student_id__in=negative_students)
 
     for st in students:
         all_marks = [

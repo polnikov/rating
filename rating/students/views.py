@@ -37,7 +37,7 @@ class StudentListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        students = Student.objects.select_related('group', 'semester').filter(is_archived=False).order_by(
+        students = Student.active_objects.select_related('group', 'semester').order_by(
             'semester',
             'group',
             'level',
@@ -49,7 +49,7 @@ class StudentListView(LoginRequiredMixin, ListView):
         context['students_list'] = students
         num_active_students = students.filter(status__exact='Является студентом').count()
         context['num_students'] = num_active_students
-        graduates = Student.objects.select_related('group', 'semester').filter(is_archived=True, status='Выпускник')
+        graduates = Student.active_objects.select_related('group', 'semester').filter(status='Выпускник')
         context['graduates'] = graduates
         return context
 
@@ -179,12 +179,12 @@ class StudentRatingApiView(LoginRequiredMixin, View):
             start = 1
 
         if groups:
-                students = Student.objects.select_related('group', 'semester', 'basis').filter(
-                    is_archived=False, group__name__in=groups, semester__semester__gte=start)
+            students = Student.active_objects.select_related('group', 'semester', 'basis').filter(
+                group__name__in=groups, semester__semester__gte=start)
         else:
-            students = Student.objects.select_related(
+            students = Student.active_objects.select_related(
                 'group', 'semester', 'basis').filter(
-                is_archived=False, semester__semester__gte=start)
+                semester__semester__gte=start)
 
         flag_1 = not sem_start and not sem_stop
         flag_2 = sem_start and not sem_stop
@@ -716,7 +716,7 @@ class StudentsMoneyListView(LoginRequiredMixin, ListView):
     """Отобразить студентов с указанием стипендии."""
     model = Student
     template_name = 'students/students_money.html'
-    queryset = Student.objects.select_related('basis', 'group', 'semester').filter(is_archived=False)
+    queryset = Student.active_objects.select_related('basis', 'group', 'semester')
 
 
 class StudentsDebtsListView(LoginRequiredMixin, ListView):
@@ -731,9 +731,9 @@ class StudentsDebtsListView(LoginRequiredMixin, ListView):
         negative_students = Result.objects.select_related('students').filter(
             mark__contained_by=negative, is_archived=False).values('students__student_id')
         # студенты
-        students = Student.objects.select_related(
+        students = Student.active_objects.select_related(
             'basis', 'group', 'semester').filter(
-            is_archived=False, student_id__in=negative_students)
+            student_id__in=negative_students)
 
         for st in students:
             all_marks = [
