@@ -8,7 +8,7 @@ register = template.Library()
 
 @register.filter(name='get_user_last_name')
 def get_user_last_name(id):
-    """Возвращает фамилию пользователя по id. Если фамилия отсутствует - username"""
+    """Returns the user's last name by id. If the last name is missing - username."""
     user = get_object_or_404(User, id=id)
     if user.last_name:
         return user.last_name
@@ -18,7 +18,7 @@ def get_user_last_name(id):
 
 @register.filter(name='date_or_else')
 def date_or_else(value):
-    """Преобразует дату: YYYY-MM-DD ---> DD.MM.YYYY."""
+    """Transforms a date: YYYY-MM-DD ---> DD.MM.YYYY."""
     if value != None:
         value = value.split('-')
         return f'{value[2]}.{value[1]}.{value[0]}'
@@ -26,7 +26,7 @@ def date_or_else(value):
 
 @register.filter(name='unpack_mark')
 def unpack_mark(value):
-    """Извлекает оценку из списка."""
+    """Retrieves a mark from the list."""
     if len(value) == 0:
         return ''
     else:
@@ -35,7 +35,7 @@ def unpack_mark(value):
 
 @register.filter(name='unpack_marks')
 def unpack_marks(value):
-    """Преобразует список оценок в читаемый вид."""
+    """Transforms a mark's list into a readable view."""
     if len(value) == 0:
         return ''
     else:
@@ -44,13 +44,13 @@ def unpack_marks(value):
 
 @register.filter(name='short_basis')
 def short_basis(value):
-    """Подменяет полное название основы обучения на первую заглавную букву."""
+    """Cuts a subject's form control to a first capital letter."""
     return value.name[0]
 
 
 @register.filter(name='short_form_control')
 def short_form_control(value):
-    """Подменяет полное название формы контроля на аббревиатуру."""
+    """Transforms a subject's form control into short name."""
     FORMCONTROL = {
         'Экзамен': 'Э',
         'Диффзачет': 'Д',
@@ -63,5 +63,5 @@ def short_form_control(value):
 
 @register.filter(name='has_group')
 def has_group(user, group_name):
-    """Проверяет принадлежность пользователя к группе."""
+    """Checks if a user is a member of a group."""
     return user.groups.filter(name=group_name).exists()

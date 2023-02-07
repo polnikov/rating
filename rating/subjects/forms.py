@@ -10,7 +10,6 @@ from subjects.models import Cathedra, Faculty, GroupSubject, Subject
 
 
 class SubjectForm(ModelForm):
-    """Форма модели <Основа обучения>."""
     class Meta:
         model = Subject
         fields = [
@@ -24,7 +23,7 @@ class SubjectForm(ModelForm):
         ]
 
     def clean_zet(self):
-        """Проверить формат ЗЕТ."""
+        """Check ZET format."""
         zet = self.cleaned_data['zet']
         pattern = r'^([0-9]{2,3})\s\(([0-9]{1,2})\)$'  # 72 (2)
 
@@ -37,7 +36,6 @@ class SubjectForm(ModelForm):
 
 
 class FacultyForm(ModelForm):
-    """Форма модели <Факультет>."""
     class Meta:
         model = Faculty
         fields = [
@@ -47,7 +45,6 @@ class FacultyForm(ModelForm):
 
 
 class CathedraForm(ModelForm):
-    """Форма модели <Кафедра>."""
     class Meta:
         model = Cathedra
         fields = [
@@ -66,7 +63,6 @@ class CathedraForm(ModelForm):
 
 
 class GroupSubjectForm(ModelForm):
-    """Форма модели <Назначение дисциплины>."""
     def __init__(self, *args, **kwargs):
         super(GroupSubjectForm, self).__init__(*args, **kwargs)
         self.fields['groups'].queryset = Group.objects.filter(is_archived=False)
@@ -95,7 +91,7 @@ class GroupSubjectForm(ModelForm):
         }
 
     def clean_teacher(self):
-        """Проверить формат ФИО преподавателя."""
+        """Check teacher full name."""
         raw_teachers = self.cleaned_data['teacher']
         if not raw_teachers:
             return ''
@@ -108,7 +104,7 @@ class GroupSubjectForm(ModelForm):
             raise ValidationError('Неверный формат ФИО')
 
     def clean_att_date(self):
-        """Проверить формат даты."""
+        """Check date format."""
         date = self.cleaned_data['att_date']
         pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
 
@@ -121,6 +117,7 @@ class GroupSubjectForm(ModelForm):
 
 
 def check_teachers_name(names: list):
+    """Validate teacher's full name."""
     pattern_1 = r'^(\w{1,})\s(\w{1})\.(\w{1})\.$'  # Фамилия И.О.
     pattern_2 = r'^(\w{1,})-(\w{1,})\s(\w{1})\.(\w{1})\.$'  # Фамилия-Фамилия И.О.
     teachers = []

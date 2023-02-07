@@ -15,7 +15,6 @@ class ActiveSubjectManager(models.Manager):
 
 
 class Subject(CommonArchivedModel, CommonTimestampModel):
-    """Модель <Дисциплина>."""
     objects = models.Manager()
     archived_objects = ArchivedSubjectManager()
     active_objects = ActiveSubjectManager()
@@ -91,14 +90,14 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
             return f'{self.name} | {self.form_control} | {self.semester} семестр | {self.cathedra.short_name}'
 
     def save(self, *args, **kwargs):
-        # Проверяем, существует ли объект
+        # Checking if the object is exist
         if Subject.objects.filter(id=self.pk).exists():
             if self.pk is not None:
-                # Меняем модель
+                # Changing the model
                 old = Subject.objects.get(pk=self.pk)
-                # получаем все поля модели
+                # Getting all model fields
                 field_names = [field.name for field in Subject._meta.fields]
-                # готовим словарь для изменений
+                # Preparing a dict for changes
                 update_fields = {}
                 for field_name in field_names:
                     try:
@@ -108,7 +107,7 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
                             update_fields['id'] = self.id
                     except Exception as ex:
                         print('[!] ---> Ошибка лога Subject', ex)
-            # добавляем записи в таблицу
+            # Adding records to table
             try:
                 for key in update_fields:
                     if key != 'id':
@@ -122,7 +121,7 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
                 print(f'Не удалось записать изменения по дисциплинам:')
                 print('[!] ---> Ошибка:', subject_log_ex)
 
-        #: Если форма контроля дисциплины КП или КР, то указываем это в ЗЕТ
+        # Change ZET field for KP, KR form controls
         match self.form_control:
             case 'Курсовая работа':
                 self.zet = 'КР'
@@ -136,7 +135,7 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
 
     @property
     def empty_cathedra(self):
-        """Вернуть <Нет>, если кафедра не выбрана."""
+        """Return <Нет>, if a cathedra is empty."""
         if not self.cathedra:
             return 'Нет'
         else:
@@ -144,7 +143,7 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
 
     @property
     def empty_zet(self):
-        """Вернуть <Нет>, если ЗЕТ отсутствуют."""
+        """Return <Нет>, if a ZET is empty."""
         if not self.zet:
             return 'Нет'
         else:
@@ -152,8 +151,6 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
 
 
 class SubjectLog(CommonModelLog):
-    """Модель <Логирование изменений по дисциплинам>."""
-
     class Meta:
         verbose_name = 'Изменения в дисциплинах'
         verbose_name_plural = "Изменения в дисциплинах"
@@ -176,7 +173,6 @@ class ActiveGroupSubjectManager(models.Manager):
 
 
 class GroupSubject(CommonArchivedModel, CommonTimestampModel):
-    """Модель <Назначение дисциплины группе>."""
     objects = models.Manager()
     archived_objects = ArchivedGroupSubjectManager()
     active_objects = ActiveGroupSubjectManager()
@@ -242,7 +238,7 @@ class GroupSubject(CommonArchivedModel, CommonTimestampModel):
 
     @property
     def empty_att_date(self):
-        """Делает пометку, где не указана дата аттестации."""
+        """Create a note, if an att date is empty."""
         if self.att_date == None or self.att_date == "":
             return 'Нет'
         else:
@@ -250,7 +246,7 @@ class GroupSubject(CommonArchivedModel, CommonTimestampModel):
 
     @property
     def empty_teacher(self):
-        """Делает пометку, где не указаны ФИО преподавателя."""
+        """Create a note, if a teacher's full name is empty."""
         if self.teacher == '':
             return 'Нет'
         else:
@@ -258,7 +254,6 @@ class GroupSubject(CommonArchivedModel, CommonTimestampModel):
 
 
 class Cathedra(CommonTimestampModel):
-    """Модель <Кафедра>."""
     name = models.CharField(
         verbose_name='Кафедра',
         max_length=255,
@@ -297,7 +292,7 @@ class Cathedra(CommonTimestampModel):
 
     @property
     def empty_short_name(self):
-        """Вернуть <Нет>, если сокращение кафедры отсутствует."""
+        """Return <Нет>, if a cathedra's short name is empty."""
         if self.short_name == None:
             return 'Нет'
         else:
@@ -305,7 +300,7 @@ class Cathedra(CommonTimestampModel):
 
     @property
     def empty_faculty(self):
-        """Вернуть <Нет>, если факультет кафедры отсутствует."""
+        """Return <Нет>, if a cathedra's faculty is empty."""
         if self.faculty == None:
             return 'Нет'
         else:
@@ -313,7 +308,6 @@ class Cathedra(CommonTimestampModel):
 
 
 class Faculty(CommonTimestampModel):
-    """Модель <Факультет>."""
     name = models.CharField(
         verbose_name='Полное название факультета',
         max_length=255,

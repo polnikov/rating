@@ -37,14 +37,14 @@
             {% elif check_mark_formcontrol == False %}
                <i class="times red icon"></i><font color="red">Оценки не соответствуют форме контроля назначенной дисциплины!</font>
             {% elif errors %}
-                  <i class="times red icon"></i><font color="red">Возникли следующие ошибки:</font>
-                  <div class="ui list left aligned">
-                     {% for error in errors %}
-                        <div class="item" align="left">
-                           <i class="bug red icon"></i>{{ error }}
-                        </div>
-                     {% endfor %}
-                  </div>
+               <i class="times red icon"></i><font color="red">Возникли следующие ошибки:</font>
+               <div class="ui list left aligned">
+                  {% for error in errors %}
+                     <div class="item" align="left">
+                        <i class="bug red icon"></i>{{ error }}
+                     </div>
+                  {% endfor %}
+               </div>
             {% elif success %}
                <div class="extra content center aligned">
                   <i class="check green icon"></i><font color="green">Все данные были успешно импортированы!</font>

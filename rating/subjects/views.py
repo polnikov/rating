@@ -13,14 +13,12 @@ from rating.settings import IMPORT_DELIMITER
 
 
 class SubjectListView(LoginRequiredMixin, ListView):
-    """Отобразить все предметы."""
     model = Subject
     template_name = 'subjects/subjects.html'
     queryset = Subject.active_objects.select_related('semester', 'cathedra')
 
 
 class SubjectCreateView(LoginRequiredMixin, CreateView):
-    """Добавить новый предмет."""
     model = Subject
     form_class = SubjectForm
     template_name = 'subjects/subject_add.html'
@@ -28,18 +26,18 @@ class SubjectCreateView(LoginRequiredMixin, CreateView):
 
 
 class SubjectDetailView(LoginRequiredMixin, DetailView):
-    """Сводная информация о дисциплине и история изменений по ней."""
     model = Subject
 
     def get(self, request, pk, **kwargs):
-        # текущая дисциплина
+        # current subject
         subject = get_object_or_404(Subject, id=pk)
-        # группы, которым назначена текущая дисциплина в соответствующем семестре
+        # groups with subject groupsubject in current semester
         groups = GroupSubject.active_objects.filter(subjects=subject.id).order_by('groups__code', 'groups__name')
         # выборка студентов, сдававших дисциплину в соответствующем семестре
+        # students who have current subject
         students = Result.objects.select_related().filter(groupsubject__subjects=subject.id)
 
-        # отображение истории изменений дисциплины
+        # subjects changes history
         try:
             history = SubjectLog.objects.select_related().filter(record_id=subject.id).order_by('-timestamp').values()
         except:
@@ -55,7 +53,6 @@ class SubjectDetailView(LoginRequiredMixin, DetailView):
 
 
 class SubjectDeleteView(LoginRequiredMixin, DeleteView):
-    """Удалить предмет."""
     model = Subject
     template_name = 'subjects/subject_delete.html'
     success_url = '/subjects/'
@@ -79,15 +76,15 @@ class SubjectUpdateView(LoginRequiredMixin, UpdateView):
 
 
 def import_subjects(request):
-    '''Импортировать дисциплины из CSV файла.'''
+    '''Import subjects from CSV file.'''
     success = False
-    errors = []  # список дисциплин, которые не были импортированы
+    errors = []  # list of non-imported subjects
     file_validation = ''
 
     if request.method == 'POST':
         import_file = request.FILES['import_file'] if request.FILES else False
 
-        # проверка, что файл выбран и формат файла CSV
+        # check that the file has been selected and his format is CSV
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}
@@ -99,7 +96,7 @@ def import_subjects(request):
                 if n == 0:
                     pass
                 else:
-                    # проверка формата ЗЕТ
+                    # check ZET format
                     pattern = r'([0-9]{2,3})\s\(([0-9]{1,2})\)'  # 72 (2)
                     if row[4] == '':
                         zet = ''
@@ -165,14 +162,12 @@ def import_subjects(request):
 
 
 class CathedraListView(LoginRequiredMixin, ListView):
-    """Отобразить все кафедры."""
     model = Cathedra
     template_name = 'subjects/cathedras.html'
     queryset = Cathedra.objects.select_related('faculty')
 
 
 class CathedraCreateView(LoginRequiredMixin, CreateView):
-    """Добавить новую кафедру."""
     model = Cathedra
     form_class = CathedraForm
     template_name = 'subjects/cathedra_add.html'
@@ -180,7 +175,6 @@ class CathedraCreateView(LoginRequiredMixin, CreateView):
 
 
 class CathedraUpdateView(LoginRequiredMixin, UpdateView):
-    """Обновить информацию о кафедре."""
     model = Cathedra
     form_class = CathedraForm
     template_name = 'subjects/cathedra_update.html'
@@ -188,22 +182,21 @@ class CathedraUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class CathedraDeleteView(LoginRequiredMixin, DeleteView):
-    """Удалить кафедру."""
     model = Cathedra
     template_name = 'subjects/cathedra_delete.html'
     success_url = '/subjects/cathedras'
 
 
 def import_cathedras(request):
-    '''Импортировать кафедры из CSV файла.'''
+    '''Import cathedras from CSV file.'''
     success = False
-    errors = []  # список кафедр, которые не были импортированы
+    errors = []  # list of non-imported cathedras
     file_validation = ''
 
     if request.method == 'POST':
         import_file = request.FILES['import_file'] if request.FILES else False
 
-        # проверка, что файл выбран и формат файла CSV
+        # check that the file has been selected and his format is CSV
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}
@@ -248,13 +241,11 @@ def import_cathedras(request):
 
 
 class FacultyListView(LoginRequiredMixin, ListView):
-    """Отобразить все факультеты."""
     model = Faculty
     template_name = 'subjects/faculties.html'
 
 
 class FacultyCreateView(LoginRequiredMixin, CreateView):
-    """Добавить новый факультет."""
     model = Faculty
     form_class = FacultyForm
     template_name = 'subjects/faculty_add.html'
@@ -262,7 +253,6 @@ class FacultyCreateView(LoginRequiredMixin, CreateView):
 
 
 class FacultyUpdateView(LoginRequiredMixin, UpdateView):
-    """Обновить информацию о факультетах."""
     model = Faculty
     form_class = FacultyForm
     template_name = 'subjects/faculty_update.html'
@@ -270,14 +260,12 @@ class FacultyUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class FacultyDeleteView(LoginRequiredMixin, DeleteView):
-    """Удалить предмет."""
     model = Faculty
     template_name = 'subjects/faculty_delete.html'
     success_url = '/subjects/faculties'
 
 
 class GroupSubjectListView(LoginRequiredMixin, ListView):
-    """Отобразить все назначения на дисциплины."""
     model = GroupSubject
     template_name = 'subjects/groupsubjects.html'
 
@@ -291,7 +279,6 @@ class GroupSubjectListView(LoginRequiredMixin, ListView):
 
 
 class GroupSubjectCreateView(LoginRequiredMixin, CreateView):
-    """Добавить новое назначение дисциплины для групп."""
     model = GroupSubject
     form_class = GroupSubjectForm
     template_name = 'subjects/groupsubject_add.html'
@@ -322,7 +309,6 @@ class GroupSubjectCreateView(LoginRequiredMixin, CreateView):
 
 
 class GroupSubjectUpdateView(LoginRequiredMixin, UpdateView):
-    """Обновить информацию о факультетах."""
     model = GroupSubject
     form_class = GroupSubjectForm
     template_name = 'subjects/groupsubject_update.html'
@@ -330,22 +316,21 @@ class GroupSubjectUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class GroupSubjectDeleteView(LoginRequiredMixin, DeleteView):
-    """Удалить дисциплину."""
     model = GroupSubject
     template_name = 'subjects/groupsubject_delete.html'
     success_url = '/subjects/groupsubjects'
 
 
 def import_groupsubjects(request):
-    '''Импортировать назначения дисциплин из CSV файла.'''
+    '''Import groupsubjects from CSV file.'''
     success = False
-    errors = []  # список назначений, которые не были импортированы
+    errors = []  # list of non-imported groupsubjects
     file_validation = date_validation = ''
 
     if request.method == 'POST':
         import_file = request.FILES['import_file'] if request.FILES else False
 
-        # проверка, что файл выбран и формат файла CSV
+        # check that the file has been selected and his format is CSV
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}
@@ -368,7 +353,7 @@ def import_groupsubjects(request):
                         subject = Subject.objects.get(name=row[0], form_control=row[1], semester=row[2])
                         group = Group.objects.get(name=row[3])
 
-                        # проверка формата даты зачисления
+                        # check att date format
                         if row[5] != '':
                             pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
                             if not re.match(pattern, row[5]):
@@ -376,7 +361,7 @@ def import_groupsubjects(request):
                                 print('[!] ---> Неверный формат даты аттестации.')
                                 break
                             else:
-                                # преобразование даты к формату поля модели
+                                # att date transformation
                                 att_date = '-'.join(row[5].split('.')[::-1])
 
                                 defaults = {
@@ -417,17 +402,16 @@ def import_groupsubjects(request):
 
 
 class SubjectsDebtsListView(LoginRequiredMixin, ListView):
-    """Отобразить задолженности всех студентов."""
     model = GroupSubject
     template_name = 'subjects/subjects_debts.html'
 
     def get_queryset(self):
         negative = ['ня', 'нз', '2']
 
-        # id всех назначений с отрицательными оценками
+        # ids of all groupsubjects with negative marks
         negative_subjects = Result.objects.select_related('groupsubject__subjects').filter(
             mark__contained_by=negative).values('groupsubject__id')
-        # назначения
+        # groupsubjects
         group_subjects = GroupSubject.active_objects.select_related('subjects__semester', 'groups').filter(
             id__in=negative_subjects).order_by('-subjects__semester')
 
