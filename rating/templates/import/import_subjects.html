@@ -72,16 +72,16 @@
                <div class="eight wide column right aligned">
                   <!-- Button's -->
                   <a
-                  {% if request.path == '/students/import/' %}
-                     href="{% url 'students:students' %}"
-                  {% elif request.path == '/subjects/import/' %}
-                     href="{% url 'subjects:subjects' %}"
-                  {% elif request.path == '/subjects/cathedras/import/' %}
-                     href="{% url 'subjects:cathedras' %}"
-                  {% elif request.path == '/subjects/groupsubjects/import/' %}
-                     href="{% url 'subjects:groupsubjects' %}"
-                  {% endif %}>
-                  <button class="ui small button center aligned" type="button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
+                     {% if request.path == '/students/import/' %}
+                        href="{% url 'students:students' %}"
+                     {% elif request.path == '/subjects/import/' %}
+                        href="{% url 'subjects:subjects' %}"
+                     {% elif request.path == '/subjects/cathedras/import/' %}
+                        href="{% url 'subjects:cathedras' %}"
+                     {% elif request.path == '/subjects/groupsubjects/import/' %}
+                        href="{% url 'subjects:groupsubjects' %}"
+                     {% endif %}>
+                     <button class="ui small button center aligned" type="button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</button>
                   </a>
                   <button class="ui primary small button center aligned" type="submit" style="font-family: Hack"><i class="icon download"></i>Загрузить</button>
                </div>
