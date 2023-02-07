@@ -31,7 +31,6 @@ logger = logging.getLogger(__name__)
 
 
 class StudentListView(LoginRequiredMixin, ListView):
-    """Отобразить всех студентов."""
     model = Student
     template_name = 'students/students.html'
 
@@ -55,7 +54,6 @@ class StudentListView(LoginRequiredMixin, ListView):
 
 
 class StudentCreateView(LoginRequiredMixin, CreateView):
-    """Добавить нового студента."""
     model = Student
     form_class = StudentForm
     template_name = 'students/student_add.html'
@@ -63,7 +61,6 @@ class StudentCreateView(LoginRequiredMixin, CreateView):
 
 
 class StudentDetailView(LoginRequiredMixin, DetailView):
-    """Сводная информация о студенте и история изменений по нему."""
     model = Student
 
     def get(self, request, pk, **kwargs):
@@ -76,16 +73,16 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             logger.info(f'История изменений по студенту {student} отсутствует', extra={'Exception': ex})
             history = 'Error'
 
-        # все оценки студента
+        # all student marks
         marks = Result.objects.select_related().filter(
             students=student.student_id).filter(
             ~Q(groupsubject__subjects__form_control__exact='Зачет'))
-        # все аттестации для данного направления (группы), исключая зачеты
+        # all group results exclude non-nu,eric marks
         atts = GroupSubject.objects.select_related('subjects'
             ).filter(groups=student.group
             ).filter(~Q(subjects__form_control__exact='Зачет'))
 
-        # вычисление среднего балла по семестрам и суммарного
+        # calculation of the average ranking for semesters and the total
         rating_by_semester_bac = {
             1: 0,
             2: 0,
@@ -112,20 +109,20 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             rating_by_semester = rating_by_semester_mag
 
         for i in semesters:
-            # все оценки за семестр
+            # all marks per semester
             sem_marks_all = marks.select_related('subjects').filter(
                 groupsubject__subjects__semester__semester=i
             ).values('mark')
-            # берем только последнюю оценку и исключаем <ня> и <2>
+            # take only the last mark and exclude <ня> и <2>
             sem_marks = list(filter(lambda x: x not in ['ня', '2'], [i['mark'][-1] for i in sem_marks_all]))
             all_marks += sem_marks
-            # количество аттестаций с оценками в семестре
+            # quantity of groupsubjects with marks per semester
             num_atts = atts.filter(subjects__semester=i).count()
             all_num_marks.append(num_atts)
-            # количество каждой из оценок <3 | 4 | 5>
+            # quantity of each mark <3 | 4 | 5>
             count_marks = dict(Counter(sem_marks))
 
-            # определяем средний балл за семестр
+            # calculate average ranking per semester
             if num_atts:
                 sem_rating = round(sum([int(k)*v for k, v in count_marks.items()]) / num_atts, 2)
             else:
@@ -133,7 +130,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
 
             rating_by_semester[i] = sem_rating
 
-        # определяем суммарный средний балл
+        # calculate total ranking
         if sum(all_num_marks):
             rating = round(sum(list(map(int, (all_marks)))) / sum(all_num_marks), 2)
         else:
@@ -155,7 +152,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
 
 
 class StudentRatingTableView(LoginRequiredMixin, ListView):
-    """Отображение шапки таблицы среднего балла студентов и вывод семестров."""
+    """Head of table of the average ranking. Semesters"""
     def get(self, request):
         semesters = Semester.objects.all()
         groups = Group.objects.filter(is_archived=False)
