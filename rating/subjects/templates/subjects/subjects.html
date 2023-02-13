@@ -150,15 +150,15 @@
 			.draw();
 		});
 
-		// Очистка фильтров двойным кликом выше head
-	$(document).on("dblclick",  ".ui.stackable.grid", function() {
-		let inputs = document.getElementsByName("filter");
-		inputs.forEach(e => {
-			e.value = "";
+		// Clean filters inputs by double-clicking above the head
+		$(document).on("dblclick",  ".ui.stackable.grid", function() {
+			let inputs = document.getElementsByName("filter");
+			inputs.forEach(e => {
+				e.value = "";
+			});
+			table.search('');
+			table.columns().search('').draw();
 		});
-		table.search('');
-		table.columns().search('').draw();
-	});
 		changeDatatableInputFont();
 	});
 

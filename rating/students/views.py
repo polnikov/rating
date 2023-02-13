@@ -152,7 +152,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
 
 
 class StudentRatingTableView(LoginRequiredMixin, ListView):
-    """Head of table of the average ranking. Semesters"""
+    """Head of table of the students average ranking. Semesters"""
     def get(self, request):
         semesters = Semester.objects.all()
         groups = Group.objects.filter(is_archived=False)
@@ -161,10 +161,8 @@ class StudentRatingTableView(LoginRequiredMixin, ListView):
 
 
 class StudentRatingApiView(LoginRequiredMixin, View):
-    """Расчет среднего балла студента."""
-
+    """Calculating of the students average ranking."""
     def get(self, request):
-        """Расчет среднего балла студента."""
         serialized_data = []
         sem_start = request.GET.get('semStart', '')
         sem_stop = request.GET.get('semStop', '')
@@ -190,7 +188,7 @@ class StudentRatingApiView(LoginRequiredMixin, View):
 
         if flag_1 or flag_2 or flag_3 or flag_4:
             logger.info(f'Расчет среднего балла за семестр {start} для студентов группы {groups}')
-            # средний балл за указанный семестр. по умолчанию - за 1ый
+            # the students average ranking for specified semester. default - for 1t
             for student in students:
                 rating = calculate_rating(student, start)
 
@@ -207,7 +205,7 @@ class StudentRatingApiView(LoginRequiredMixin, View):
                 })
         else:
             logger.info(f'Расчет среднего балла за период с {start} по {stop} семестр для студентов группы {groups}')
-            # средний балл за указанный период
+            # the students average ranking for specified period
             start, stop = sem_start, sem_stop
 
             for student in students:
@@ -231,12 +229,11 @@ class StudentRatingApiView(LoginRequiredMixin, View):
 
 
 class StudentDeleteView(LoginRequiredMixin, DeleteView):
-    """Удалить студента."""
     model = Student
     template_name = 'students/student_delete.html'
     success_url = '/students/'
 
-    # переопределение ссылки на студента через номер зачетной книжки
+    # overwrite the student link through ID number
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
@@ -265,23 +262,22 @@ class StudentDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class StudentUpdateView(LoginRequiredMixin, UpdateView):
-    """Обновление информации о студенте."""
     model = Student
     form_class = StudentForm
     template_name = 'students/student_update.html'
 
 
 def import_students(request):
-    '''Импортировать студентов из CSV файла.'''
+    '''Import students from CSV file.'''
     logger.info('Импорт студентов')
     success = False
-    errors = []  # список студентов, которые не были импортированы
+    errors = []  # list of non-imported students
     file_validation = date_validation = ''
 
     if request.method == 'POST':
         import_file = request.FILES['import_file'] if request.FILES else False
 
-        # проверка, что файл выбран и формат файла CSV
+        # checking that the file has been selected and its format is CSV
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}
@@ -332,14 +328,14 @@ def import_students(request):
                     logger.error(f'Ошибка импорта студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
                     break
 
-                # проверка формата даты зачисления
+                # check att date format
                 pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
                 if not re.match(pattern, row[9]):
                     date_validation = False
                     logger.error(f'Неверный формат даты зачисления: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
                     break
                 else:
-                    # преобразование даты к формату поля модели
+                    # att date transformation 
                     start_date = '-'.join(row[9].split('.')[::-1])
 
                 try:
@@ -378,8 +374,8 @@ def import_students(request):
 
 
 def transfer_students(request):
-    '''Перевести студентов на следующий семестр. В случае последнего семестра студент отправляется в <Архив> со сменой
-    статуса на <Выпускник>.
+    '''Transfer students to the next semester. In case of the last semester the student is sent to <Архив> with a status
+    change to <Выпускник>.
     '''
     logger.info('Перевод студентов на следующий семестр')
     students_for_transfer = request.POST.getlist('checkedStudents[]', False)
@@ -396,7 +392,7 @@ def transfer_students(request):
             student.semester = semester_obj
             student.save()
         else:
-            # меняем статус студента на <Выпускник> и отправляем в <Архив>
+            # change the student status to <Выпускник> and sent to <Архив>
             student.status = Student.Status.GRADUATED
             student.save()
 
@@ -438,28 +434,27 @@ class ResultUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class ResultDeleteView(LoginRequiredMixin, DeleteView):
-    """Удалить оценку."""
     model = Result
     template_name = 'students/result_delete.html'
     success_url = '/groups/cards'
 
 
 def import_results(request):
-    '''Импортировать оценки из EXCEL файла.'''
+    '''Import results from EXCEL file | files.'''
     logger.info('Импорт оценок')
     success = False
-    errors = []  # список студентов, по которым оценки не были импортированы
+    errors = []  # list of students with non-imported results
 
     if request.method == 'POST':
         import_files = request.FILES.getlist('import_file') if request.FILES else False
 
-        # проверка выбора
+        # checking that the file has been selected
         if not import_files:
             file_validation_exist = False
             context = {'file_validation_exist': file_validation_exist}
             return render(request, 'import/import_results.html', context)
 
-        # проверка формата (xls)
+        # checking file format (xls)
         for file in import_files:
             if str(file).split('.')[-1] != 'xls':
                 file_validation_format = False
@@ -524,13 +519,13 @@ def import_results(request):
             'marks': [],
         }
 
-        # читаем файл
+        # read file
         for file in import_files:
             book = xlrd.open_workbook(file_contents=file.read())
             sheet = book.sheet_by_index(0)
             num_rows = sheet.nrows
 
-            # формируем данные
+            # extract needed lines
             raw_data = []
             for n in range(num_rows):
                 row_data = list(filter(lambda x: x != '', sheet.row_values(n)))
@@ -595,6 +590,7 @@ def import_results(request):
                             return render(request, 'import/import_results.html', context)
                         data['marks'].append(st)
 
+            # write data to DB
             try:
                 logger.info('Запись оценок в БД...')
                 try:
@@ -710,24 +706,22 @@ def import_results(request):
 
 
 class StudentsMoneyListView(LoginRequiredMixin, ListView):
-    """Отобразить студентов с указанием стипендии."""
     model = Student
     template_name = 'students/students_money.html'
     queryset = Student.active_objects.select_related('basis', 'group', 'semester')
 
 
 class StudentsDebtsListView(LoginRequiredMixin, ListView):
-    """Отобразить задолженности всех студентов."""
     model = Student
     template_name = 'students/students_debts.html'
 
     def get_queryset(self):
         negative = ['ня', 'нз', '2']
 
-        # id всех студентов с отрицательными оценками
+        # students ids who has debts
         negative_students = Result.objects.select_related('students').filter(
             mark__contained_by=negative, is_archived=False).values('students__student_id')
-        # студенты
+        # filter students by ids
         students = Student.active_objects.select_related(
             'basis', 'group', 'semester').filter(
             student_id__in=negative_students)
@@ -783,7 +777,7 @@ def download_excel_data(request):
     att_level = request.GET.get('att')
     logger.info(f'Формирование excel файла с задолженностями за {att_level} период аттестации...')
 
-    # id всех назначений с отрицательными оценками
+    # groupsubjects ids with negative results per att period
     match att_level:
         case 'att1':
             negative_groupsubjects_ids = Result.objects.select_related().filter(
@@ -800,19 +794,19 @@ def download_excel_data(request):
         logger.info(f'Задолженностей за {att_level} период аттестации нет')
         return HttpResponseRedirect(url)
     else:
-        # назначения
+        # groupsubjects
         group_subjects = GroupSubject.active_objects.select_related().filter(id__in=negative_groupsubjects_ids)
         
-        # кафедры
+        # cathedras
         cathedras = list(set(group_subjects.values_list('subjects__cathedra__short_name', flat=True)))
 
-        # создаем файл
+        # create xls file
         book = Workbook()
-        # названия столбцов заголовка
+        # headers names
         header = ['Дисциплина', 'Форма контроля', 'Группа', 'Семестр', 'Преподаватель', 'Студенты']
 
         for cathedra in cathedras:
-            # создаем лист с названием = аббревиатура кафедры и делаем активным
+            # create the sheet with the name equal cathedra short name
             book.create_sheet(title=cathedra, index=None)
             sheet = book[cathedra]
             sheet.column_dimensions['A'].width = 75
@@ -823,17 +817,17 @@ def download_excel_data(request):
             sheet.column_dimensions['F'].width = 150
             sheet.auto_filter.ref = 'A1:F1'
 
-            # записываем заголовок на лист
+            # write the header line on the sheet
             for col in range(1, len(header) + 1):
                 cell = sheet.cell(row=1, column=col, value=header[col - 1])
                 sheet[cell.coordinate].font = Font(bold=True, size=14)
 
-            # назначения по кафедре
+            # groupsubjects for the cathedra
             cathedra_group_subjects = group_subjects.filter(subjects__cathedra__short_name=cathedra)
 
             row = 2
             for gs in cathedra_group_subjects:
-                # отрицательные результаты по каждому назначению кафедры
+                # negative results per cathedra groupsubject
                 match att_level:
                     case 'att1':
                         res = gs.result_set.select_related().filter(mark__0__in=negative)
@@ -842,7 +836,7 @@ def download_excel_data(request):
                     case 'att3':
                         res = gs.result_set.select_related().filter(mark__2__in=negative)
 
-                # фио студентов-должников по назначению
+                # students full name with debts
                 students = res.values_list('students__last_name', 'students__first_name', 'students__second_name')
                 students = ', '.join([' '.join(i) for i in students])
                 res_data = [
@@ -859,7 +853,7 @@ def download_excel_data(request):
                     sheet.cell(row=row, column=col + 1).font = Font(size=12)
                 row += 1
 
-        # добавляем оглавление
+        # create sheet with contents
         sheet = book['Sheet']
         sheet.title = 'Оглавление'
         sheet.column_dimensions['A'].width = 200

@@ -76,7 +76,7 @@
 <script>
     $('select.dropdown').dropdown();
     
-    // календарь
+    // calendar
     $(function () {
         $("#id_att_date").datepicker({
             weekStart: 1,
@@ -88,8 +88,8 @@
     });
 
     $(document).ready(function() {
- 
         // изменить шрифт в поле <input>
+        // change font into <input>
         let formElements = document.forms[1].elements;
         for (let i = 0; i < formElements.length; i++) {
            if (formElements[i].localName == "input" && formElements[i].type == "text") {

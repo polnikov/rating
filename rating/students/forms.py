@@ -7,10 +7,10 @@ from django.forms.widgets import DateInput, MultiWidget, RadioSelect, TextInput,
 
 from groups.models import Group
 from students.models import Result, Student
+from subjects.models import Subject
 
 
 class StudentForm(forms.ModelForm):
-    """Форма модели <Студент>"""
     def __init__(self, *args, **kwargs):
         super(StudentForm, self).__init__(*args, **kwargs)
         self.fields['group'].queryset = Group.objects.filter(is_archived=False)
@@ -49,7 +49,6 @@ class StudentForm(forms.ModelForm):
         }
 
     def clean_student_id(self):
-        """Проверить формат номера зачетной книжки."""
         student_id = self.cleaned_data['student_id']
 
         if isinstance(student_id, str) is True:
@@ -57,7 +56,6 @@ class StudentForm(forms.ModelForm):
         return student_id
 
     def clean_start_date(self):
-        """Проверить формат даты."""
         date = self.cleaned_data['start_date']
         pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
 
@@ -70,7 +68,6 @@ class StudentForm(forms.ModelForm):
 
 
 class ResultForm(forms.ModelForm):
-    """Форма модели <Оценка>"""
     students = Input()
     groupsubject = Input()
 
@@ -89,34 +86,35 @@ class ResultForm(forms.ModelForm):
         }
 
     def clean_mark(self):
-        """Проверить формат соответствия оценки форме контроля дисциплины."""
-        form_control_numeric = ['Экзамен', 'Диффзачет', 'Курсовой проект', 'Курсовая работа']
+        """Check that the mark corresponds to form control."""
+        form_control_numeric = [Subject.Formcontrol.EXAM, Subject.Formcontrol.DIF, Subject.Formcontrol.KP, Subject.Formcontrol.KR]
         set_1 = ['ня', '2', '3', '4', '5']
         set_2 = ['ня', 'нз', 'зач']
         set_3 = ['ня', 'нз', '2']
-        mark = self.cleaned_data['mark']  # список оценок
+        mark = self.cleaned_data['mark']  # list of marks
         subject_form_control = self.cleaned_data['groupsubject'].subjects.form_control
         mark_types = set_1 if subject_form_control in form_control_numeric else set_2
 
+        # if no one mark
         if len(mark) == 0:
             raise ValidationError('Оценка не может быть пустой')
-        # если оценка первая, проверяем соответствие форме контроля
+        # if it is the first mark
         elif len(mark) == 1 and mark[0] not in mark_types:
             raise ValidationError(f'Оценка не соответствует форме контроля. Возможные оценки: {" ".join(mark_types)}')
-        # если оценка вторая
+        # if it is the second mark
         elif len(mark) == 2:
-            # проверяем соответствие каждой оценки форме контроля
+            # check that every mark corresponds to form control
             if not set(mark).issubset(mark_types):
                 raise ValidationError(f'Оценка не соответствует форме контроля. Возможные оценки: {" ".join(mark_types)}')
-            # проверяем, что первая оценка отрицательная
+            # check that the first mark is negative
             if mark[0] not in set_3:
                 raise ValidationError('При выставлении второй оценки, первая не может быть положительной')
-        # если оценка третья
+        # if it is the third mark
         elif len(mark) == 3:
-            # проверяем соответствие каждой оценки форме контроля
+            # check that every mark corresponds to form control
             if not set(mark).issubset(mark_types):
                 raise ValidationError(f'Оценка не соответствует форме контроля. Возможные оценки: {" ".join(mark_types)}')
-            # проверяем, что первые две оценки отрицательные
+            # check that two first marks are negative
             if not set(mark[0:2]).issubset(set_3):
                 raise ValidationError('При выставлении третьей оценки, первые две не могут быть положительными')
 
