@@ -150,7 +150,6 @@
     // DataTable
     $(document).ready(function() {
         document.querySelector('#group-subjects').style.width = "100%";
-        // DataTable
         var table = $('#group-subjects').DataTable({
             language: {
                 lengthMenu: '_MENU_ записей на страницу',
@@ -185,7 +184,7 @@
             .draw();
         });
 
-        // Очистка фильтров двойным кликом выше head
+        // Clean filters inputs by double-clicking above the head
         $(document).on("dblclick",  ".ui.stackable.grid", function() {
             let inputs = document.getElementsByName("filter");
             inputs.forEach(e => {

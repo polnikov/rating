@@ -84,7 +84,7 @@ def import_subjects(request):
     if request.method == 'POST':
         import_file = request.FILES['import_file'] if request.FILES else False
 
-        # check that the file has been selected and his format is CSV
+        # checking that the file has been selected and its format is CSV
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}
@@ -196,7 +196,7 @@ def import_cathedras(request):
     if request.method == 'POST':
         import_file = request.FILES['import_file'] if request.FILES else False
 
-        # check that the file has been selected and his format is CSV
+        # checking that the file has been selected and its format is CSV
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}
@@ -330,7 +330,7 @@ def import_groupsubjects(request):
     if request.method == 'POST':
         import_file = request.FILES['import_file'] if request.FILES else False
 
-        # check that the file has been selected and his format is CSV
+        # checking that the file has been selected and its format is CSV
         if not import_file or str(import_file).split('.')[-1] != 'csv':
             file_validation = False
             context = {'file_validation': file_validation}

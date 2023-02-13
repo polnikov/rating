@@ -136,7 +136,6 @@
 <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
 
 <script>
-   // DataTables
    $(document).ready(function() {
       let firstRow = $('#students-debts thead tr')[0];
       let secondRow = firstRow.cloneNode(true);
@@ -151,7 +150,6 @@
       };
 
       document.querySelector('#students-debts').style.width = "100%";
-      // DataTable
       var table = $('#students-debts').DataTable({
          language: {
             lengthMenu: '_MENU_ записей на страницу',
@@ -186,7 +184,7 @@
             .draw();
       });
 
-      // Очистка фильтров двойным кликом выше head
+      // Clean filters inputs by double-clicking above the head
       $(document).on("dblclick",  ".ui.stackable.grid", function() {
          let inputs = document.getElementsByName("filter");
          inputs.forEach(e => {

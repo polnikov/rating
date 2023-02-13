@@ -164,7 +164,7 @@
             .draw();
       });
 
-      // Очистка фильтров двойным кликом выше head
+      // Clean filters inputs by double-clicking above the head
       $(document).on("dblclick",  ".ui.stackable.grid", function() {
          let inputs = document.getElementsByName("filter");
          inputs.forEach(e => {

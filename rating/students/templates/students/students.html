@@ -165,10 +165,8 @@
 <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
 
 <script type="text/javascript">
-	// tabs
 	$('.menu .item').tab();
 
-	// DataTable
 	$(document).ready(function() {
 		let firstRow = $('#students thead tr')[0];
 		let secondRow = firstRow.cloneNode(true);
@@ -217,15 +215,15 @@
 			.draw();
 		});
 
-		// Очистка фильтров двойным кликом выше head
-	$(document).on("dblclick",  ".ui.stackable.grid", function() {
-		let inputs = document.getElementsByName("filter");
-		inputs.forEach(e => {
-			e.value = "";
+		// Clean filters inputs by double-clicking above the head
+		$(document).on("dblclick",  ".ui.stackable.grid", function() {
+			let inputs = document.getElementsByName("filter");
+			inputs.forEach(e => {
+				e.value = "";
+			});
+			table.search('');
+			table.columns().search('').draw();
 		});
-		table.search('');
-		table.columns().search('').draw();
-	});
 		changeDatatableInputFont();
 	});
 
@@ -277,17 +275,17 @@
 			.draw();
 		});
 
-		// Очистка фильтров двойным кликом выше head
-	$(document).on("dblclick",  ".ui.stackable.grid", function() {
-		let inputs = document.getElementsByName("filter");
-		inputs.forEach(e => {
-			e.value = "";
+		// Clean filters inputs by double-clicking above the head
+		$(document).on("dblclick",  ".ui.stackable.grid", function() {
+			let inputs = document.getElementsByName("filter");
+			inputs.forEach(e => {
+				e.value = "";
+			});
+			table.search('');
+			table.columns().search('').draw();
 		});
-		table.search('');
-		table.columns().search('').draw();
-	});
-		changeDatatableInputFont();
-	});
+			changeDatatableInputFont();
+		});
 
 	deletePaddingBottomForTitleBlock();
 	deletePaddingTopForDatatableSegment();

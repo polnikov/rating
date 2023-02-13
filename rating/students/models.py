@@ -24,7 +24,6 @@ class ActiveStudentManager(models.Manager):
 
 
 class Student(CommonArchivedModel, CommonTimestampModel):
-    """Модель <Студент>."""
     objects = models.Manager()
     archived_objects = ArchivedStudentManager()
     active_objects = ActiveStudentManager()
@@ -158,15 +157,14 @@ class Student(CommonArchivedModel, CommonTimestampModel):
         return f'{self.last_name} {self.first_name} {self.second_name} | {self.group}-{self.semester}'
 
     def save(self, *args, **kwargs):
-        # Проверяем, существует ли объект
+        # Checking if the object is exist
         if Student.objects.filter(student_id=self.pk).exists():
-            # Отправляем информацию по изменениям в модель <StudentLog>
             if self.pk is not None:
-                # берем текущий объект
+                # Changing the model
                 old_object = Student.objects.get(pk=self.pk)
-                # получаем все поля модели
+                # Getting all model fields
                 field_names = [field.name for field in Student._meta.fields]
-                # готовим словарь для изменений
+                # Preparing a dict for changes
                 update_fields = {}
                 for field_name in field_names:
                     try:
@@ -176,7 +174,7 @@ class Student(CommonArchivedModel, CommonTimestampModel):
                             update_fields['student_id'] = self.student_id
                     except Exception as ex:
                         logger.error(f'Изменения поля {old_object} студента {self.student_id} не удалось сохранить', extra={'Exception': ex})
-            # добавляем записи в таблицу
+            # Adding records to table
             try:
                 for key in update_fields:
                     if key != 'student_id':
@@ -189,13 +187,13 @@ class Student(CommonArchivedModel, CommonTimestampModel):
             except Exception as ex:
                 logger.error(f'Не удалось сохранить изменения студента {self.student_id}', extra={'Exception': ex})
 
-        # Если студент получает статус <Отчислен>, <АО> или <Выпускник> - отправляем его в архив
+        # send student to archive if his status in (<Отчислен>, <АО>, <Выпускник>)
         if self.status in [Student.Status.FIRED, Student.Status.GRADUATED] or self.status == Student.Status.DELAY:
             self.is_archived = True
         else:
             self.is_archived = False
 
-        # Если студент имеет основу обучения <ИГ> или <Контракт> - устанавливаем для него стипендию
+        # if student has basis equal <Контракт> - set a money for him <нет>
         if self.basis.name == 'Контракт':
             self.money = 'нет'
 
@@ -206,12 +204,12 @@ class Student(CommonArchivedModel, CommonTimestampModel):
 
     @property
     def fullname(self):
-        """Возвращает полное ФИО."""
+        """Return full name."""
         return f'{self.last_name} {self.first_name} {self.second_name}'
 
     @property
     def is_ill(self):
-        """Отмечает студентов, у которых в примечании есть запись <болеет>."""
+        """Indicate if student is ill."""
         if 'болеет' in self.comment.lower():
             return True
         else:
@@ -219,7 +217,7 @@ class Student(CommonArchivedModel, CommonTimestampModel):
 
     @property
     def course(self):
-        """Возвращает текущий курс студента."""
+        """Return current student course."""
         match int(self.semester.semester):
             case 1 | 2:
                 return '1'
@@ -232,7 +230,7 @@ class Student(CommonArchivedModel, CommonTimestampModel):
 
     @property
     def graduate_year(self):
-        """Возвращает год выпуска студента."""
+        """Return graduate year of the student."""
         if self.status == Student.Status.GRADUATED:
             match self.level:
                 case Student.Level.BAC:
@@ -242,7 +240,7 @@ class Student(CommonArchivedModel, CommonTimestampModel):
 
     @property
     def money_rate(self):
-        """Возвращает уровень стипендии."""
+        """Return money type of the student."""
         match self.money:
             case Student.Money.D:
                 return 0
@@ -269,7 +267,6 @@ class StudentLog(CommonModelLog):
 
 
 class Result(CommonArchivedModel, CommonTimestampModel, DynamicArrayMixin):
-    """Модель <Результат>."""
     MARK = (
         ('ня', 'ня'),
         ('нз', 'нз'),
@@ -329,6 +326,7 @@ class Result(CommonArchivedModel, CommonTimestampModel, DynamicArrayMixin):
     @property
     def empty_mark(self):
         """Делает пометку, если не указана оценка."""
+        """Return <-> if the mark is empty."""
         if self.mark == None:
             return '-'
         else:
@@ -336,7 +334,6 @@ class Result(CommonArchivedModel, CommonTimestampModel, DynamicArrayMixin):
 
 
 class Basis(CommonTimestampModel):
-    """Модель <Основа обучения>."""
     name = models.CharField(
         verbose_name='Основа обучения',
         max_length=20,
@@ -352,7 +349,6 @@ class Basis(CommonTimestampModel):
 
 
 class Semester(models.Model):
-    """Модель <Семестр>."""
     SEMESTER = [
         (1, 1),
         (2, 2),
