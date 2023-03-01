@@ -133,6 +133,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 st.delta_days = (st.delay_end_date - datetime.now().date()).days
             except AttributeError:
                 st.msg = 'no'
+                st.delta_days = 0
         delay_students = sorted(delay_students, key=lambda o: (o.delta_days))
 
         # количественный блок
