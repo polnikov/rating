@@ -25,11 +25,18 @@ class SubjectForm(ModelForm):
     def clean_zet(self):
         """Check ZET format."""
         zet = self.cleaned_data['zet']
-        pattern = r'^([0-9]{2,3})\s\(([0-9]{1,2})\)$'  # 72 (2)
+        form_control = self.cleaned_data['form_control']
+        pattern1 = r'^([0-9]{2,3})\s\(([0-9]{1,2})\)$'  # 72 (2)
+        pattern2 = r'^(КР|КП)$'  # КР or КП
 
         if not zet:
             return zet
-        elif not re.match(pattern, zet):
+        elif form_control in [Subject.Formcontrol.KP, Subject.Formcontrol.KR]:
+            if not re.match(pattern2, zet):
+                raise ValidationError('Неверный формат ЗЕТ')
+            else:
+                return zet
+        elif not re.match(pattern1, zet):
             raise ValidationError('Неверный формат ЗЕТ')
         else:
             return zet
