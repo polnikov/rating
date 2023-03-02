@@ -33,6 +33,18 @@ def unpack_mark(value):
         return value[0]
 
 
+@register.filter(name='get_last_mark')
+def get_last_mark(value):
+    """Retrieves the last mark from the list."""
+    match len(value):
+        case 1:
+            return value[0]
+        case 2:
+            return value[1]
+        case 3:
+            return value[2]
+
+
 @register.filter(name='unpack_marks')
 def unpack_marks(value):
     """Transforms a mark's list into a readable view."""
