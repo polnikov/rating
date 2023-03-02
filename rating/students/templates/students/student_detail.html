@@ -219,7 +219,7 @@
                                 </td>
                             {% endif %}
 
-                            <td class="collapsing center aligned">
+                            <td class="collapsing {% if item.mark|get_last_mark in "2нянз" %}negative{% endif %} center aligned">
                                 <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'students:result_update' item.id %}{% else %}#{% endif %}">
                                     <div class="ui equal width grid collapsing center aligned">
                                         <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
