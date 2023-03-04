@@ -1,3 +1,4 @@
+import concurrent.futures
 import re
 import xlrd
 import logging
@@ -188,41 +189,59 @@ class StudentRatingApiView(LoginRequiredMixin, View):
 
         if flag_1 or flag_2 or flag_3 or flag_4:
             logger.info(f'Расчет среднего балла за семестр {start} для студентов группы {groups}')
-            # the students average ranking for specified semester. default - for 1t
-            for student in students:
-                rating = calculate_rating(student, start)
 
-                serialized_data.append({
-                    'studentId': student.student_id,
-                    'fullname': student.fullname,
-                    'group': student.group.name,
-                    'currentSemester': student.semester.semester,
-                    'basis': student.basis.name,
-                    'level': student.level,
-                    'rating': rating,
-                    'isIll': student.is_ill,
-                    'tag': student.tag,
-                })
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                # the students average ranking for specified semester. default - for 1t
+                future_to_student = {
+                    executor.submit(calculate_rating, student, start): student
+                    for student in students
+                }
+                for future in concurrent.futures.as_completed(future_to_student):
+                    student = future_to_student[future]
+                    try:
+                        rating = future.result()
+                    except Exception as exc:
+                        logger.error(f'calculation of student {student.student_id} rating failed: {exc}')
+                    else:
+                        serialized_data.append({
+                            'studentId': student.student_id,
+                            'fullname': student.fullname,
+                            'group': student.group.name,
+                            'currentSemester': student.semester.semester,
+                            'basis': student.basis.name,
+                            'level': student.level,
+                            'rating': rating,
+                            'isIll': student.is_ill,
+                            'tag': student.tag,
+                        })
         else:
-            logger.info(f'Расчет среднего балла за период с {start} по {stop} семестр для студентов группы {groups}')
             # the students average ranking for specified period
             start, stop = sem_start, sem_stop
+            logger.info(f'Расчет среднего балла за период с {start} по {stop} семестр для студентов группы {groups}')
 
-            for student in students:
-                rating = calculate_rating(student, start, stop)
-
-                serialized_data.append({
-                    'studentId': student.student_id,
-                    'fullname': student.fullname,
-                    'group': student.group.name,
-                    'currentSemester': student.semester.semester,
-                    'basis': student.basis.name,
-                    'level': student.level,
-                    'rating': rating,
-                    'isIll': student.is_ill,
-                    'tag': student.tag,
-                })
-
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future_to_student = {
+                    executor.submit(calculate_rating, student, start, stop): student
+                    for student in students
+                }
+                for future in concurrent.futures.as_completed(future_to_student):
+                    student = future_to_student[future]
+                    try:
+                        rating = future.result()
+                    except Exception as exc:
+                        logger.error(f'calculation of student {student.student_id} rating failed: {exc}')
+                    else:
+                        serialized_data.append({
+                            'studentId': student.student_id,
+                            'fullname': student.fullname,
+                            'group': student.group.name,
+                            'currentSemester': student.semester.semester,
+                            'basis': student.basis.name,
+                            'level': student.level,
+                            'rating': rating,
+                            'isIll': student.is_ill,
+                            'tag': student.tag,
+                        })
         serialized_data = sorted(serialized_data, key=lambda d: d['rating'])
 
         return JsonResponse({'data': serialized_data})
