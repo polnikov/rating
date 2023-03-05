@@ -95,14 +95,14 @@ class GroupMarksApiView(LoginRequiredMixin, View):
         for m in students:
             # {groupsubject_id: [subject_id, form_control, result_id, [оценки]]}
             marks_data = [{k[0]:[k[1], k[2], v[0] if v != '-' else v, v[-1] if v != '-' else v]} for k, v in m.marks.items()]
-
             serialized_data.append({
                 'studentId': m.student_id,
                 'money': m.money,
                 'att1': m.att1,
                 'att2': m.att2,
                 'att3': m.att3,
-                'marks': marks_data
+                'marks': marks_data,
+                'passSession': m.pass_session,
             })
 
         # итоговая структура оценок [student.marks]
@@ -151,4 +151,5 @@ class GroupMarksApiView(LoginRequiredMixin, View):
             'att1': statistic[1],
             'att2': statistic[2],
             'att3': statistic[3],
+            'passSession': statistic[4],
         })
