@@ -25,6 +25,8 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
 
     # id всех назначенных дисциплин
     subjects_id = [i.subjects.id for i in subjects]
+    # количество назначенных предметов
+    q_sub = subjects.count()
     # id всех назначений
     group_subjects_id = [i.id for i in subjects]
     # формы контроля назначенных дисциплин
@@ -103,7 +105,14 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
         att2 = '' if not cnt2 else cnt2
         att3 = '' if not cnt3 else cnt3
 
-        return [student.money, att1, att2, att3]
+        # количество аттестаций
+        q_att = len(marks)
+        if q_att == q_sub and not att1:
+            student.pass_session = True
+        else:
+            student.pass_session = False
+
+        return [student.money, att1, att2, att3, student.pass_session]
 
     else:
         # студенты текущей группы
@@ -214,6 +223,14 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
             m.att1 = '' if not cnt1 else cnt1
             m.att2 = '' if not cnt2 else cnt2
             m.att3 = '' if not cnt3 else cnt3
+
+            # количество аттестаций
+            q_att = len([i[1] for i in list(filter(lambda x: x!='-', [v for v in m.marks.values()]))])
+
+            if q_att == q_sub and not m.att1:
+                m.pass_session = True
+            else:
+                m.pass_session = False
 
         return students
 

@@ -28,10 +28,17 @@ $(document).ready(function() {
 
             // готовим массив оценок
             let result = [];
+            if(e.passSession){
+               var text = `<td id="att1" data-student-id="${e.studentId}" class="collapsing center aligned"><i class="icon green checkmark" style="margin-right: 0px"></i></div></td>`
+            }else{
+               var text = `<td id="att1" data-student-id="${e.studentId}" class="collapsing center aligned">${e.att1}</div></td>`
+            }
             result.push(
-               `<td id="money" data-student-id="${e.studentId}" class="collapsing center aligned" style="width: 30px">${e.money}</td>
-               <td id="att1" data-student-id="${e.studentId}" class="collapsing center aligned">${e.att1}</div></td>
-               <td id="att2" data-student-id="${e.studentId}" class="collapsing center aligned">${e.att2}</div></td>
+               `<td id="money" data-student-id="${e.studentId}" class="collapsing center aligned" style="width: 30px">${e.money}</td>`
+               +
+               `${text}`
+               +
+               `<td id="att2" data-student-id="${e.studentId}" class="collapsing center aligned">${e.att2}</div></td>
                <td id="att3" data-student-id="${e.studentId}" class="collapsing center aligned">${e.att3}</div></td>`
             );
             for (let value of Object.values(e.marks)) {
@@ -194,7 +201,13 @@ $(document).ready(function() {
          obj.dataset.resultId = response.newResId;
          const dataForUpdate = [response.money, response.att1, response.att2, response.att3,];
          document.querySelector(`#money[data-student-id="${studentId}"]`).textContent = dataForUpdate[0];
-         document.querySelector(`#att1[data-student-id="${studentId}"]`).textContent = dataForUpdate[1];
+
+         if(response.passSession){
+            document.querySelector(`#att1[data-student-id="${studentId}"]`).innerHTML = `<i class="icon green checkmark" style="margin-right: 0px"></i>`;
+         }else{
+            document.querySelector(`#att1[data-student-id="${studentId}"]`).textContent = dataForUpdate[1];
+         };
+
          document.querySelector(`#att2[data-student-id="${studentId}"]`).textContent = dataForUpdate[2];
          document.querySelector(`#att3[data-student-id="${studentId}"]`).textContent = dataForUpdate[3];
          // смена подсветки ячейки со стипендией в зависимости от новой оценки
