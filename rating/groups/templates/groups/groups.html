@@ -49,7 +49,7 @@
                 <tbody>
                     {% for group in group_list %}
                         <tr>
-                            <td class="center aligned" data-tooltip="{{ group.level }}" data-position="left center" data-inverted="">{{ forloop.counter }}</td>
+                            <td class="center aligned" data-tooltip="{{ group.level }}" data-position="right center" data-inverted="">{{ forloop.counter }}</td>
                             <td class="collapsing">{{ group.name }} {% if group.is_archived %}<i class="archive brown icon"></i>{% endif %}</td>
                             <td>{{ group.direction }}</td>
                             <td>{{ group.profile }}</td>
