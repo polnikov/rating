@@ -142,7 +142,7 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
 
-    "root": {"level": "WARNING", "handlers": ["file"]},
+    "root": {"level": "INFO", "handlers": ["file"]},
 
     "formatters": {
         "app": {
@@ -153,7 +153,7 @@ LOGGING = {
 
     "handlers": {
         "file": {
-            "level": "WARNING",
+            "level": "INFO",
             "class": "logging.FileHandler",
             "filename": "/var/log/django.log",
             "formatter": "app",
@@ -162,7 +162,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "WARNING",
+            "level": "INFO",
             "propagate": True
         },
     },
