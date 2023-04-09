@@ -2,6 +2,7 @@ from api import serializers
 import xlrd
 import locale
 import re
+import logging
 from datetime import datetime
 from collections import Counter
 
@@ -20,6 +21,9 @@ from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
 
 from rating.settings import IMPORT_DELIMITER
 from rating.functions import _get_students_group_statistic_and_marks, calculate_rating
+
+
+logger = logging.getLogger(__name__)
 
 
 # Students
@@ -43,6 +47,7 @@ def transfer_students(request):
     '''Перевести студентов на следующий семестр. В случае последнего семестра студент отправляется в <Архив> со сменой
     статуса на <Выпускник>.
     '''
+    logger.info('API: Перевод студентов на следующий семестр...')
     students_for_transfer = request.POST.getlist('checkedStudents[]', False)
     students_id = list(map(int, students_for_transfer))
 
@@ -457,10 +462,10 @@ class GroupsViewSet(viewsets.ModelViewSet):
 # @api_view(['GET', 'POST'])
 def group_marks(request):
     '''Статистика и оценки студентов группы.'''
-
     if request.method == 'GET':
         groupname = request.GET.get('groupname', '')
         semester = request.GET.get('semester', '')
+        logger.info(f'API ---> Запрос статистики и оценок группы {groupname} за {semester} семестр...')
         students = _get_students_group_statistic_and_marks(groupname, semester)
 
         data = []
@@ -493,6 +498,7 @@ def group_marks(request):
         value = request.POST.get('value', '')
         group_name = request.POST.get('groupName', '')
         semester = request.POST.get('semester', '')
+        logger.info(f'API ---> Запись оценок группы {group_name} за {semester} семестр...')
 
         # преобразуем строку с оценками в список
         # валидация оценок осуществляется на front-end
