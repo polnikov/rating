@@ -219,3 +219,26 @@
    transform: scale(1.1);
    transition: all 0.3s;
 }
+
+
+@media screen and (max-width: 768px) {
+   #content {
+      padding-top: 20px !important;
+      /* padding-bottom: 20px; */
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+   }
+
+   #groupcards {
+      padding-top: 10px !important;
+      padding-bottom: 25px !important;
+   }
+   
+   .ui.cards {
+      justify-content: center;
+   }
+   
+   #group-cards, .ui-card {
+      width: 300px !important;
+   }
+}
