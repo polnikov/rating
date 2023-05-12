@@ -419,7 +419,7 @@ class SubjectsDebtsListView(LoginRequiredMixin, ListView):
             all_marks = [
                 i[0]
                 for i in gsub.result_set.select_related('students__semester_semester').filter(
-                    mark__contained_by=negative).values_list('mark')]
+                    mark__contained_by=negative, students__is_archived=False).values_list('mark')]
             marks_att1 = [i[0] for i in all_marks]
             marks_att2 = [i[1] for i in list(filter(lambda x: len(x) in [2, 3], all_marks))]
             marks_att3 = [i[2] for i in list(filter(lambda x: len(x) == 3, all_marks))]
