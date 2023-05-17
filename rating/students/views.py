@@ -51,6 +51,8 @@ class StudentListView(LoginRequiredMixin, ListView):
         context['num_students'] = num_active_students
         graduates = Student.active_objects.select_related('group', 'semester').filter(status='Выпускник')
         context['graduates'] = graduates
+        history = StudentLog.objects.select_related('user').order_by('-timestamp').values()
+        context['history'] = history
         return context
 
 
