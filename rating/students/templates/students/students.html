@@ -40,6 +40,7 @@
         <div class="ui top attached tabular menu" style="font-family: Hack">
             <a class="item active" data-tab="first"><i class="icon green checkmark"></i>Активные</a>
             <a class="item" data-tab="second"><i class="graduation cap icon"></i>Выпускники</a>
+            <a class="item" data-tab="third"><i class="history icon"></i>История изменений</a>
         </div>
 
         <!-- Tab 1 -->
@@ -155,6 +156,51 @@
 				{% endif %}
 			</div>
 		</div>
+
+		<!-- Tab 3 -->
+        <!-- History -->
+        <div class="ui bottom attached tab segment" data-tab="third">
+            {% if history %}
+                <table id="student-history" class="ui selectable celled compact table">
+
+                    <thead>
+                        <tr class="center aligned">
+                            <th class="collapsing">Дата и время</th>
+                            <th>Автор</th>
+                            <th>Свойство</th>
+                            <th>Было</th>
+                            <th>Стало</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for record in history %}
+                            <tr>
+                                <td class="center aligned collapsing">{{ record.timestamp|date:"d.m.y|H:i:s" }}</td>
+                                <td class="collapsing">{{ record.user_id|get_user_last_name }}</td>
+                                <td class="collapsing">{{ record.field }}</td>
+                                {% if record.field == 'Attestaion date' %}
+                                    <td>{{ record.old_value|date_or_else }}</td>
+                                    <td>{{ record.new_value|date_or_else }}</td>
+                                {% else %}
+                                    <td>{{ record.old_value|default:"---"|truncatechars:40 }}</td>
+                                    <td>{{ record.new_value|default:"---"|truncatechars:40 }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="ui one column centered grid">
+                    <div class="one column"></div>
+                    <div class="ui center aligned container">
+                        <p>Изменений пока нет...</p>
+                    </div>
+                    <div class="one column"></div>
+                </div>
+            {% endif %}
+        </div>
+
 	</div>
 </div>
 
@@ -284,8 +330,42 @@
 			table.search('');
 			table.columns().search('').draw();
 		});
-			changeDatatableInputFont();
-		});
+		changeDatatableInputFont();
+	});
+
+	$(document).ready(function() {
+		$('#student-history').DataTable({
+            language: {
+                lengthMenu: '_MENU_ записей на страницу',
+                zeroRecords: 'Записей нет...',
+                info: 'Всего записей: _MAX_',
+                infoEmpty: '',
+                infoFiltered: 'Найдено: _TOTAL_',
+                search: '',
+                searchPlaceholder: 'поиск',
+                paginate: {
+                    first:    '«',
+                    previous: '‹',
+                    next:     '›',
+                    last:     '»'
+                }
+            },
+            lengthMenu: [
+                [20, 50, -1],
+                [20, 50, 'Все']
+            ],
+            autoWidth: false,
+            fixedColumns: true,
+            columnDefs: [
+                { width: 170, targets: 0 },
+                { width: 130, targets: 1 },
+                { width: 130, targets: 2 },
+            ],
+            pageLength: 20,
+            ordering: false,
+        });
+		changeDatatableInputFont();
+	});
 
 	deletePaddingBottomForTitleBlock();
 	deletePaddingTopForDatatableSegment();
