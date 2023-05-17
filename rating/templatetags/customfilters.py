@@ -1,6 +1,8 @@
 from django import template
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
+from students.models import Student
 
 
 register = template.Library()
@@ -77,3 +79,13 @@ def short_form_control(value):
 def has_group(user, group_name):
     """Checks if a user is a member of a group."""
     return user.groups.filter(name=group_name).exists()
+
+
+@register.filter(name='get_student_fullname')
+def get_student_fullname(id_number):
+    """Returns the student's full name by id."""
+    try:
+        student = Student.objects.get(student_id=id_number)
+        return student.fullname
+    except ObjectDoesNotExist:
+        return f'Удалён [{id_number}]'
