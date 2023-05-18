@@ -177,7 +177,7 @@
                     <tbody>
                         {% for record in history %}
                             <tr>
-                                <td class="center aligned collapsing">{{ record.timestamp|date:"d.m.y|H:i:s" }}</td>
+                                <td class="center aligned collapsing">{{ record.timestamp|date:"d.m.y | H:i" }}</td>
                                 <td class="collapsing">{{ record.user_id|get_user_last_name }}</td>
                                 <td class="collapsing">{{ record.record_id|get_student_fullname }}</td>
                                 <td class="collapsing">{{ record.field }}</td>
@@ -358,11 +358,12 @@
             ],
             autoWidth: false,
             columnDefs: [
-                { width: 170, targets: 0 },
+                { width: 150, targets: 0 },
                 { width: 130, targets: 1 },
                 { width: 130, targets: 2 },
             ],
             pageLength: 20,
+			ordering: false,
         });
 		changeDatatableInputFont();
 	});

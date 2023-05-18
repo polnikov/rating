@@ -281,7 +281,7 @@
                     <tbody>
                         {% for record in history %}
                             <tr>
-                                <td class="collapsing">{{ record.timestamp|date:"d.m.y|H:i:s" }}</td>
+                                <td class="collapsing">{{ record.timestamp|date:"d.m.y | H:i" }}</td>
                                 <td class="collapsing">{{ record.user_id|get_user_last_name }}</td>
                                 <td class="collapsing">{{ record.field }}</td>
                                 {% if record.field == 'Attestaion date' %}
@@ -372,7 +372,7 @@
             autoWidth: false,
             fixedColumns: true,
             columnDefs: [
-                { width: 170, targets: 0 },
+                { width: 150, targets: 0 },
                 { width: 130, targets: 1 },
                 { width: 130, targets: 2 },
             ],
