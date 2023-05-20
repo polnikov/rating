@@ -215,6 +215,7 @@
                                 </a>
                             </td>
                             <td>{% if student.students.is_ill %}<i class="heart broken red icon"></i>{% endif %}
+                                {% if student.students.is_archived %}<i class="archive brown icon"></i>{% endif %}
                                 <a href="{{ student.students.get_absolute_url }}">
                                     {{ student.students.fullname }}
                                 </a>
@@ -337,7 +338,6 @@
             ],
             pageLength: 20,
             autoWidth: false,
-            fixedColumns: true,
             columnDefs: [
                 { width: '8%', targets: 0 },
                 { width: '10%', targets: 1 },
