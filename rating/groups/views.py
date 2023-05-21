@@ -73,12 +73,23 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
         ).order_by('subjects__form_control', 'subjects__name')
         # текущий курс группы
         course = students[0].course if students else '-'
+
+        if group.level == 'Бакалавриат':
+            max_semester = 8
+        else:
+            max_semester = 4
+
+        previous_semester = semester - 1 if semester > 1 else False
+        next_semester = semester + 1 if semester < max_semester else False
+
         context = {
             'students': students,
             'subjects': subjects,
             'group': group,
             'semester': semester,
             'course': course,
+            'previous_semester': previous_semester,
+            'next_semester': next_semester,
         }
         return self.render_to_response(context)
 

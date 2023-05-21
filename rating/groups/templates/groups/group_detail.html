@@ -10,7 +10,7 @@
 
 {% block content %}
 
-<div id="segments" class="ui basic segment" style="padding-bottom: 0">
+<div id="segments" class="ui basic segment" style="padding-bottom: 0; margin-bottom: 0">
    <table class="ui very basic table">
       <tbody>
          <tr>
@@ -54,6 +54,28 @@
                <div id="info" class="ui grey circular label">
                   {{ students.count }}
                </div>
+            </td>
+         </tr>
+         <tr>
+            <td colspan="2" name="info-td">
+               {% if previous_semester %}
+                  <button
+                     class="ui left floated animated tiny circular icon button"
+                     tabindex="0"
+                     onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=previous_semester %}';">
+                     <div class="visible content"><i class="angle left icon"></i></div>
+                     <div class="hidden content">{{ previous_semester }}</div>
+                  </button>
+               {% endif %}
+               {% if next_semester %}
+                  <button
+                     class="ui right floated animated tiny circular icon button"
+                     tabindex="0"
+                     onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=next_semester %}';">
+                     <div class="visible content"><i class="angle right icon"></i></div>
+                     <div class="hidden content">{{ next_semester }}</div>
+                  </button>
+               {% endif %}
             </td>
          </tr>
       </tbody>
