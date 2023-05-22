@@ -29,7 +29,7 @@ urlpatterns = [
 
     path('v1/transferstudents/', views.transfer_students),  # [-]
     path('v1/import/students/', views.import_students),  # [-]
-    path('v1/import/results/', views.import_results),  # [-]
+    path('v1/import/results/', views.import_results),  # [+]
     # path('v1/import/subjects/', views.import_subjects),
 ]
 

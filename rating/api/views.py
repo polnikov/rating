@@ -1,6 +1,7 @@
 from api import serializers
 import xlrd
 import locale
+import json
 import re
 import logging
 from datetime import datetime
@@ -16,7 +17,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 from groups.models import Group
 from students.models import Result, Semester, Student, StudentLog, Basis
-from students.validators import validate_mark
+from students.validators import validate_mark, check_mark
 from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
 
 from rating.settings import IMPORT_DELIMITER
@@ -246,19 +247,29 @@ class ResultViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ResultSerializer
 
 
-@api_view(['POST'])
+# @api_view(['POST'])
 def import_results(request):
-    '''Импортировать оценки из EXCEL файла.'''
+    '''Import results from EXCEL file | files.'''
+    logger.info('Импорт оценок...')
+    serialized_data = []
     success = False
-    errors = []  # список студентов, по которым оценки не были импортированы
+    errors = []  # list of students with non-imported results
 
     if request.method == 'POST':
-        import_file = request.FILES['import_file'] if request.FILES else False
-        # проверка, что файл выбран и формат файла xls
-        if not import_file or str(import_file).split('.')[-1] != 'xls':
-            file_validation = False
-            context = {'file_validation': file_validation}
-            return render(request, 'import/import_results.html', context)
+        import_files = request.FILES.getlist('import_files') if request.FILES else False
+
+        # checking that the file has been selected
+        if not import_files:
+            serialized_data.append({'error': 'file_validation_exist', 'success': success})
+            logger.error('Файл не выбран')
+            return JsonResponse({'data': serialized_data})
+
+        # checking file format (xls)
+        for import_file in import_files:
+            if str(import_file).split('.')[-1] != 'xls':
+                serialized_data.append({'error': 'file_validation_format', 'success': success})
+                logger.error('Неверный формат файла')
+                return JsonResponse({'data': serialized_data})
 
         semesters = {
             'первый': '1',
@@ -288,21 +299,23 @@ def import_results(request):
             'Отлично': '5',
             'Хорошо': '4',
             'Удовл.': '3',
+            'Удовлетворительно': '3',
             'Неудовл.': '2',
+            'Неудовлетворительно': '2',
         }
         months = {
-            'Января': 'январь',
-            'Февраля': 'февраль',
-            'Марта': 'март',
-            'Апреля': 'апрель',
-            'Мая': 'май',
-            'Июня': 'июнь',
-            'Июля': 'июль',
-            'Августа': 'август',
-            'Сентября': 'сентябрь',
-            'Октября': 'октябрь',
-            'Ноября': 'ноябрь',
-            'Декабря': 'декабрь',
+            'Января': 'january',
+            'Февраля': 'february',
+            'Марта': 'march',
+            'Апреля': 'april',
+            'Мая': 'may',
+            'Июня': 'june',
+            'Июля': 'july',
+            'Августа': 'august',
+            'Сентября': 'september',
+            'Октября': 'october',
+            'Ноября': 'november',
+            'Декабря': 'december',
         }
         data = {
             'type': '',
@@ -317,140 +330,186 @@ def import_results(request):
             'marks': [],
         }
 
-        # читаем файл
-        book = xlrd.open_workbook(file_contents=import_file.read())
-        sheet = book.sheet_by_index(0)
-        num_rows = sheet.nrows
+        # read file
+        for import_file in import_files:
+            book = xlrd.open_workbook(file_contents=import_file.read())
+            sheet = book.sheet_by_index(0)
+            num_rows = sheet.nrows
 
-        # формируем данные
-        raw_data = []
-        for n in range(num_rows):
-            row_data = list(filter(lambda x: x != '', sheet.row_values(n)))
-            if row_data:
-                raw_data.append(row_data)
+            # extract needed lines
+            raw_data = []
+            for n in range(num_rows):
+                row_data = list(filter(lambda x: x != '', sheet.row_values(n)))
+                if row_data:
+                    raw_data.append(row_data)
 
-        for i in range(len(raw_data)):
-            if raw_data[i][0].lower().startswith('экзаменационная'):
-                start_row = 13
-                data['form_control'] = 'Экзамен'
-                data['type'] = types.get(raw_data[i + 1][0], False)
+            for i in range(len(raw_data)):
+                if raw_data[i][0].lower().startswith('экзаменационная'):
+                    data['form_control'] = 'Экзамен'
+                    data['type'] = types.get(raw_data[i + 1][0], False)
 
-            elif raw_data[i][0].lower().startswith('зачетная'):
-                start_row = 14
-                data['form_control'] = form_controls.get(raw_data[i + 2][0].split(' ')[-1], False)
-                data['type'] = types.get(raw_data[i + 1][0], False)
+                elif raw_data[i][0].lower().startswith('зачетная'):
+                    data['form_control'] = form_controls.get(raw_data[i + 2][0].split('–')[-1].strip(), False)
+                    data['type'] = types.get(raw_data[i + 1][0], False)
 
-            elif raw_data[i][0].lower().startswith('учебный'):
-                data['semester'] = semesters.get(raw_data[i][3].split()[0].lower(), False)
-                data['group'] = raw_data[i][5][:-2]
-                data['subject'] = raw_data[i + 1][-1]
-                data['cathedra'] = raw_data[i + 2][1].capitalize()
-                data['zet'] = raw_data[i + 2][-1]
+                elif raw_data[i][0].lower().startswith('учебный'):
+                    data['semester'] = semesters.get(raw_data[i][3].split()[0].lower(), False)
+                    data['group'] = raw_data[i][5][:-2]
+                    data['subject'] = raw_data[i + 1][-1]
+                    data['cathedra'] = raw_data[i + 2][1].capitalize()
+                    data['zet'] = raw_data[i + 2][-1]
 
-                day = raw_data[i + 4][2]
-                month = raw_data[i + 4][4].strip()
-                year = '20' + str(int(raw_data[i + 4][6]))
+                    day = raw_data[i + 4][2]
+                    month = raw_data[i + 4][4].strip()
+                    year = '20' + str(int(raw_data[i + 4][6]))
 
-                raw_att_date = f'{year}-{months[month]}-{day}'
-                locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
-                att_date = datetime.strptime(raw_att_date, '%Y-%B-%d')
-                data['att_date'] = att_date.date()
+                    raw_att_date = f'{year}-{months[month]}-{day}'
+                    att_date = datetime.strptime(raw_att_date, '%Y-%B-%d')
+                    data['att_date'] = att_date.date()
 
-            elif raw_data[i][0].lower().startswith('фио'):
-                raw_teachers = raw_data[i][-1].split(', ')
-                teachers = []
-                for t in raw_teachers:
-                    t = t.split()
-                    if len(t) == 2:
-                        teachers.append(f'{t[0]} {t[1][0]}.')
-                    elif len(t) == 3:
-                        teachers.append(f'{t[0]} {t[1][0]}.{t[2][0]}.')
+                elif raw_data[i][0].lower().startswith('фио'):
+                    raw_teachers = raw_data[i][-1].split(', ')
+                    teachers = []
+                    for t in raw_teachers:
+                        t = t.split()
+                        if len(t) == 2:
+                            teachers.append(f'{t[0]} {t[1][0]}.')
+                        elif len(t) == 3:
+                            teachers.append(f'{t[0]} {t[1][0]}.{t[2][0]}.')
 
-                data['teacher'] = ', '.join(teachers)
+                    data['teacher'] = ', '.join(teachers)
 
-            elif raw_data[i][0].isdigit():
-                st = raw_data[i][1:]
-                st = [st[0], st[1], marks.get(st[2], False)]
-                data['marks'].append(st)
+                elif raw_data[i][0].isdigit():
+                    if data['form_control'] != 'Диффзачет':
+                        st = raw_data[i][1:]
+                        st = [st[0], st[1], marks.get(st[-1], False)]
+                        if not check_mark(st[-1], data['form_control']):
+                            serialized_data.append({'error': 'check_mark_formcontrol'})
+                            logger.error('Оценки не соответствуют форме контроля')
+                            return JsonResponse({'data': serialized_data})
+                        data['marks'].append(st)
+                    else:
+                        st = []
+                        st.extend(raw_data[i][1:3])
+                        st.append(raw_data[i][-1])
+                        st = [st[0], st[1], marks.get(st[-1], False)]
+                        if not check_mark(st[-1], data['form_control']):
+                            serialized_data.append({'error': 'check_mark_formcontrol'})
+                            logger.error('Оценки не соответствуют форме контроля')
+                            return JsonResponse({'data': serialized_data})
+                        data['marks'].append(st)
 
-        try:
+            # write data to DB
             try:
-                group = Group.objects.get(name=data['group'])
-            except Group.DoesNotExist:
-                errors.append('Ошибка группы - проверьте наименование или что группа существует.')
-
-            try:
-                subject = Subject.objects.get(
-                    Q(name=data['subject']) &
-                    Q(form_control=data['form_control']) &
-                    Q(semester=data['semester'])
-                )
-            except Subject.DoesNotExist:
-                errors.append('Ошибка дисциплины - проверьте наименование или что дисциплина существует.')
-
-            if not subject.cathedra:
-                subject.cathedra = Cathedra.objects.get(name=data['cathedra'])
-
-            try:
-                groupsubject = GroupSubject.objects.get(Q(groups=group) & Q(subjects=subject))
-            except GroupSubject.DoesNotExist:
-                errors.append('Ошибка назначения - проверьте, что назначение существует.')
-
-            if not groupsubject.teacher:
-                groupsubject.teacher = data['teacher']
-            if not groupsubject.att_date:
-                groupsubject.att_date = data['att_date']
-            groupsubject.save()
-
-            for item in data['marks']:
+                logger.info('|---> Запись оценок в БД...')
                 try:
-                    student = Student.objects.get(student_id=int(item[1]))
-                except Student.DoesNotExist:
-                    errors.append(f'ID студента [{item[0]}] в ведомости не корректно.')
+                    group = Group.objects.get(name=data['group'])
+                except Group.DoesNotExist:
+                    errors.append(f'{import_file}: Ошибка группы - проверьте наименование или что группа существует.')
+                    logger.error('|---> Группа {0} отсутствует в БД'.format(data['group']))
 
-                sheet_type = data['type']
-                match sheet_type:
-                    case 0:
-                        try:
-                            result = Result.objects.get(students=student, groupsubject=groupsubject)
-                            result.mark = [item[-1]]
-                            result.save()
-                        except Result.DoesNotExist:
-                            result = Result.objects.create(students=student, groupsubject=groupsubject, mark=[item[-1]])
-                            result.save()
-                    case 1:
-                        try:
-                            result = Result.objects.get(students=student, groupsubject=groupsubject)
-                            result.mark[1] = item[-1]
-                            result.save()
-                        except IndexError:
-                            result.mark.append(item[-1])
-                            validation = validate_mark(result.mark)
-                            if validation == True:
+                try:
+                    subject = Subject.objects.filter(
+                        Q(name=data['subject']) &
+                        Q(form_control=data['form_control']) &
+                        Q(semester=data['semester'])
+                    )
+                    if len(subject) > 1:
+                        subject = Subject.objects.get(
+                            Q(name=data['subject']) &
+                            Q(form_control=data['form_control']) &
+                            Q(cathedra=Cathedra.objects.get(name=data['cathedra'])) &
+                            Q(semester=data['semester'])
+                        )
+                    else:
+                        subject = Subject.objects.get(
+                            Q(name=data['subject']) &
+                            Q(form_control=data['form_control']) &
+                            Q(semester=data['semester'])
+                        )
+                except Subject.DoesNotExist:
+                    errors.append(f'{import_file}: Ошибка дисциплины - проверьте наименование или что дисциплина существует.')
+                    logger.error('|---> Предмет {0} отсутствует в БД'.format(data['subject']))
+
+                if not subject.cathedra:
+                    subject.cathedra.name = Cathedra.objects.get(name=data['cathedra'])
+                    subject.save()
+                if data['form_control'] not in ['Курсовая работа', 'Курсовой проект'] and not subject.zet:
+                    subject.zet = data['zet']
+                    subject.save()
+                else:
+                    if data['form_control'] == 'Курсовая работа':
+                        subject.zet = 'КР'
+                        subject.save()
+                    if data['form_control'] == 'Курсовой проект':
+                        subject.zet = 'КП'
+                        subject.save()
+
+                try:
+                    groupsubject = GroupSubject.objects.get(Q(groups=group) & Q(subjects=subject))
+                except GroupSubject.DoesNotExist:
+                    errors.append(f'{import_file}: Ошибка назначения - проверьте, что назначение существует.')
+                    logger.error(f'|---> Назначение предмета {subject} группе {group} отсутствует в БД')
+
+                if not groupsubject.teacher:
+                    groupsubject.teacher = data['teacher']
+                    groupsubject.save()
+                if not groupsubject.att_date:
+                    groupsubject.att_date = data['att_date']
+                    groupsubject.save()
+
+                for item in data['marks']:
+                    logger.info('|---> Поиск студентов в БД по номеру зачетной книжки')
+                    try:
+                        student = Student.objects.get(student_id=int(item[1]))
+                    except Student.DoesNotExist:
+                        errors.append(f'{import_file}: ID студента [{item[0]}] в ведомости не корректно.')
+                        logger.error('|---> Студент {0} отсутствует в БД'.format(item[0]))
+
+                    sheet_type = data['type']
+                    match sheet_type:
+                        case 0:
+                            try:
+                                result = Result.objects.get(students=student, groupsubject=groupsubject)
+                                result.mark = [item[-1]]
                                 result.save()
-                            else:
-                                errors.append(f'{student.fullname}: {validation[-1]}')
-                    case 2:
-                        try:
-                            result = Result.objects.get(students=student, groupsubject=groupsubject)
-                            result.mark[2] = item[-1]
-                            result.save()
-                        except IndexError:
-                            result.mark.append(item[-1])
-                            validation = validate_mark(result.mark)
-                            if validation == True:
+                            except Result.DoesNotExist:
+                                result = Result.objects.create(students=student, groupsubject=groupsubject, mark=[item[-1]])
                                 result.save()
-                            else:
-                                errors.append(f'{student.fullname}: {validation[-1]}')
-            if not errors:
-                success = True
+                        case 1:
+                            try:
+                                result = Result.objects.get(students=student, groupsubject=groupsubject)
+                                result.mark[1] = item[-1]
+                                result.save()
+                            except IndexError:
+                                result.mark.append(item[-1])
+                                validation = validate_mark(result.mark)
+                                if validation == True:
+                                    result.save()
+                                else:
+                                    errors.append(f'{import_file}: {student.fullname}: {validation[-1]}')
+                                    logger.error(f'|---> Оценка не проходит валидацию. {import_file}: {student.fullname}: {validation[-1]}')
+                        case 2:
+                            try:
+                                result = Result.objects.get(students=student, groupsubject=groupsubject)
+                                result.mark[2] = item[-1]
+                                result.save()
+                            except IndexError:
+                                result.mark.append(item[-1])
+                                validation = validate_mark(result.mark)
+                                if validation == True:
+                                    result.save()
+                                else:
+                                    errors.append(f'{import_file}: {student.fullname}: {validation[-1]}')
+                                    logger.error(f'|---> Оценка не проходит валидацию. {import_file}: {student.fullname}: {validation[-1]}')
+                if not errors:
+                    success = True
+                logger.info('|---> Запись оценок в БД успешно выполнена')
+            except Exception as ex:
+                logger.error(f'|---> Запись оценок из файла {import_file} в БД не удалась', extra={'Exception': ex})
 
-        except Exception as ex:
-            print('----- ERROR >>>', ex)
-
-    context = {'errors': errors, 'success': success}
-
-    return render(request, 'import/import_results.html', context)
+    serialized_data.append({'errors': errors, 'success': success})
+    return JsonResponse({'data': serialized_data})
 
 
 # Groups

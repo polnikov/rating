@@ -433,6 +433,91 @@ function transferStudents() {
    } else {closeCheckboxColumn()};
 };
 
+// функция отображения модального окна для импорта оценок
+function showImportResultsModal() {
+   var importModal = document.getElementById('import-results');
+   $(importModal).modal({blurring: true}).modal('show');
+};
+
+// функция импорта оценок
+function importResults() {
+   const url = window.location.origin + "/api/v1/import/results/";
+   var fileInput = document.querySelector('input[type="file"]');
+   var formData = new FormData();
+   var files = fileInput.files;
+
+   for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      formData.append('import_files', file);
+   }
+
+   fetch(url, {
+      method: "POST",
+      headers: {
+         "X-CSRFToken": csrftoken,
+      },
+      body: formData,
+   })
+   .then(function(response) {
+      if (response.ok) {
+         return response.json();
+      } else {
+         throw new Error('Network response was not ok.');
+      }
+   })
+   .then(function(data) {
+      var success = data.data[0].success;
+      if (!success) {
+         $('#import-results').modal('hide');
+         
+         var errorText = document.getElementById("error-text");
+         var error = data.data[0].error;
+         if (error) {
+            $('#error').modal({blurring: true}).modal('show');
+            switch (error) {
+               case 'file_validation_exist':
+                  errorText.innerHTML = '<i class="times red icon"></i><font color="red">Ничего не выбрано для импорта!</font>';
+                  break;
+               case 'file_validation_format':
+                  errorText.innerHTML = '<i class="times red icon"></i><font color="red">Проверьте формат импортируемых файлов!</font>';
+                  break;
+               case 'check_mark_formcontrol':
+                  errorText.innerHTML = '<i class="times red icon"></i><font color="red">Какие то оценки не соответствуют форме контроля назначенной дисциплины!</font>';
+                  break;
+            };
+         };
+
+         var errors = data.data[0].errors;
+         if (errors) {
+            console.log('ERRORS', errors)
+            $('#errors').modal({blurring: true}).modal('show');
+            
+            var errorsList = document.getElementById("errors-list");
+            for (var i = 0; i < errors.length; i++) {
+               console.log(errors[i])
+               var errorString = `
+                  <div class="item">
+                     <i class="bug red icon"></i>
+                     <div class="content">
+                        <div class="description">${errors[i]}</div>
+                     </div>
+                  </div>
+               `;
+               errorsList.insertAdjacentHTML('beforeend', errorString);
+            };
+         };
+      } else {
+         $('#import-results').modal('hide');
+         $('#success').modal({blurring: true}).modal('show');
+      };
+   })
+   .catch(function(error) {
+      console.log(error);
+      alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+   });
+   fileInput.value = '';
+};
+
 // добавить класс красной подсветки ячеек с основой обучения
 function addHightlightBasis() {
    let negativeElements  = document.getElementsByName("has-negative");
