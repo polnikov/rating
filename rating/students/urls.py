@@ -35,5 +35,4 @@ urlpatterns = [
     path('results/add/', views.ResultCreateView.as_view(), name='result_add'),
     path('results/delete/<int:pk>/', views.ResultDeleteView.as_view(), name='result_delete'),
     path('results/update/<int:pk>/', views.ResultUpdateView.as_view(), name='result_update'),
-    path('results/import/', views.import_results, name='results_import'),
 ]

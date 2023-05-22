@@ -32,8 +32,7 @@
                   <button id="transfer" class="ui green small circular button" style="font-family: Hack; ; display: none" onclick="transferStudents()"><i class="level up alternate icon"></i>Перевести</button>
                   <button id="cancel-button" class="ui red small circular button" style="font-family: Hack; display: none" onclick="closeCheckboxColumn()"><i class="times circle icon"></i></i>Отмена</button>
                   <button id="transfer-button" class="ui violet small circular button" style="font-family: Hack" onclick="openCheckboxColumn()"><i class="level up alternate icon"></i>Перевод</button>
-                  <a href="{% url 'students:results_import' %}">
-                     <button id="import-button" class="ui orange small circular button" style="font-family: Hack"><i class="icon download"></i>Импорт ведомости</button></a>
+                  <button id="import-button" class="ui orange small circular button" style="font-family: Hack" onclick="showImportResultsModal()"><i class="icon download"></i>Импорт ведомости</button>
                {% endif %}
                <a href="{% url 'groups:cards' %}">
                   <button id="back-button" class="ui grey small circular button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
@@ -162,20 +161,58 @@
    {% endif %}
 </div>
 
+<!-- Modal for import results -->
+<div id="import-results" class="ui tiny modal">
+   <div class="center aligned header" style="font-family: Hack">Загрузите ведомость <i class="file excel green icon"></i>EXCEL в формате [xls]</div>
+   <div class="center aligned content">
+      <div class="center aligned actions">
+         <form method="post" enctype="multipart/form-data" class="ui form">
+            {% csrf_token %}
+            <div class="ui file input small">
+               <input name="import_file" type="file" multiple style="font-family: Hack">
+            </div>
+
+            <div class="ui horizontal divider"></div>
+            
+            <div class="ui small cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+            <div class="ui primary small ok button" onclick="importResults()" type="submit" style="font-family: Hack"><i class="icon download"></i>Загрузить</div>
+         </form>
+      </div>
+   </div>
+</div>
+
+<!-- Modal for success import -->
+<div id="success" class="ui tiny basic modal">
+   <div class="center aligned header" style="font-family: Hack"><i class="check green icon"></i><font color="green">Все оценки были успешно импортированы!</font></div>
+</div>
+
+<!-- Modal for error -->
+<div id="error" class="ui tiny basic modal">
+   <div id="error-text" class="center aligned header" style="font-family: Hack"></div>
+</div>
+
+<!-- Modal for errors -->
+<div id="errors" class="ui small modal">
+   <div class="basic header" style="font-family: Hack">Возникли следующие ошибки</div>
+   <div class="scrolling content" >
+      <div id="errors-list" class="ui list" style="font-family: Hack"></div>
+   </div>
+</div>
+
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/script_group_detail.js' %}"></script>
 
 <script type="text/javascript">
-   /* on page ************************************************************************************************************/
+   /* on page *********************************************************************************************************/
    $('.ui.checkbox').checkbox();
    $('.ui.accordion').accordion();
 
-   /* script *************************************************************************************************************/
+   /* script **********************************************************************************************************/
    deleteSidePadding("name", "formcontrol");
    deleteSidePadding("name", "subjects");
    deletePaddingBottomForTitleBlock();
 
-   /* script_group_detail ************************************************************************************************/
+   /* script_group_detail *********************************************************************************************/
    addHighlightMarks();
    addHightlightBasis();
    addColorForAttCells();
