@@ -29,13 +29,13 @@
             <!-- Buttons -->
             <td id="back-button-cell" class="top aligned" colspan="2">
                {% if request.user|has_group:"Сотрудники" %}
-                  <button id="transfer" class="ui green small circular button" style="font-family: Hack; ; display: none" onclick="transferStudents()"><i class="level up alternate icon"></i>Перевести</button>
-                  <button id="cancel-button" class="ui red small circular button" style="font-family: Hack; display: none" onclick="closeCheckboxColumn()"><i class="times circle icon"></i></i>Отмена</button>
-                  <button id="transfer-button" class="ui violet small circular button" style="font-family: Hack" onclick="openCheckboxColumn()"><i class="level up alternate icon"></i>Перевод</button>
-                  <button id="import-button" class="ui orange small circular button" style="font-family: Hack" onclick="showImportResultsModal()"><i class="icon download"></i>Импорт ведомости</button>
+                  <button id="transfer" class="ui green small circular button" style="display: none" onclick="transferStudents()"><i class="level up alternate icon"></i>Перевести</button>
+                  <button id="cancel-button" class="ui red small circular button" style="display: none" onclick="closeCheckboxColumn()"><i class="times circle icon"></i></i>Отмена</button>
+                  <button id="transfer-button" class="ui violet small circular button" onclick="openCheckboxColumn()"><i class="level up alternate icon"></i>Перевод</button>
+                  <button id="import-button" class="ui orange small circular button" onclick="showImportResultsModal()"><i class="icon download"></i>Импорт ведомости</button>
                {% endif %}
                <a href="{% url 'groups:cards' %}">
-                  <button id="back-button" class="ui grey small circular button" style="font-family: Hack"><i class="left arrow icon"></i>Назад</button></a>
+                  <button id="back-button" class="ui grey small circular button"><i class="left arrow icon"></i>Назад</button></a>
             </td>
          </tr>
          <tr>
