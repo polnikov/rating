@@ -4,6 +4,8 @@
 
 {% load static %}
 
+{% load semanticui %}
+
 {% load customfilters %}
 
 {% block title %}Архив{% endblock %}
@@ -26,276 +28,382 @@
    <!-- Tabs -->
    <div id="tabs-segment" class="ui basic segment">
       <!-- Tabs title's -->
-      <div class="ui top attached tabular menu" style="font-family: Hack">
-         <a class="item active" data-tab="first">Студенты <div class="ui grey small label">{{ students.count }}</div></a>
-         <a class="item" data-tab="second">Оценки <div class="ui grey small label">{{ marks.count }}</div></a>
-         <a class="item" data-tab="third">Дисциплины <div class="ui grey small label">{{ subjects.count }}</div></a>
-         <a class="item" data-tab="fourth">Назначения дисциплин <div class="ui grey small label">{{ groupsubjects.count }}</div></a>
-         <a class="item" data-tab="fifth">Группы <div class="ui grey small label">{{ groups.count }}</div></a>
+      <div class="ui secondary menu" style="font-family: Hack">
+         <a class="item active" data-tab="first">Студенты <div class="ui grey circular small label">{{ students.count }}</div></a>
+         <a class="item" data-tab="second">Оценки <div class="ui grey circular small label">{{ marks.count }}</div></a>
+         <a class="item" data-tab="third">Дисциплины <div class="ui grey circular small label">{{ subjects.count }}</div></a>
+         <a class="item" data-tab="fourth">Назначения дисциплин <div class="ui grey circular small label">{{ groupsubjects.count }}</div></a>
+         <a class="item" data-tab="fifth">Группы <div class="ui grey circular small label">{{ groups }}</div></a>
       </div>
 
       <!-- Tab 1 -->
       <!-- Students -->
-      <div class="ui bottom attached tab segment active" data-tab="first">
+      <div class="ui tab active" data-tab="first">
          <!-- Table -->
-         <div id="datatable-segment" class="ui basic segment">
-            {% if students %}
-               <table id="students" class="ui selectable celled table">
+         {% if students %}
+            <table id="students" class="ui selectable celled table">
 
-                  <thead>
-                     <tr class="center aligned">
-                        <th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
-                        <th>ФИО</th>
-                        <th class="collapsing">Группа</th>
-                        <th class="collapsing">Семестр</th>
-                        <th class="collapsing">Статус</th>
-                        <th class="collapsing">Примечание</th>
+               <thead>
+                  <tr class="center aligned">
+                     <th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
+                     <th>ФИО</th>
+                     <th class="collapsing">Группа</th>
+                     <th class="collapsing">Семестр</th>
+                     <th class="collapsing">Статус</th>
+                     <th class="collapsing">Примечание</th>
+                  </tr>
+               </thead>
+
+               <tbody>
+                  {% for student in students %}
+                     <tr>
+                        <td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
+                        <td class="collapsing"><a href="{{ student.get_absolute_url }}">{{ student.fullname }} </a>
+                           {% if student.tag %}
+                              <div id="tag-label" class="ui small pink label">{{ student.tag }}</div>
+                           {% endif %}
+                        </td>
+                        <td class="center aligned">{{ student.group }}</td>
+                        <td class="center aligned">{{ student.semester.semester }}</td>
+                        <td class="center aligned collapsing">{{ student.get_status_display }}</td>
+                        <td>{{ student.comment|truncatechars:25 }}</td>
                      </tr>
-                  </thead>
+                  {% endfor %}
+               </tbody>
 
-                  <tbody>
-                     {% for student in students %}
-                        <tr>
-                           <td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
-                           <td class="collapsing"><a href="{{ student.get_absolute_url }}">{{ student.fullname }} </a>
-                              {% if student.tag %}
-                                 <div id="tag-label" class="ui small pink label">{{ student.tag }}</div>
-                              {% endif %}
-                           </td>
-                           <td class="center aligned">{{ student.group }}</td>
-                           <td class="center aligned">{{ student.semester.semester }}</td>
-                           <td class="center aligned collapsing">{{ student.get_status_display }}</td>
-                           <td>{{ student.comment|truncatechars:25 }}</td>
-                        </tr>
-                     {% endfor %}
-                  </tbody>
-
-               </table>
-            {% else %}
-               {% include 'empty_records.html' %}
-            {% endif %}
-         </div>
+            </table>
+         {% else %}
+            {% include 'empty_records.html' %}
+         {% endif %}
       </div>
 
       <!-- Tab 2 -->
       <!-- Marks -->
-      <div class="ui bottom attached tab segment" data-tab="second">
+      <div class="ui tab" data-tab="second">
          <!-- Table -->
-         <div id="datatable-segment" class="ui basic segment">
-            {% if marks %}
-               <table id="marks" class="ui selectable celled table">
+         {% if marks %}
+            <table id="marks" class="ui selectable celled table">
 
-                  <thead>
-                     <tr class="center aligned">
-                        <th id="semester" class="collapsing">Семестр</th>
-                        <th class="collapsing">Группа</th>
-                        <th>Студент</th>
-                        <th>Дисциплина</th>
-                        <th>Форма контроля</th>
-                        <th name="mark" class="collapsing">Оценка</th>
-                        <th>Дата аттестации</th>
+               <thead>
+                  <tr class="center aligned">
+                     <th id="semester" class="collapsing">Семестр</th>
+                     <th class="collapsing">Группа</th>
+                     <th>Студент</th>
+                     <th>Дисциплина</th>
+                     <th>Форма контроля</th>
+                     <th name="mark" class="collapsing">Оценка</th>
+                     <th>Дата аттестации</th>
+                  </tr>
+               </thead>
+
+               <tbody>
+                  {% for item in marks %}
+                     <tr style="padding-right: 0">
+                           <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
+                           <td class="collapsing center aligned">{{ item.groupsubject.groups }}</td>
+                           <td class="collapsing">
+                              <a href="{{ item.students.get_absolute_url }}">
+                                 {{ item.students.fullname }}
+                              </a>
+                           </td>
+                           <td>
+                              <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
+                                 {{ item.groupsubject.subjects.name|truncatechars:80 }}
+                              </a>
+                           </td>
+                           <td class="collapsing">{{ item.groupsubject.subjects.form_control }}</td>
+
+                           <td class="collapsing center aligned"><a href="{{ item.get_absolute_url }}">
+                              <div class="ui equal width grid collapsing center aligned">
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
+                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
+                              </div></a>
+                           </td>
+
+                           <td class="center aligned" style="width: 150px">{{ item.groupsubject.subjects.empty_att_date }}</td>
                      </tr>
-                  </thead>
+                  {% endfor %}
+               </tbody>
 
-                  <tbody>
-                     {% for item in marks %}
-                        <tr style="padding-right: 0">
-                              <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
-                              <td class="collapsing center aligned">{{ item.groupsubject.groups }}</td>
-                              <td class="collapsing">
-                                 <a href="{{ item.students.get_absolute_url }}">
-                                    {{ item.students.fullname }}
-                                 </a>
-                              </td>
-                              <td>
-                                 <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
-                                    {{ item.groupsubject.subjects.name|truncatechars:80 }}
-                                 </a>
-                              </td>
-                              <td class="collapsing">{{ item.groupsubject.subjects.form_control }}</td>
-
-                              <td class="collapsing center aligned"><a href="{{ item.get_absolute_url }}">
-                                 <div class="ui equal width grid collapsing center aligned">
-                                          <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
-                                          <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
-                                          <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
-                                 </div></a>
-                              </td>
-
-                              <td class="center aligned" style="width: 150px">{{ item.groupsubject.subjects.empty_att_date }}</td>
-                        </tr>
-                     {% endfor %}
-                  </tbody>
-
-               </table>
-            {% else %}
-               {% include 'empty_records.html' %}
-            {% endif %}
-         </div>
+            </table>
+         {% else %}
+            {% include 'empty_records.html' %}
+         {% endif %}
       </div>
 
       <!-- Tab 3 -->
       <!-- Subjects -->
-      <div class="ui bottom attached tab segment" data-tab="third">
+      <div class="ui tab" data-tab="third">
          <!-- Table -->
-         <div id="datatable-segment" class="ui basic segment">
-            {% if subjects %}
-               <table id="subjects" class="ui selectable celled table">
+         {% if subjects %}
+            <table id="subjects" class="ui selectable celled table">
 
-                  <thead>
-                     <tr class="center aligned">
-                        <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
-                        <th>Название</th>
-                        <th class="collapsing">Форма контроля</th>
-                        <th class="collapsing">Семестр</th>
-                        
-                        <th>Примечание</th>
+               <thead>
+                  <tr class="center aligned">
+                     <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+                     <th>Название</th>
+                     <th class="collapsing">Форма контроля</th>
+                     <th class="collapsing">Семестр</th>
+                     
+                     <th>Примечание</th>
+                  </tr>
+               </thead>
+
+               <tbody>
+                  {% for subject in subjects %}
+                     <tr>
+                        <td class="collapsing center aligned">{{ forloop.counter }}</td>
+                        <td class="collapsing">
+                           <a href="{{ subject.get_absolute_url }}">{{ subject.name|truncatechars:50 }}</a>
+                        </td>
+                        <td class="collapsing center aligned">{{ subject.form_control }}</td>
+                        <td class="collapsing center aligned">{{ subject.semester.semester }}</td>
+                        <td class="collapsing">{{ subject.comment|truncatechars:20 }}</td>
                      </tr>
-                  </thead>
+                  {% endfor %}
+               </tbody>
 
-                  <tbody>
-                     {% for subject in subjects %}
-                        <tr>
-                           <td class="collapsing center aligned">{{ forloop.counter }}</td>
-                           <td class="collapsing">
-                              <a href="{{ subject.get_absolute_url }}">{{ subject.name|truncatechars:50 }}</a>
-                           </td>
-                           <td class="collapsing center aligned">{{ subject.form_control }}</td>
-                           <td class="collapsing center aligned">{{ subject.semester.semester }}</td>
-                           <td class="collapsing">{{ subject.comment|truncatechars:20 }}</td>
-                        </tr>
-                     {% endfor %}
-                  </tbody>
-
-               </table>
-            {% else %}
-               {% include 'empty_records.html' %}
-            {% endif %}
-         </div>
+            </table>
+         {% else %}
+            {% include 'empty_records.html' %}
+         {% endif %}
       </div>
 
       <!-- Tab 4 -->
       <!-- GroupSubjects -->
-      <div class="ui bottom attached tab segment" data-tab="fourth">
+      <div class="ui tab" data-tab="fourth">
          <!-- Table -->
-         <div id="datatable-segment" class="ui basic segment">
-            {% if groupsubjects %}
-               <table id="groupsubjects" class="ui selectable celled table">
+         {% if groupsubjects %}
+            <table id="groupsubjects" class="ui selectable celled table">
 
-                  <thead>
-                     <tr class="center aligned">
-                        <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
-                        <th>Дисциплина</th>
-                        <th class="collapsing">Форма контроля</th>
-                        <th class="collapsing">Группа</th>
-                        <th class="collapsing">Семестр</th>
-                        <th class="collapsing">Преподаватель {% if empty_teacher %}<div id="count-label" class="ui left pointing red tiny label">
-                           {{ empty_teacher }}</div>{% endif %}
-                        </th>
-                        <th class="collapsing">Кафедра</th>
-                     </tr>
-                  </thead>
+               <thead>
+                  <tr class="center aligned">
+                     <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+                     <th>Дисциплина</th>
+                     <th class="collapsing">Форма контроля</th>
+                     <th class="collapsing">Группа</th>
+                     <th class="collapsing">Семестр</th>
+                     <th class="collapsing">Преподаватель {% if empty_teacher %}<div id="count-label" class="ui left pointing red tiny label">
+                        {{ empty_teacher }}</div>{% endif %}
+                     </th>
+                     <th class="collapsing">Кафедра</th>
+                  </tr>
+               </thead>
 
-                  <tbody>
-                        {% for item in groupsubjects %}
-                           <tr>
-                              <td class="collapsing center aligned">{{ forloop.counter }}</td>
-                              <td><a href="{% url 'subjects:groupsubject_update' item.id %}">{{ item.subjects.name }}</a></td>
-                              <td class="center aligned collapsing">{{ item.subjects.form_control }}</td>
-                              <td class="center aligned collapsing">{{ item.groups }}</td>
-                              <td class="center aligned collapsing">{{ item.subjects.semester.semester }}</td>
+               <tbody>
+                     {% for item in groupsubjects %}
+                        <tr>
+                           <td class="collapsing center aligned">{{ forloop.counter }}</td>
+                           <td><a href="{% url 'subjects:groupsubject_update' item.id %}">{{ item.subjects.name }}</a></td>
+                           <td class="center aligned collapsing">{{ item.subjects.form_control }}</td>
+                           <td class="center aligned collapsing">{{ item.groups }}</td>
+                           <td class="center aligned collapsing">{{ item.subjects.semester.semester }}</td>
 
-                              {% if item.teacher %}
-                                 <td>{{ item.teacher }}</td>
-                              {% else %}
-                                 <td class="negative collapsing center aligned"><i class="icon close"></i>
-                                    {{ item.empty_teacher }}
-                                 </td>
-                              {% endif %}
+                           {% if item.teacher %}
+                              <td>{{ item.teacher }}</td>
+                           {% else %}
+                              <td class="negative collapsing center aligned"><i class="icon close"></i>
+                                 {{ item.empty_teacher }}
+                              </td>
+                           {% endif %}
 
-                              {% if item.subjects.cathedra %}
-                                 <td class="collapsing">
-                                    {{ item.subjects.cathedra }}
-                                 </td>
-                              {% else %}
-                                 <td class="negative collapsing center aligned"><i class="icon close"></i>
-                                    {{ item.subjects.empty_cathedra }}
-                                 </td>
-                              {% endif %}
+                           {% if item.subjects.cathedra %}
+                              <td class="collapsing">
+                                 {{ item.subjects.cathedra }}
+                              </td>
+                           {% else %}
+                              <td class="negative collapsing center aligned"><i class="icon close"></i>
+                                 {{ item.subjects.empty_cathedra }}
+                              </td>
+                           {% endif %}
 
-                           </tr>
-                        {% endfor %}
-                  </tbody>
+                        </tr>
+                     {% endfor %}
+               </tbody>
 
-               </table>
-            {% else %}
-               {% include 'empty_records.html' %}
-            {% endif %}
-         </div>
+            </table>
+         {% else %}
+            {% include 'empty_records.html' %}
+         {% endif %}
       </div>
 
       <!-- Tab 5 -->
       <!-- Groups -->
-      <div class="ui bottom attached tab segment" data-tab="fifth">
+      <div class="ui tab" data-tab="fifth">
          <!-- Table -->
-         <div id="datatable-segment" class="ui basic segment">
-            {% if groups %}
-               <table id="groups" class="ui selectable celled table">
-
-                  <thead>
-                     <tr class="center aligned">
-                        <th><i class="hashtag small icon"></i></th>
-                        <th>Название</th>
-                        <th>Направление</th>
-                        <th>Профиль|Специализация</th>
-                        <th>Шифр</th>
-                        <th class="collapsing">Удалить</th>
-                        <th class="collapsing">Изменить</th>
-                     </tr>
-                  </thead>
-
-                  <tbody>
-                        {% for group in groups %}
-                           <tr>
-                              <td class="center aligned" data-tooltip="{{ group.level }}" data-position="left center" data-inverted="">{{ forloop.counter }}</td>
-                              <td class="center aligned collapsing">{{ group.name }}</td>
-                              <td>{{ group.direction }}</td>
-                              <td>{{ group.profile }}</td>
-                              <td class="center aligned">{{ group.code }}</td>
-                              <td class="center aligned collapsing">
-                                 <a href="{% url 'groups:delete' group.id %}">
-                                    <button id="trash-button" class="circular ui red tiny icon button">
-                                       <i class="trash alternate outline icon"></i>
-                                    </button>
-                              </a>
-                              </td>
-                              <td class="center aligned collapsing">
-                                 <a href="{% url 'groups:update' group.id %}">
-                                       <button id="edit-button" class="circular ui blue tiny icon button">
-                                          <i class="edit icon"></i>
-                                       </button>
-                                 </a>
-                              </td>
-                           </tr>
-                        {% endfor %}
-                  </tbody>
-
-               </table>
-            {% else %}
-               {% include 'empty_records.html' %}
-            {% endif %}
-         </div>
+         {% if groups %}
+            <table id="groups-table" class="ui selectable compact small celled table">
+               <thead>
+                  <tr class="center aligned">
+                     <th><i class="hashtag small icon"></i></th>
+                     <th>Название</th>
+                     <th>Уровень</th>
+                     <th>Направление</th>
+                     <th>Профиль | Специализация</th>
+                     <th>Шифр</th>
+                     <th class="collapsing">Удалить</th>
+                     <th class="collapsing">Изменить</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <!-- data from JavaScript -->
+               </tbody>
+            </table>
+         {% else %}
+            {% include 'empty_records.html' %}
+         {% endif %}
       </div>
    </div>
 </div>
 
-<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<!-- Modal for update group -->
+<div id="update-group-modal" class="ui large modal">
+   <div class="basic center aligned header" style="font-family: Hack">Изменить группу</div>
+   <div class="content" style="font-family: Hack">
+      <form id="update-form" method="POST">
+         {% csrf_token %}
+         <div class="ui form">
+            <div class="required field">
+               <label>Название</label>
+               {{ group_form.name }}
+            </div>
+            <div class="two fields">
+               <div class="five wide required field">
+                  <label>Направление</label>
+                  {{ group_form.direction }}
+               </div>
+               <div class="eleven wide required field">
+                  <label>Профиль | Специализация</label>
+                  {{ group_form.profile }}
+               </div>
+            </div>
+            <div class="two fields">
+               <div class="required field">
+                  <label>Уровень обучения</label>
+                  {% render_field group_form.level _no_label='True' placeholder='Выбрать' %}
+               </div>
+               <div class="required field {% if group_form.code.errors %} error {% endif %}">
+                  <label>Шифр в формате: XX.XX.XX</label>
+                  {{ group_form.code }}
+               </div>
+            </div>
+            <div class=" field">
+               {% render_field group_form.is_archived %}
+            </div>
+         </div>
+      </form>
+   </div>
+   <div class="basic actions">
+      <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+      <div id="update-group-button" class="ui blue circular button" onclick="updateGroup()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+   </div>
+</div>
+
+<!-- Modal for delete group -->
+<div id="delete-group-modal" class="ui modal">
+   <div class="basic center aligned header" style="font-family: Hack">Удалить группу</div>
+   <div class="content" style="font-family: Hack">
+      <form id="delete-form" method="POST">
+         {% csrf_token %}
+         <table class="ui definition table" style="margin-top: 0">
+            <tbody>
+               <tr>
+                  <td class="five wide">Название</td>
+                  <td id="del-name"></td>
+               </tr>
+               <tr>
+                  <td>Направление</td>
+                  <td id="del-direction"></td>
+               </tr>
+               <tr>
+                  <td>Профиль | Специализация</td>
+                  <td id="del-profile"></td>
+               </tr>
+               <tr>
+                  <td>Уровень обучения</td>
+                  <td id="del-level"></td>
+               </tr>
+               <tr>
+                  <td>Шифр</td>
+                  <td id="del-code"></td>
+               </tr>
+            </tbody>
+         </table>
+      </form>
+   </div>
+   <div class="basic actions">
+       <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+       <div id="delete-group-button" class="ui red circular button" onclick="deleteGroup()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+   </div>
+</div>
 
 <!-- DataTable -->
 <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
 
+<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/script_groups.js' %}"></script>
 <script type="text/javascript">
+   $(document).ready(function() {
+      if ($.fn.DataTable.isDataTable('#groups-table')) {
+         $('#groups-table').DataTable().destroy();
+      };
+
+      const groupsDataTableOptions = {
+         language: {
+            lengthMenu: '_MENU_ записей на страницу',
+            zeroRecords: 'Записей нет...',
+            info: 'Всего записей: _MAX_',
+            infoEmpty: '',
+            infoFiltered: 'Найдено: _TOTAL_',
+            search: '',
+            searchPlaceholder: 'поиск',
+            paginate: {
+               first:    '«',
+               previous: '‹',
+               next:     '›',
+               last:     '»'
+            },
+         },
+         lengthMenu: [
+            [20, 50, -1],
+            [20, 50, 'Все']
+         ],
+         pageLength: 20,
+         paging: false,
+         searching: true,
+         ordering: true,
+         autoWidth: false,
+         columnDefs: [
+            { width: "3%", targets: [0, 6, 7] },
+            { width: "10%", targets: [1, 2] },
+            { width: "24%", targets: 3 },
+            { width: "42%", targets: 4 },
+            { width: "5%", targets: 5 },
+            { orderable: false, targets: [6, 7] },
+            { className: 'center aligned', targets: [0, 2, 5, 6, 7] },
+         ],
+      };
+
+      $('#groups-table').DataTable(groupsDataTableOptions);
+
+      var hasGroup = '{{ request.user|has_group:"Сотрудники" }}';
+      fetchGroupsDataAndPopulate(hasGroup);
+
+      var forms = document.forms;
+      for (let i = 0; i < forms.length; i++) {
+         var formElements = forms[i].elements;
+         for (let j = 0; j < formElements.length; j++) {
+            if (formElements[j].localName == "input" && formElements[j].type == "text") {
+               formElements[j].style.fontFamily = "Hack";
+            };
+         };
+      };
+   });
+
+
+
    // tabs
    $('.menu .item').tab();
 

@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-
 {% extends "base.html" %}
 
 {% load static %}
+
+{% load semanticui %}
 
 {% load customfilters %}
 
@@ -20,56 +20,35 @@
                     <td><h2 style="font-family: Hack">Группы</h2></td>
                     {% if request.user|has_group:"Сотрудники" %}
                         <td class="right aligned">
-                            <a href="{% url 'groups:add' %}">
-                                <button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
-                            </a>
+                            <button id="add-button" class="ui positive small circular button" onclick="showAddGroupModal()"><i class="icon plus circle"></i>Добавить</button>
                         </td>
                     {% endif %}
                 </tr>
             </tbody>
         </table>
     </div>
-
+    
     <!-- Table -->
     <div class="ui basic segment">
-        {% if group_list %}
-            <table class="ui selectable celled table">
+        <div id="success" class="ui green inverted nag">
+            Успешно!
+        </div>
+        {% if groups %}
+            <table id="groups-table" class="ui selectable compact small celled table">
                 <thead>
                     <tr class="center aligned">
                         <th><i class="hashtag small icon"></i></th>
                         <th>Название</th>
+                        <th>Уровень</th>
                         <th>Направление</th>
-                        <th>Профиль|Специализация</th>
+                        <th>Профиль | Специализация</th>
                         <th>Шифр</th>
                         <th class="collapsing">Удалить</th>
                         <th class="collapsing">Изменить</th>
                     </tr>
                 </thead>
-
                 <tbody>
-                    {% for group in group_list %}
-                        <tr>
-                            <td class="center aligned" data-tooltip="{{ group.level }}" data-position="right center" data-inverted="">{{ forloop.counter }}</td>
-                            <td class="collapsing">{{ group.name }} {% if group.is_archived %}<i class="archive brown icon"></i>{% endif %}</td>
-                            <td>{{ group.direction }}</td>
-                            <td>{{ group.profile }}</td>
-                            <td class="center aligned">{{ group.code }}</td>
-                            <td class="center aligned collapsing">
-                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'groups:delete' group.id %}{% else %}#{% endif %}">
-                                    <button id="trash-button" class="circular ui red mini icon button">
-                                        <i class="trash alternate outline icon"></i>
-                                    </button>
-                                </a>
-                            </td>
-                            <td class="center aligned collapsing">
-                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'groups:update' group.id %}{% else %}#{% endif %}">
-                                    <button id="edit-button" class="circular ui blue mini icon button">
-                                        <i class="edit icon"></i>
-                                    </button>
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
+                    <!-- data from JavaScript -->
                 </tbody>
             </table>
         {% else %}
@@ -77,5 +56,191 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Modal for add group -->
+<div id="add-group-modal" class="ui large modal">
+    <div class="basic center aligned header" style="font-family: Hack">Добавить группу</div>
+    <div class="content" style="font-family: Hack">
+        <form id="add-form" method="POST">
+            {% csrf_token %}
+            <div class="ui form">
+                <div class="required field">
+                    <label>Название</label>
+                    {{ form.name }}
+                </div>
+                <div class="two fields">
+                    <div class="required field">
+                        <label>Направление</label>
+                        {{ form.direction }}
+                    </div>
+                    <div class="required field">
+                        <label>Профиль | Специализация</label>
+                        {{ form.profile }}
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class="required field">
+                        <label>Уровень обучения</label>
+                        {% render_field form.level _no_label='True' placeholder='Выбрать' %}
+                    </div>
+                    <div class="required field {% if form.code.errors %} error {% endif %}">
+                        <label>Шифр в формате: XX.XX.XX</label>
+                        {{ form.code }}
+                    </div>
+                </div>
+                <div class=" field">
+                    {% render_field form.is_archived %}
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <div class="ui circular cancel button" onclick="resetForm()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div class="ui green circular button" onclick="saveGroup()" style="font-family: Hack"><i class="save icon"></i>Сохранить</div>
+    </div>
+</div>
+
+<!-- Modal for update group -->
+<div id="update-group-modal" class="ui large modal">
+    <div class="basic center aligned header" style="font-family: Hack">Изменить группу</div>
+    <div class="content" style="font-family: Hack">
+        <form id="update-form" method="POST">
+            {% csrf_token %}
+            <div class="ui form">
+                <div class="required field">
+                    <label>Название</label>
+                    {{ form.name }}
+                </div>
+                <div class="two fields">
+                    <div class="five wide required field">
+                        <label>Направление</label>
+                        {{ form.direction }}
+                    </div>
+                    <div class="eleven wide required field">
+                        <label>Профиль | Специализация</label>
+                        {{ form.profile }}
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class="required field">
+                        <label>Уровень обучения</label>
+                        {% render_field form.level _no_label='True' placeholder='Выбрать' %}
+                    </div>
+                    <div class="required field {% if form.code.errors %} error {% endif %}">
+                        <label>Шифр в формате: XX.XX.XX</label>
+                        {{ form.code }}
+                    </div>
+                </div>
+                <div class=" field">
+                    {% render_field form.is_archived %}
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="update-group-button" class="ui blue circular button" onclick="updateGroup()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+    </div>
+</div>
+
+<!-- Modal for delete group -->
+<div id="delete-group-modal" class="ui modal">
+    <div class="basic center aligned header" style="font-family: Hack">Удалить группу</div>
+    <div class="content" style="font-family: Hack">
+        <form id="delete-form" method="POST">
+            {% csrf_token %}
+            <table class="ui definition table" style="margin-top: 0">
+                <tbody>
+                    <tr>
+                        <td class="five wide">Название</td>
+                        <td id="del-name"></td>
+                    </tr>
+                    <tr>
+                        <td>Направление</td>
+                        <td id="del-direction"></td>
+                    </tr>
+                    <tr>
+                        <td>Профиль | Специализация</td>
+                        <td id="del-profile"></td>
+                    </tr>
+                    <tr>
+                        <td>Уровень обучения</td>
+                        <td id="del-level"></td>
+                    </tr>
+                    <tr>
+                        <td>Шифр</td>
+                        <td id="del-code"></td>
+                    </tr>
+                </tbody>
+            </table>
+    </form>
+    </div>
+    <div class="basic actions">
+        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="delete-group-button" class="ui red circular button" onclick="deleteGroup()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+    </div>
+</div>
+
+<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/script_groups.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        if ($.fn.DataTable.isDataTable('#groups-table')) {
+            $('#groups-table').DataTable().destroy();
+        };
+
+        const dataTableOptions = {
+            language: {
+                lengthMenu: '_MENU_ записей на страницу',
+                zeroRecords: 'Записей нет...',
+                info: 'Всего записей: _MAX_',
+                infoEmpty: '',
+                infoFiltered: 'Найдено: _TOTAL_',
+                search: '',
+                searchPlaceholder: 'поиск',
+                paginate: {
+                    first:    '«',
+                    previous: '‹',
+                    next:     '›',
+                    last:     '»'
+                },
+            },
+            lengthMenu: [
+                [20, 50, -1],
+                [20, 50, 'Все']
+            ],
+            pageLength: 20,
+            paging: false,
+            searching: true,
+            ordering: true,
+            autoWidth: false,
+            columnDefs: [
+                { width: "3%", targets: [0, 6, 7] },
+                { width: "10%", targets: [1, 2] },
+                { width: "24%", targets: 3 },
+                { width: "42%", targets: 4 },
+                { width: "5%", targets: 5 },
+                { orderable: false, targets: [6, 7] },
+                { className: 'center aligned', targets: [0, 2, 5, 6, 7] },
+            ],
+        };
+
+        $('#groups-table').DataTable(dataTableOptions);
+
+        var hasGroup = '{{ request.user|has_group:"Сотрудники" }}';
+        fetchGroupsDataAndPopulate(hasGroup);
+
+        var forms = document.forms;
+        for (let i = 0; i < forms.length; i++) {
+            var formElements = forms[i].elements;
+            for (let j = 0; j < formElements.length; j++) {
+                if (formElements[j].localName == "input" && formElements[j].type == "text") {
+                    formElements[j].style.fontFamily = "Hack";
+                };
+            };
+        };
+        changeDatatableInputFont();
+    });
+</script>
 
 {% endblock %}
