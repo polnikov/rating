@@ -1,7 +1,5 @@
 from api import serializers
 import xlrd
-import locale
-import json
 import re
 import logging
 from datetime import datetime
@@ -16,6 +14,7 @@ from django.db.models import Q, F
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 from groups.models import Group
+from groups.forms import GroupForm
 from students.models import Result, Semester, Student, StudentLog, Basis
 from students.validators import validate_mark, check_mark
 from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
@@ -514,8 +513,64 @@ def import_results(request):
 
 # Groups
 class GroupsViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
+    queryset = Group.objects.filter(is_archived=False)
     serializer_class = serializers.GroupSerializer
+
+
+    def get_queryset(self):
+        if self.request.GET.get('is_archived') == 'true':
+            return Group.objects.filter(is_archived=True)
+        return super().get_queryset()
+
+
+    def retrieve(self, request, pk=None):
+        queryset = Group.objects.all()
+
+        try:
+            group = queryset.get(id=pk)
+        except Group.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Group not found'}, status=404)
+
+        serializer = self.get_serializer(group)
+        return Response(serializer.data)
+
+
+    @action(methods=['post'], detail=False)
+    def create_group(self, request):
+        form = GroupForm(request.data)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=201)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['patch'], detail=True)
+    def update_group(self, request, pk=None):
+        try:
+            group = Group.objects.get(id=pk)
+        except Group.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Group not found'}, status=404)
+
+        form = GroupForm(request.POST, instance=group)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=200)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['delete'], detail=True)
+    def delete_group(self, request, pk=None):
+        queryset = Group.objects.all()
+
+        try:
+            group = queryset.get(id=pk)
+        except Group.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Group not found'}, status=404)
+
+        group.delete()
+        return JsonResponse({'success': True}, status=201)
 
 
 # @api_view(['GET', 'POST'])
