@@ -35,56 +35,54 @@
 	</div>
 
 	<!-- Table -->
-	<div id="datatable-segment" class="ui basic segment">
-		{% if subject_list %}
-			<div class="ui segment">
-				<table id="subjects" class="ui selectable celled compact table">
+	{% if subject_list %}
+		<div class="ui basic segment">
+			<table id="subjects" class="ui selectable celled compact small table">
 
-					<thead>
-						<tr class="center aligned">
-							<th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
-							<th>Название
-								<div id="count-label" class="ui left pointing grey tiny label">{{ subject_list.count }}</div>
-							</th>
-							<th class="collapsing" style="width: 50px">Форма контроля</th>
-							<th class="collapsing">Семестр</th>
-							<th class="collapsing center aligned">Кафедра</th>
-							<th>Примечание</th>
-						</tr>
-					</thead>
+				<thead>
+					<tr class="center aligned">
+						<th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+						<th>Название
+							<div id="count-label" class="ui left pointing grey tiny label">{{ subject_list.count }}</div>
+						</th>
+						<th class="collapsing" style="width: 50px">Форма контроля</th>
+						<th class="collapsing">Семестр</th>
+						<th class="collapsing center aligned">Кафедра</th>
+						<th>Примечание</th>
+					</tr>
+				</thead>
 
-					<tbody>
-						{% for subject in subject_list %}
-							<tr>
-								<td class="collapsing center aligned">{{ forloop.counter }}</td>
-								<td>
-									<a href="{{ subject.get_absolute_url }}">{{ subject.name|truncatechars:80 }}</a>
-									{% if subject.is_archived %}<i class="archive brown icon"></i>{% endif %}
+				<tbody>
+					{% for subject in subject_list %}
+						<tr>
+							<td class="collapsing center aligned">{{ forloop.counter }}</td>
+							<td>
+								<a href="{{ subject.get_absolute_url }}">{{ subject.name|truncatechars:80 }}</a>
+								{% if subject.is_archived %}<i class="archive brown icon"></i>{% endif %}
+							</td>
+							<td class="collapsing">{{ subject.form_control }}</td>
+							<td class="collapsing center aligned">{{ subject.semester.semester }}</td>
+
+							{% if subject.cathedra.short_name %}
+								<td class="collapsing center aligned">
+									{{ subject.cathedra.short_name }}
 								</td>
-								<td class="collapsing">{{ subject.form_control }}</td>
-								<td class="collapsing center aligned">{{ subject.semester.semester }}</td>
+							{% else %}
+								<td class="negative collapsing center aligned">
+									<i class="icon close"></i> Нет
+								</td>
+							{% endif %}
 
-								{% if subject.cathedra.short_name %}
-									<td class="collapsing center aligned">
-										{{ subject.cathedra.short_name }}
-									</td>
-								{% else %}
-									<td class="negative collapsing center aligned">
-										<i class="icon close"></i> Нет
-									</td>
-								{% endif %}
+							<td class="collapsing">{{ subject.comment|truncatechars:20 }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
 
-								<td class="collapsing">{{ subject.comment|truncatechars:20 }}</td>
-							</tr>
-						{% endfor %}
-					</tbody>
-
-				</table>
-			</div>
-		{% else %}
-			{% include 'empty_records.html' %}
-		{% endif %}
-	</div>
+			</table>
+		</div>
+	{% else %}
+		{% include 'empty_records.html' %}
+	{% endif %}
 </div>
 
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
