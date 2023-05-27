@@ -35,51 +35,49 @@
     </div>
 
     <!-- Table -->
-	<div id="datatable-segment" class="ui basic segment">
-        {% if cathedra_list %}
-            <div class="ui segment">
-                <table id="cathedras" class="ui selectable celled compact table">
-                    <thead>
-                        <tr class="center aligned">
-                            <th class="collapsing"><i class="hashtag small icon"></i></th>
-                            <th>Факультет</th>
-                            <th class="collapsing">Сокращение</th>
-                            <th>Полное название <div id="count-label" class="ui left pointing grey tiny label">{{ cathedra_list.count }}</div></th>
-                            <th class="collapsing">Удалить</th>
-                            <th class="collapsing">Изменить</th>
-                        </tr>
-                    </thead>
+    {% if cathedra_list %}
+        <div class="ui basic segment">
+            <table id="cathedras" class="ui selectable celled compact small table">
+                <thead>
+                    <tr class="center aligned">
+                        <th class="collapsing"><i class="hashtag small icon"></i></th>
+                        <th>Факультет</th>
+                        <th class="collapsing">Сокращение</th>
+                        <th>Полное название <div id="count-label" class="ui left pointing grey tiny label">{{ cathedra_list.count }}</div></th>
+                        <th class="collapsing">Удалить</th>
+                        <th class="collapsing">Изменить</th>
+                    </tr>
+                </thead>
 
-                    <tbody>
-                        {% for cathedra in cathedra_list %}
-                            <tr>
-                                <td class="center aligned">{{ forloop.counter }}</td>
-                                <td class="collapsing center aligned">{{ cathedra.faculty.short_name|default_if_none:"" }}</td>
-                                <td class="collapsing center aligned">{{ cathedra.short_name }}</td>
-                                <td>{{ cathedra.name|truncatechars:85 }}</td>
-                                <td class="center aligned collapsing">
-                                    <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:cathedra_delete' cathedra.id %}{% else %}#{% endif %}">
-                                        <button id="trash-button" class="circular ui red mini icon button">
-                                            <i class="trash alternate outline icon"></i>
-                                        </button>
-                                    </a>
-                                </td>
-                                <td class="center aligned collapsing">
-                                    <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:cathedra_update' cathedra.id %}{% else %}#{% endif %}">
-                                        <button id="edit-button" class="circular ui blue mini icon button">
-                                            <i class="edit icon"></i>
-                                        </button>
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            {% include 'empty_records.html' %}
-        {% endif %}
-    </div>
+                <tbody>
+                    {% for cathedra in cathedra_list %}
+                        <tr>
+                            <td class="center aligned">{{ forloop.counter }}</td>
+                            <td class="collapsing center aligned">{{ cathedra.faculty.short_name|default_if_none:"" }}</td>
+                            <td class="collapsing center aligned">{{ cathedra.short_name }}</td>
+                            <td>{{ cathedra.name|truncatechars:85 }}</td>
+                            <td class="center aligned collapsing">
+                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:cathedra_delete' cathedra.id %}{% else %}#{% endif %}">
+                                    <button id="trash-button" class="circular ui red mini icon button">
+                                        <i class="trash alternate outline icon"></i>
+                                    </button>
+                                </a>
+                            </td>
+                            <td class="center aligned collapsing">
+                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:cathedra_update' cathedra.id %}{% else %}#{% endif %}">
+                                    <button id="edit-button" class="circular ui blue mini icon button">
+                                        <i class="edit icon"></i>
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        {% include 'empty_records.html' %}
+    {% endif %}
 </div>
 
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
@@ -120,8 +118,8 @@
             ],
             pageLength: 20,
         });
+        changeDatatableInputFont();
     });
-
     deletePaddingBottomForTitleBlock();
     deletePaddingTopForDatatableSegment();
 </script>

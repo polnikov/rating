@@ -8,10 +8,9 @@
 
 {% block content %}
 
-<div class="ui container" style="width: 80%">
-	<div class="ui basic segment">
-
-        <!-- Title & button -->
+<div id="segments" class="ui basic segments">
+    <!-- Title & button -->
+    <div id="buttons-segment" class="ui basic segment">
         <table class="ui very basic table">
             
             <tbody>
@@ -30,7 +29,7 @@
 
         <!-- Table -->
         {% if faculty_list %}
-            <table class="ui single line table">
+            <table class="ui selectable celled compact small table">
                 <thead>
                     <tr class="center aligned">
                         <th class="collapsing"><i class="hashtag small icon"></i></th>

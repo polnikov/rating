@@ -35,95 +35,93 @@
     </div>
 
     <!-- Table -->
-    <div id="datatable-segment" class="ui basic segment">
-        {% if groupsubject_list %}
-            <div class="ui segment">
-                <table id="group-subjects" class="ui selectable celled compact table">
-                    <thead>
-                        <tr class="center aligned">
-                            <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
-                            <th>Дисциплина <div id="count-label" class="ui left pointing grey tiny label">{{ groupsubject_list.count }}</div></th>
-                            <th class="collapsing">Форма контроля</th>
-                            <th class="collapsing">Группа</th>
-                            <th class="collapsing">Семестр</th>
-                            <th class="collapsing">Преподаватель {% if empty_teacher %}<br><div id="count-label" class="ui red tiny label">
-								{{ empty_teacher }}</div>{% endif %}
-							</th>
-                            <th class="collapsing">Дата аттестации {% if empty_date %}<br><div id="count-label" class="ui red tiny label">
-								{{ empty_date }}</div>{% endif %}
-							</th>
-                            <th class="collapsing">Кафедра</th>
-                            <th name="actions" class="collapsing"><i class="trash alternate outline icon"></i></th>
-                            <th name="actions" class="collapsing"><i class="edit icon"></i></th>
+    {% if groupsubject_list %}
+        <div class="ui basic segment">
+            <table id="group-subjects" class="ui selectable celled compact small table">
+                <thead>
+                    <tr class="center aligned">
+                        <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+                        <th>Дисциплина <div id="count-label" class="ui left pointing grey tiny label">{{ groupsubject_list.count }}</div></th>
+                        <th class="collapsing">Форма контроля</th>
+                        <th class="collapsing">Группа</th>
+                        <th class="collapsing">Семестр</th>
+                        <th class="collapsing">Преподаватель {% if empty_teacher %}<br><div id="count-label" class="ui red mini label">
+                            {{ empty_teacher }}</div>{% endif %}
+                        </th>
+                        <th class="collapsing">Дата аттестации {% if empty_date %}<br><div id="count-label" class="ui red mini label">
+                            {{ empty_date }}</div>{% endif %}
+                        </th>
+                        <th class="collapsing">Кафедра</th>
+                        <th name="actions" class="collapsing"><i class="trash alternate outline icon"></i></th>
+                        <th name="actions" class="collapsing"><i class="edit icon"></i></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in groupsubjects_list %}
+                        <tr>
+                            <td class="collapsing center aligned">{{ forloop.counter }}</td>
+                            <td><a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name|truncatechars:45 }}</a></td>
+                            <td class="collapsing">{{ item.subjects.form_control }}</td>
+
+                            <td class="center aligned collapsing">
+                                <a onclick="window.location.href = '{% url 'groups:detail' groupname=item.groups semester=item.subjects.semester.semester  %}'">
+                                    {{ item.groups }}
+                                </a>
+                            </td>
+
+                            <td class="center aligned collapsing">{{ item.subjects.semester.semester }}</td>
+
+                            {% if item.teacher %}
+                                <td class="collapsing">{{ item.teacher }}</td>
+                            {% else %}
+                                <td class="negative collapsing center aligned"><i class="icon close"></i>
+                                    {{ item.empty_teacher }}
+                                </td>
+                            {% endif %}
+
+                            {% if item.att_date %}
+                                <td class="collapsing center aligned">
+                                    {{ item.empty_att_date|date:"D d M Y" }}
+                                </td>
+                            {% else %}
+                                <td class="negative collapsing center aligned"><i class="icon close"></i>
+                                    {{ item.empty_att_date }}
+                                </td>
+                            {% endif %}
+
+                            {% if item.subjects.cathedra.short_name %}
+                                <td class="center aligned collapsing">
+                                    {{ item.subjects.cathedra.short_name }}
+                                </td>
+                            {% else %}
+                                <td class="center aligned negative collapsing">
+                                    <i class="icon close"></i> Нет
+                                </td>
+                            {% endif %}
+
+                            <td class="center aligned collapsing">
+                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:groupsubject_delete' item.id %}{% else %}#{% endif %}">
+                                    <button id="trash-button" class="circular ui red mini icon button">
+                                        <i class="trash alternate outline icon"></i>
+                                    </button>
+                                </a>
+                            </td>
+                            <td class="center aligned collapsing">
+                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:groupsubject_update' item.id %}{% else %}#{% endif %}">
+                                    <button id="edit-button" class="circular ui blue mini icon button">
+                                        <i class="edit icon"></i>
+                                    </button>
+                                </a>
+                            </td>
                         </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for item in groupsubjects_list %}
-                            <tr>
-                                <td class="collapsing center aligned">{{ forloop.counter }}</td>
-                                <td><a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name|truncatechars:45 }}</a></td>
-                                <td class="collapsing">{{ item.subjects.form_control }}</td>
-
-                                <td class="center aligned collapsing">
-                                    <a onclick="window.location.href = '{% url 'groups:detail' groupname=item.groups semester=item.subjects.semester.semester  %}'">
-                                        {{ item.groups }}
-                                    </a>
-                                </td>
-
-                                <td class="center aligned collapsing">{{ item.subjects.semester.semester }}</td>
-
-                                {% if item.teacher %}
-                                    <td class="collapsing">{{ item.teacher }}</td>
-                                {% else %}
-                                    <td class="negative collapsing center aligned"><i class="icon close"></i>
-                                        {{ item.empty_teacher }}
-                                    </td>
-                                {% endif %}
-
-                                {% if item.att_date %}
-                                    <td class="collapsing center aligned">
-                                        {{ item.empty_att_date|date:"D d M Y" }}
-                                    </td>
-                                {% else %}
-                                    <td class="negative collapsing center aligned"><i class="icon close"></i>
-                                        {{ item.empty_att_date }}
-                                    </td>
-                                {% endif %}
-
-                                {% if item.subjects.cathedra.short_name %}
-                                    <td class="center aligned collapsing">
-                                        {{ item.subjects.cathedra.short_name }}
-                                    </td>
-                                {% else %}
-                                    <td class="center aligned negative collapsing">
-                                        <i class="icon close"></i> Нет
-                                    </td>
-                                {% endif %}
-
-                                <td class="center aligned collapsing">
-                                    <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:groupsubject_delete' item.id %}{% else %}#{% endif %}">
-                                        <button id="trash-button" class="circular ui red mini icon button">
-                                            <i class="trash alternate outline icon"></i>
-                                        </button>
-                                    </a>
-                                </td>
-                                <td class="center aligned collapsing">
-                                    <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:groupsubject_update' item.id %}{% else %}#{% endif %}">
-                                        <button id="edit-button" class="circular ui blue mini icon button">
-                                            <i class="edit icon"></i>
-                                        </button>
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            {% include 'empty_records.html' %}
-        {% endif %}
-    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        {% include 'empty_records.html' %}
+    {% endif %}
 </div>
 
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>

@@ -37,132 +37,124 @@
     <div id="tabs-segment" class="ui basic segment">
 
         <!-- Tabs title's -->
-        <div class="ui top attached tabular menu" style="font-family: Hack">
-            <a class="item active" data-tab="first"><i class="icon green checkmark"></i>Активные</a>
-            <a class="item" data-tab="second"><i class="graduation cap icon"></i>Выпускники</a>
-            <a class="item" data-tab="third"><i class="history icon"></i>История изменений</a>
+        <div class="ui secondary menu" style="font-family: Hack">
+            <a class="item active" data-tab="first"><i class="checkmark green icon"></i>Активные</a>
+            <a class="item" data-tab="second"><i class="graduation blue cap icon"></i>Выпускники</a>
+            <a class="item" data-tab="third"><i class="history red icon"></i>История изменений</a>
         </div>
 
         <!-- Tab 1 -->
         <!-- All students -->
-        <div class="ui bottom attached tab segment active" data-tab="first">
+        <div class="ui tab active" data-tab="first">
 			<!-- Table -->
-			<div id="datatable-segment" class="ui basic segment">
-				{% if students_list %}
-					<table id="students" class="ui selectable celled compact table">
+			{% if students_list %}
+				<table id="students" class="ui selectable celled compact small table">
+					<thead>
+						<tr class="center aligned">
+							<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
+							<th>ФИО
+								<div id="count-label" class="ui left pointing grey tiny label">{{ num_students }}</div></th>
+							<th class="collapsing">Группа</th>
+							<th class="collapsing">Семестр</th>
+							<th class="collapsing">Статус</th>
+							<th class="collapsing">Гражданство</th>
+							<th class="collapsing">Примечание</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for student in students_list %}
+							<tr>
+								<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
+								<td class="collapsing">
+									{% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %}
+									{% if student.is_archived %}<i class="archive brown icon"></i>{% endif %}
+									<a href="{{ student.get_absolute_url }}">
+										{{ student.fullname }}
+									</a>
+									{% if student.tag %}<div id="tag-label" class="ui mini pink label">{{ student.tag }}</div>{% endif %}
+								</td>
+								<td class="center aligned collapsing">{{ student.group }}</td>
+								<td class="center aligned collapsing">{{ student.semester.semester }}</td>
 
-						<thead>
-							<tr class="center aligned">
-								<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
-								<th>ФИО
-									<div id="count-label" class="ui left pointing grey tiny label">{{ num_students }}</div></th>
-								<th class="collapsing">Группа</th>
-								<th class="collapsing">Семестр</th>
-								<th class="collapsing">Статус</th>
-								<th class="collapsing">Гражданство</th>
-								<th class="collapsing">Примечание</th>
-							</tr>
-						</thead>
-
-						<tbody>
-							{% for student in students_list %}
-								<tr>
-									<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
-									<td class="collapsing">
-										{% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %}
-										{% if student.is_archived %}<i class="archive brown icon"></i>{% endif %}
-										<a href="{{ student.get_absolute_url }}">
-											{{ student.fullname }}
-										</a>
-										{% if student.tag %}<div id="tag-label" class="ui small pink label">{{ student.tag }}</div>{% endif %}
-									</td>
-									<td class="center aligned collapsing">{{ student.group }}</td>
-									<td class="center aligned collapsing">{{ student.semester.semester }}</td>
-
-									{% if student.get_status_display == 'Отчислен' %}
-									<td class="center aligned negative collapsing"><i class="icon close"></i>
+								{% if student.get_status_display == 'Отчислен' %}
+								<td class="center aligned negative collapsing"><i class="icon close"></i>
+									{{ student.get_status_display }}
+								</td>
+								{% elif student.get_status_display == 'Академический отпуск' %}
+									<td class="center aligned warning collapsing"><i class="icon hourglass half"></i>
 										{{ student.get_status_display }}
 									</td>
-									{% elif student.get_status_display == 'Академический отпуск' %}
-										<td class="center aligned warning collapsing"><i class="icon hourglass half"></i>
-											{{ student.get_status_display }}
-										</td>
-									{% elif student.get_status_display == 'Выпускник' %}
-										<td class="center aligned grey collapsing"><i class="icon rocket"></i>
-											{{ student.get_status_display }}
-										</td>
-									{% else %}
-										<td class="center aligned collapsing"><i class="icon checkmark"></i>
-											{{ student.get_status_display }}
-										</td>
-									{% endif %}
+								{% elif student.get_status_display == 'Выпускник' %}
+									<td class="center aligned grey collapsing"><i class="icon rocket"></i>
+										{{ student.get_status_display }}
+									</td>
+								{% else %}
+									<td class="center aligned collapsing"><i class="icon green checkmark"></i>
+										{{ student.get_status_display }}
+									</td>
+								{% endif %}
 
-									<td class="center aligned">{{ student.citizenship }}</td>
+								<td class="center aligned">{{ student.citizenship }}</td>
 
-									<td>{{ student.comment|truncatechars:25 }}</td>
-								</tr>
-							{% endfor %}
-						</tbody>
-
-					</table>
-				{% else %}
-					{% include 'empty_records.html' %}
-				{% endif %}
-			</div>
+								<td>{{ student.comment|truncatechars:25 }}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			{% else %}
+				{% include 'empty_records.html' %}
+			{% endif %}
 		</div>
 
         <!-- Tab 2 -->
         <!-- Graduates -->
-        <div class="ui bottom attached tab segment" data-tab="second">
+        <div class="ui tab" data-tab="second">
 			<!-- Table -->
-			<div id="datatable-segment" class="ui basic segment">
-				{% if graduates %}
-					<table id="graduates" class="ui selectable celled compact table">
+			{% if graduates %}
+				<table id="graduates" class="ui selectable celled compact small table">
 
-						<thead>
-							<tr class="center aligned">
-								<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
-								<th>ФИО
-									<div id="count-label" class="ui left pointing grey tiny label">{{ graduates.count }}</div></th>
-								<th class="collapsing">Группа</th>
-								<th class="collapsing">Семестр</th>
-								<th class="collapsing">Год выпуска</th>
-								<th class="collapsing">Примечание</th>
+					<thead>
+						<tr class="center aligned">
+							<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
+							<th>ФИО
+								<div id="count-label" class="ui left pointing grey tiny label">{{ graduates.count }}</div></th>
+							<th class="collapsing">Группа</th>
+							<th class="collapsing">Семестр</th>
+							<th class="collapsing">Год выпуска</th>
+							<th class="collapsing">Примечание</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						{% for student in graduates %}
+							<tr>
+								<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
+								<td class="collapsing">
+									<a href="{{ student.get_absolute_url }}">{{ student.fullname }}</a>
+									{% if student.tag %}
+										<div id="tag-label" class="ui small pink label">{{ student.tag }}</div>
+									{% endif %}
+								</td>
+								<td class="center aligned">{{ student.group }}</td>
+								<td class="center aligned">{{ student.semester.semester }}</td>
+
+								<td class="center aligned">{{ student.graduate_year|date:"Y" }}</td>
+								<td>{{ student.comment|truncatechars:25 }}</td>
 							</tr>
-						</thead>
+						{% endfor %}
+					</tbody>
 
-						<tbody>
-							{% for student in graduates %}
-								<tr>
-									<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
-									<td class="collapsing">
-										<a href="{{ student.get_absolute_url }}">{{ student.fullname }}</a>
-										{% if student.tag %}
-											<div id="tag-label" class="ui small pink label">{{ student.tag }}</div>
-										{% endif %}
-									</td>
-									<td class="center aligned">{{ student.group }}</td>
-									<td class="center aligned">{{ student.semester.semester }}</td>
-
-									<td class="center aligned">{{ student.graduate_year|date:"Y" }}</td>
-									<td>{{ student.comment|truncatechars:25 }}</td>
-								</tr>
-							{% endfor %}
-						</tbody>
-
-					</table>
-				{% else %}
-					{% include 'empty_records.html' %}
-				{% endif %}
-			</div>
+				</table>
+			{% else %}
+				{% include 'empty_records.html' %}
+			{% endif %}
 		</div>
 
 		<!-- Tab 3 -->
         <!-- History -->
-        <div class="ui bottom attached tab segment" data-tab="third">
+        <div class="ui tab" data-tab="third">
             {% if history %}
-                <table id="student-history" class="ui selectable celled compact table">
-
+                <table id="student-history" class="ui selectable celled compact small table">
                     <thead>
                         <tr class="center aligned">
                             <th class="collapsing">Дата и время</th>
@@ -173,13 +165,16 @@
                             <th>Стало</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         {% for record in history %}
                             <tr>
                                 <td class="center aligned collapsing">{{ record.timestamp|date:"d.m.y | H:i" }}</td>
                                 <td class="collapsing">{{ record.user_id|get_user_last_name }}</td>
-                                <td class="collapsing">{{ record.record_id|get_student_fullname }}</td>
+                                <td class="collapsing">
+									<a href="{{ record.record_id }}">
+										{{ record.record_id|get_student_fullname }}
+									</a>
+								</td>
                                 <td class="collapsing">{{ record.field }}</td>
                                 {% if record.field == 'Attestaion date' %}
                                     <td>{{ record.old_value|date_or_else }}</td>
@@ -202,7 +197,6 @@
                 </div>
             {% endif %}
         </div>
-
 	</div>
 </div>
 
