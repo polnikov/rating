@@ -10,6 +10,7 @@
 
 {% block content %}
 
+<div id="has-group" style="display: none">{{ request.user|has_group:"Сотрудники" }}</div>
 <div id="segments" class="ui basic segments">
 
     <!-- Title & button -->
@@ -20,7 +21,7 @@
                     <td><h2 style="font-family: Hack">Группы</h2></td>
                     {% if request.user|has_group:"Сотрудники" %}
                         <td class="right aligned">
-                            <button id="add-button" class="ui positive small circular button" onclick="showAddGroupModal()"><i class="icon plus circle"></i>Добавить</button>
+                            <button id="add-button" class="ui positive small circular button" onclick="showAddModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
                         </td>
                     {% endif %}
                 </tr>
@@ -58,12 +59,12 @@
 </div>
 
 <!-- Modal for add group -->
-<div id="add-group-modal" class="ui large modal">
+<div id="add-modal" class="ui large modal">
     <div class="basic center aligned header" style="font-family: Hack">Добавить группу</div>
     <div class="content" style="font-family: Hack">
         <form id="add-form" method="POST">
             {% csrf_token %}
-            <div class="ui form">
+            <div class="ui large form">
                 <div class="required field">
                     <label>Название</label>
                     {{ form.name }}
@@ -95,13 +96,13 @@
         </form>
     </div>
     <div class="basic actions">
-        <div class="ui circular cancel button" onclick="resetForm()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div class="ui green circular button" onclick="saveGroup()" style="font-family: Hack"><i class="save icon"></i>Сохранить</div>
+        <div id="cancel-button" class="ui circular cancel button" onclick="resetAddForm()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="save-button" class="ui green circular button" onclick="saveModalForm('groups/create_group')" style="font-family: Hack"><i class="save icon"></i>Сохранить</div>
     </div>
 </div>
 
 <!-- Modal for update group -->
-<div id="update-group-modal" class="ui large modal">
+<div id="update-modal" class="ui large modal">
     <div class="basic center aligned header" style="font-family: Hack">Изменить группу</div>
     <div class="content" style="font-family: Hack">
         <form id="update-form" method="POST">
@@ -138,46 +139,43 @@
         </form>
     </div>
     <div class="basic actions">
-        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="update-group-button" class="ui blue circular button" onclick="updateGroup()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+        <div id="cancel-button" class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="update-button" class="ui blue circular button" onclick="updateGroup()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
     </div>
 </div>
 
 <!-- Modal for delete group -->
-<div id="delete-group-modal" class="ui modal">
+<div id="delete-modal" class="ui modal">
     <div class="basic center aligned header" style="font-family: Hack">Удалить группу</div>
     <div class="content" style="font-family: Hack">
-        <form id="delete-form" method="POST">
-            {% csrf_token %}
-            <table class="ui definition table" style="margin-top: 0">
-                <tbody>
-                    <tr>
-                        <td class="five wide">Название</td>
-                        <td id="del-name"></td>
-                    </tr>
-                    <tr>
-                        <td>Направление</td>
-                        <td id="del-direction"></td>
-                    </tr>
-                    <tr>
-                        <td>Профиль | Специализация</td>
-                        <td id="del-profile"></td>
-                    </tr>
-                    <tr>
-                        <td>Уровень обучения</td>
-                        <td id="del-level"></td>
-                    </tr>
-                    <tr>
-                        <td>Шифр</td>
-                        <td id="del-code"></td>
-                    </tr>
-                </tbody>
-            </table>
-    </form>
+        <table class="ui definition table" style="margin-top: 0">
+            <tbody>
+                <tr>
+                    <td class="five wide">Название</td>
+                    <td id="del-name"></td>
+                </tr>
+                <tr>
+                    <td>Направление</td>
+                    <td id="del-direction"></td>
+                </tr>
+                <tr>
+                    <td>Профиль | Специализация</td>
+                    <td id="del-profile"></td>
+                </tr>
+                <tr>
+                    <td>Уровень обучения</td>
+                    <td id="del-level"></td>
+                </tr>
+                <tr>
+                    <td>Шифр</td>
+                    <td id="del-code"></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <div class="basic actions">
-        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="delete-group-button" class="ui red circular button" onclick="deleteGroup()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+        <div id="cancel-button" class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="delete-button" class="ui red circular button" onclick="deleteGroup()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
     </div>
 </div>
 
@@ -226,9 +224,6 @@
         };
 
         $('#groups-table').DataTable(dataTableOptions);
-
-        var hasGroup = '{{ request.user|has_group:"Сотрудники" }}';
-        fetchGroupsDataAndPopulate(hasGroup);
 
         var forms = document.forms;
         for (let i = 0; i < forms.length; i++) {

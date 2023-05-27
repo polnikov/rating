@@ -109,7 +109,7 @@
                {% if subjects %}
                   {% for item in subjects %}
                      <th name="subjects" class="center aligned" style="width: 10px">
-                        <span class="rotated-text left aligned"><a style="color: black" href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:groupsubject_update' item.id %}{% else %}#{% endif %}">
+                        <span class="rotated-text left aligned"><a style="color: black" href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:detail' item.subjects.id %}{% else %}#{% endif %}">
                               {{ item.subjects.name|truncatewords:10 }}
                         </a></span>
                      </th>
