@@ -3,7 +3,7 @@ from collections import Counter
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, render, redirect
-from django.views.generic import (CreateView, DeleteView, DetailView, ListView, UpdateView)
+from django.views.generic import (TemplateView, CreateView, DeleteView, DetailView, ListView, UpdateView)
 from groups.models import Group
 from students.models import Result, Semester
 from subjects.forms import (CathedraForm, FacultyForm, GroupSubjectForm, SubjectForm)
@@ -240,29 +240,15 @@ def import_cathedras(request):
     return render(request, 'import/import_cathedras.html', context)
 
 
-class FacultyListView(LoginRequiredMixin, ListView):
-    model = Faculty
+class FacultyView(LoginRequiredMixin, TemplateView):
     template_name = 'subjects/faculties.html'
 
 
-class FacultyCreateView(LoginRequiredMixin, CreateView):
-    model = Faculty
-    form_class = FacultyForm
-    template_name = 'subjects/faculty_add.html'
-    success_url = '/subjects/faculties'
-
-
-class FacultyUpdateView(LoginRequiredMixin, UpdateView):
-    model = Faculty
-    form_class = FacultyForm
-    template_name = 'subjects/faculty_update.html'
-    success_url = '/subjects/faculties'
-
-
-class FacultyDeleteView(LoginRequiredMixin, DeleteView):
-    model = Faculty
-    template_name = 'subjects/faculty_delete.html'
-    success_url = '/subjects/faculties'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['faculties'] = Faculty.objects.all().count()
+        context['form'] = FacultyForm()
+        return context
 
 
 class GroupSubjectListView(LoginRequiredMixin, ListView):

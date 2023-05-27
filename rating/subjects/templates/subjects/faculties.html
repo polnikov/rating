@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-
 {% extends "base.html" %}
+
+{% load static %}
 
 {% load customfilters %}
 
@@ -8,28 +8,32 @@
 
 {% block content %}
 
+<div id="has-group" style="display: none">{{ request.user|has_group:"Сотрудники" }}</div>
 <div id="segments" class="ui basic segments">
+
     <!-- Title & button -->
-    <div id="buttons-segment" class="ui basic segment">
+    <div class="ui basic segment" style="padding-bottom: 0">
         <table class="ui very basic table">
-            
             <tbody>
                 <tr>
                     <td><h2 style="font-family: Hack">Факультеты</h2></td>
                     {% if request.user|has_group:"Сотрудники" %}
                         <td class="right aligned">
-                            <a href="{% url 'subjects:faculty_add' %}">
-                                <button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
-                            </a>
+                            <button id="add-button" class="ui positive small circular button" onclick="showAddModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
                         </td>
                     {% endif %}
                 </tr>
             </tbody>
         </table>
+    </div>
 
         <!-- Table -->
-        {% if faculty_list %}
-            <table class="ui selectable celled compact small table">
+    <div class="ui basic segment">
+        <div id="success" class="ui green inverted nag">
+            Успешно!
+        </div>
+        {% if faculties %}
+            <table id="faculties-table" class="ui selectable celled compact small table">
                 <thead>
                     <tr class="center aligned">
                         <th class="collapsing"><i class="hashtag small icon"></i></th>
@@ -39,29 +43,8 @@
                         <th class="collapsing">Изменить</th>
                     </tr>
                 </thead>
-
                 <tbody>
-                    {% for faculty in faculty_list %}
-                        <tr>
-                            <td class="center aligned">{{ forloop.counter }}</td>
-                            <td class="collapsing">{{ faculty.short_name }}</td>
-                            <td>{{ faculty.name }}</td>
-                            <td class="center aligned collapsing">
-                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:faculty_delete' faculty.id %}{% else %}#{% endif %}">
-                                    <button id="trash-button" class="circular ui red mini icon button">
-                                        <i class="trash alternate outline icon"></i>
-                                    </button>
-                                </a>
-                            </td>
-                            <td class="center aligned collapsing">
-                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'subjects:faculty_update' faculty.id %}{% else %}#{% endif %}">
-                                    <button id="edit-button" class="circular ui blue mini icon button">
-                                        <i class="edit icon"></i>
-                                    </button>
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
+                    <!-- data from JavaScript -->
                 </tbody>
             </table>
         {% else %}
@@ -69,5 +52,82 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Modal for add faculty -->
+<div id="add-modal" class="ui modal">
+    <div class="basic center aligned header" style="font-family: Hack">Добавить факультет</div>
+    <div class="content" style="font-family: Hack">
+        <form id="add-form" method="POST">
+            {% csrf_token %}
+            <div class="ui large form">
+                <div class="required field">
+                    <label>Полное название</label>
+                    {{ form.name }}
+                </div>
+                <div class="required field">
+                    <label>Сокращенние [аббревиатура]</label>
+                    {{ form.short_name }}
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <div id="cancel-button" class="ui circular cancel button" onclick="resetAddForm()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="save-button" class="ui green circular button" onclick="saveModalForm('faculties/create_faculty')" style="font-family: Hack"><i class="save icon"></i>Сохранить</div>
+    </div>
+</div>
+
+<!-- Modal for update faculty -->
+<div id="update-modal" class="ui modal">
+    <div class="basic center aligned header" style="font-family: Hack">Изменить факультет</div>
+    <div class="content" style="font-family: Hack">
+        <form id="update-form" method="POST">
+            {% csrf_token %}
+            <div class="ui large form">
+                <div class="required field">
+                    <label>Полное название</label>
+                    {{ form.name }}
+                </div>
+
+                <div class="required field">
+                    <label>Сокращение [аббревиатура]</label>
+                    {{ form.short_name }}
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <div id="cancel-button" class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="update-button" class="ui blue circular button" onclick="updateFaculty()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+    </div>
+</div>
+
+<!-- Modal for delete faculty -->
+<div id="delete-modal" class="ui modal">
+    <div class="basic center aligned header" style="font-family: Hack">Удалить факультет</div>
+    <div class="content" style="font-family: Hack">
+        <h4 id="del-info" style="font-family: Hack"></h4>
+    </div>
+    <div class="basic actions">
+        <div id="cancel-button" class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="delete-button" class="ui red circular button" onclick="deleteFaculty()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+    </div>
+</div>
+
+<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/script_faculties.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var forms = document.forms;
+        for (let i = 0; i < forms.length; i++) {
+            var formElements = forms[i].elements;
+            for (let j = 0; j < formElements.length; j++) {
+                if (formElements[j].localName == "input" && formElements[j].type == "text") {
+                    formElements[j].style.fontFamily = "Hack";
+                };
+            };
+        };
+    });
+</script>
 
 {% endblock %}

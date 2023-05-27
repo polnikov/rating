@@ -16,6 +16,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 from groups.models import Group
 from groups.forms import GroupForm
+from subjects.forms import FacultyForm
 from students.models import Result, Semester, Student, StudentLog, Basis
 from students.validators import validate_mark, check_mark
 from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
@@ -696,6 +697,44 @@ def students_debts(request):
 class FacultyViewSet(viewsets.ModelViewSet):
     queryset = Faculty.objects.all()
     serializer_class = serializers.FacultySerializer
+
+
+    @action(methods=['post'], detail=False)
+    def create_faculty(self, request):
+        form = FacultyForm(request.data)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=201)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['patch'], detail=True)
+    def update_faculty(self, request, pk=None):
+        try:
+            faculty = Faculty.objects.get(id=pk)
+        except Faculty.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Faculty not found'}, status=404)
+
+        form = FacultyForm(request.POST, instance=faculty)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=200)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['delete'], detail=True)
+    def delete_faculty(self, request, pk=None):
+        queryset = Faculty.objects.all()
+
+        try:
+            faculty = queryset.get(id=pk)
+        except Faculty.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Faculty not found'}, status=404)
+
+        faculty.delete()
+        return JsonResponse({'success': True}, status=201)
 
 
 # Cathedras

@@ -20,10 +20,7 @@ urlpatterns = [
     path('debts/', views.SubjectsDebtsListView.as_view(), name='debts'),
 
     # Faculties
-    path('faculties/', views.FacultyListView.as_view(), name='faculties'),
-    path('faculties/add/', views.FacultyCreateView.as_view(), name='faculty_add'),
-    path('faculties/<int:pk>/delete/', views.FacultyDeleteView.as_view(), name='faculty_delete'),
-    path('faculties/<int:pk>/update/', views.FacultyUpdateView.as_view(), name='faculty_update'),
+    path('faculties/', views.FacultyView.as_view(), name='faculties'),
 
     # Cathedras
     path('cathedras/', views.CathedraListView.as_view(), name='cathedras'),

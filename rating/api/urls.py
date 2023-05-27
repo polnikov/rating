@@ -12,7 +12,7 @@ router.register('students', views.StudentViewSet)
 router.register('results', views.ResultViewSet)
 router.register('groups', views.GroupsViewSet)  # [+]
 router.register('cathedras', views.CathedraViewSet)
-router.register('faculties', views.FacultyViewSet)
+router.register('faculties', views.FacultyViewSet)  # [+]
 router.register('subjects', views.SubjectViewSet)
 router.register('groupsubjects', views.GroupSubjectViewSet)
 router.register('semesters', views.SemesterViewSet)

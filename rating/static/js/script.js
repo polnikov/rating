@@ -1,5 +1,3 @@
-/* <script type="text/javascript" src="{% static 'js/script.js' %}"></script> */
-
 // изменить шрифт в поле <input> в формах
 function changeFormsInputFont() {
    let formElements = document.forms.form.elements;
@@ -235,3 +233,43 @@ function getJobInfo(date, lessonTime, num) {
                      Осталось <div class="ui black circular small label">${waitMinutes}</div> мин.</div>`;
    };
 };
+
+function resetAddForm() {
+   var form = document.querySelector('#add-form');
+   form.reset();
+};
+
+function showAddModal(modal) {
+   var element = document.getElementById(modal);
+   $(element).modal({blurring: true}).modal('show');
+};
+
+function saveModalForm(path) {
+   var url = window.location.origin + `/api/v1/${path}/`;
+   var addModal = document.getElementById('add-modal');
+   var form = document.querySelector('#add-form');
+   var formData = new FormData(form);
+
+   fetch(url, {
+       method: 'POST',
+       headers: {
+           'X-CSRFToken': csrftoken,
+       },
+       body: formData,
+   })
+   .then(response => response.json())
+   .then(data => {
+       if (!data.errors) {
+           fetchFacultiesDataAndPopulate();
+           $(addModal).modal({blurring: true}).modal('hide');
+           resetAddForm();
+           $('#success').nag({displayTime: 1500}).show();
+       };
+   })
+   .catch(error => {
+       console.error(error);
+       alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+       $(addModal).modal({blurring: true}).modal('hide');
+   });
+};
+

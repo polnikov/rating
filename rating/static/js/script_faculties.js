@@ -15,47 +15,40 @@ function getCookie(name) {
     return cookieValue;
 };
 const csrftoken = getCookie('csrftoken');
-
+ 
 const hasGroup = document.getElementById('has-group').textContent;
-fetchGroupsDataAndPopulate(hasGroup);
+fetchFacultiesDataAndPopulate(hasGroup);
 
-function fetchGroupsDataAndPopulate(hasGroup) {
-    let url;
-    if (location.href.includes('archive')) {
-        url = window.location.origin + "/api/v1/groups/?is_archived=true";
-    } else {
-        url = window.location.origin + "/api/v1/groups/";
-    }
+function fetchFacultiesDataAndPopulate(hasGroup) {
+    const url = window.location.origin + "/api/v1/faculties/";
 
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            const table = $('#groups-table').DataTable();
-            table.clear();
+            const table = document.getElementById('faculties-table');
+            const tbody = table.getElementsByTagName('tbody')[0];
+            tbody.innerHTML = '';
 
-            data.forEach((group, index) => {
-                console.log(hasGroup);
+            data.forEach((faculty, index) => {
                 let defFunc, updFunc;
                 if (hasGroup === 'True') {
-                    defFunc = `onclick="showDeleteGroup(${group.id})"`;
-                    updFunc = `onclick="showUpdateGroup(${group.id})"`;
+                    defFunc = `onclick="showDeleteFaculty(${faculty.id})"`;
+                    updFunc = `onclick="showUpdateFaculty(${faculty.id})"`;
                 } else {
                     defFunc = '';
                     updFunc = '';
                 };
-                let rowData = [
-                    index + 1,
-                    group.name,
-                    group.level,
-                    group.direction,
-                    group.profile,
-                    group.code,
-                    `<button id="trash-button" ${defFunc} class="circular ui red mini icon button"><i class="trash alternate outline icon"></i></button>`,
-                    `<button id="edit-button" ${updFunc} class="circular ui blue mini icon button"><i class="edit icon"></i></button>`,
-                ];
-                table.row.add(rowData);
+                let rowData = `
+                    <tr class="center aligned">
+                        <td class="collapsing">${index + 1}</td>
+                        <td class="collapsing">${faculty.short_name}</td>
+                        <td class="left aligned">${faculty.name}</td>
+                        <td><button id="trash-button" ${defFunc} class="circular ui red mini icon button"><i class="trash alternate outline icon"></i></button></td>
+                        <td><button id="edit-button" ${updFunc} class="circular ui blue mini icon button"><i class="edit icon"></i></button></td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', rowData);
             });
-            table.draw();
         })
         .catch(error => {
             console.error(error);
@@ -63,30 +56,21 @@ function fetchGroupsDataAndPopulate(hasGroup) {
         });
 };
 
-function showUpdateGroup(groupId) {
-    let url;
-    if (location.href.includes('archive')) {
-        url = window.location.origin + `/api/v1/groups/${groupId}/?is_archived=true`;
-    } else {
-        url = window.location.origin + `/api/v1/groups/${groupId}/`;
-    }
-    var updateGroupModal = document.getElementById('update-modal');
+function showUpdateFaculty(facultyId) {
+    const url = window.location.origin + `/api/v1/faculties/${facultyId}/`;
+    var updateModal = document.getElementById('update-modal');
     
     fetch(url)
     .then(response => response.json())
     .then(data => {
         var form = document.querySelector('#update-form');
         form.elements.name.value = data.name;
-        form.elements.direction.value = data.direction;
-        form.elements.profile.value = data.profile;
-        form.elements.level.value = data.level;
-        form.elements.code.value = data.code;
-        form.elements.is_archived.checked = data.is_archived;
+        form.elements.short_name.value = data.short_name;
 
         var updateButton = document.getElementById('update-button');
-        updateButton.dataset.groupId = groupId;
+        updateButton.dataset.facultyId = facultyId;
 
-        $(updateGroupModal).modal({blurring: true}).modal('show');
+        $(updateModal).modal({blurring: true}).modal('show');
     })
     .catch(error => {
         console.error(error);
@@ -94,10 +78,10 @@ function showUpdateGroup(groupId) {
     });
 };
 
-function updateGroup() {
+function updateFaculty() {
     var button = document.getElementById("update-button");
-    var groupId = button.getAttribute("data-group-id");
-    var url = window.location.origin + `/api/v1/groups/${groupId}/update_group/`;
+    var facultyId = button.getAttribute("data-faculty-id");
+    var url = window.location.origin + `/api/v1/faculties/${facultyId}/update_faculty/`;
     var updateModal = document.getElementById('update-modal');
     var form = document.querySelector('#update-form');
     var formData = new FormData(form);
@@ -112,7 +96,7 @@ function updateGroup() {
     .then(response => response.json())
     .then(data => {
         if (!data.errors) {
-            fetchGroupsDataAndPopulate(hasGroup);
+            fetchFacultiesDataAndPopulate(hasGroup);
             $(updateModal).modal({blurring: true}).modal('hide');
             $('#success').nag({displayTime: 1500}).show();
         };
@@ -124,26 +108,16 @@ function updateGroup() {
     });
 };
 
-function showDeleteGroup(groupId) {
-    let url;
-    if (location.href.includes('archive')) {
-        url = window.location.origin + `/api/v1/groups/${groupId}/?is_archived=true`;
-    } else {
-        url = window.location.origin + `/api/v1/groups/${groupId}/`;
-    }
+function showDeleteFaculty(facultyId) {
+    const url = window.location.origin + `/api/v1/faculties/${facultyId}/`;
     var deleteModal = document.getElementById('delete-modal');
     
     fetch(url)
     .then(response => response.json())
     .then(data => {
-        document.querySelector('#del-name').textContent = data.name;
-        document.querySelector('#del-direction').textContent = data.direction;
-        document.querySelector('#del-profile').textContent = data.profile;
-        document.querySelector('#del-level').textContent = data.level;
-        document.querySelector('#del-code').textContent = data.code;
-
+        document.querySelector('#del-info').textContent = `Вы уверены, что хотите удалить факультет: ${data.name} (${data.short_name})`;
         var deleteButton = document.getElementById('delete-button');
-        deleteButton.dataset.groupId = groupId;
+        deleteButton.dataset.facultyId = facultyId;
 
         $(deleteModal).modal({blurring: true}).modal('show');
     })
@@ -153,11 +127,11 @@ function showDeleteGroup(groupId) {
     });
 };
 
-function deleteGroup() {
+function deleteFaculty() {
     var button = document.getElementById("delete-button");
-    var groupId = button.getAttribute("data-group-id");
-    var url = window.location.origin + `/api/v1/groups/${groupId}/delete_group/`;
-    var deleteGroupModal = document.getElementById('delete-modal');
+    var facultyId = button.getAttribute("data-faculty-id");
+    var url = window.location.origin + `/api/v1/faculties/${facultyId}/delete_faculty/`;
+    var deleteModal = document.getElementById('delete-modal');
 
     fetch(url, {
         method: 'DELETE',
@@ -167,14 +141,14 @@ function deleteGroup() {
     })
     .then(response => {
         if (response.ok) {
-            fetchGroupsDataAndPopulate(hasGroup);
-            $(deleteGroupModal).modal({blurring: true}).modal('hide');
+            fetchFacultiesDataAndPopulate(hasGroup);
+            $(deleteModal).modal({blurring: true}).modal('hide');
             $('#success').nag({displayTime: 1500}).show();
         };
     })
     .catch(error => {
         console.error(error);
         alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
-        $(updateGroupModal).modal({blurring: true}).modal('hide');
+        $(deleteModal).modal({blurring: true}).modal('hide');
     });
 };
