@@ -161,83 +161,68 @@ def import_subjects(request):
     return render(request, 'import/import_subjects.html', context)
 
 
-class CathedraListView(LoginRequiredMixin, ListView):
-    model = Cathedra
+class CathedraView(LoginRequiredMixin, TemplateView):
     template_name = 'subjects/cathedras.html'
-    queryset = Cathedra.objects.select_related('faculty')
 
 
-class CathedraCreateView(LoginRequiredMixin, CreateView):
-    model = Cathedra
-    form_class = CathedraForm
-    template_name = 'subjects/cathedra_add.html'
-    success_url = '/subjects/cathedras'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cathedras'] = Cathedra.objects.all().count()
+        context['form'] = CathedraForm()
+        return context
 
 
-class CathedraUpdateView(LoginRequiredMixin, UpdateView):
-    model = Cathedra
-    form_class = CathedraForm
-    template_name = 'subjects/cathedra_update.html'
-    success_url = '/subjects/cathedras'
+# def import_cathedras(request):
+#     '''Import cathedras from CSV file.'''
+#     success = False
+#     errors = []  # list of non-imported cathedras
+#     file_validation = ''
 
+#     if request.method == 'POST':
+#         import_file = request.FILES['import_file'] if request.FILES else False
 
-class CathedraDeleteView(LoginRequiredMixin, DeleteView):
-    model = Cathedra
-    template_name = 'subjects/cathedra_delete.html'
-    success_url = '/subjects/cathedras'
+#         # checking that the file has been selected and its format is CSV
+#         if not import_file or str(import_file).split('.')[-1] != 'csv':
+#             file_validation = False
+#             context = {'file_validation': file_validation}
+#             return render(request, 'import/import_cathedras.html', context)
 
+#         try:
+#             for n, line in enumerate(import_file):
+#                 row = line.decode().strip().split(IMPORT_DELIMITER)
+#                 if n == 0:
+#                     pass
+#                 else:
+#                     is_faculty = Faculty.objects.filter(short_name=row[2]).exists()
+#                     if not is_faculty:
+#                         faculty = ''
+#                     else:
+#                         faculty = Faculty.objects.get(short_name=row[2]).id
 
-def import_cathedras(request):
-    '''Import cathedras from CSV file.'''
-    success = False
-    errors = []  # list of non-imported cathedras
-    file_validation = ''
+#                     if row[0].startswith('"'):
+#                         row[0] = row[0].replace('"', "")
 
-    if request.method == 'POST':
-        import_file = request.FILES['import_file'] if request.FILES else False
+#                     obj, created = Cathedra.objects.get_or_create(
+#                         name=row[0],
+#                         defaults={
+#                             'short_name': row[1],
+#                             'faculty_id': faculty,
+#                         }
+#                     )
+#                     if not created:
+#                         errors.append(f'[{n+1}] {row[0]} {row[1]}')
+#             if not errors:
+#                 success = True
 
-        # checking that the file has been selected and its format is CSV
-        if not import_file or str(import_file).split('.')[-1] != 'csv':
-            file_validation = False
-            context = {'file_validation': file_validation}
-            return render(request, 'import/import_cathedras.html', context)
+#         except Exception as import_cathedras_error:
+#             print('[!] ---> Ошибка импорта кафедр:', import_cathedras_error, sep='\n')
 
-        try:
-            for n, line in enumerate(import_file):
-                row = line.decode().strip().split(IMPORT_DELIMITER)
-                if n == 0:
-                    pass
-                else:
-                    is_faculty = Faculty.objects.filter(short_name=row[2]).exists()
-                    if not is_faculty:
-                        faculty = ''
-                    else:
-                        faculty = Faculty.objects.get(short_name=row[2]).id
-
-                    if row[0].startswith('"'):
-                        row[0] = row[0].replace('"', "")
-
-                    obj, created = Cathedra.objects.get_or_create(
-                        name=row[0],
-                        defaults={
-                            'short_name': row[1],
-                            'faculty_id': faculty,
-                        }
-                    )
-                    if not created:
-                        errors.append(f'[{n+1}] {row[0]} {row[1]}')
-            if not errors:
-                success = True
-
-        except Exception as import_cathedras_error:
-            print('[!] ---> Ошибка импорта кафедр:', import_cathedras_error, sep='\n')
-
-    context = {
-        'file_validation': file_validation,
-        'errors': errors,
-        'success': success,
-    }
-    return render(request, 'import/import_cathedras.html', context)
+#     context = {
+#         'file_validation': file_validation,
+#         'errors': errors,
+#         'success': success,
+#     }
+#     return render(request, 'import/import_cathedras.html', context)
 
 
 class FacultyView(LoginRequiredMixin, TemplateView):

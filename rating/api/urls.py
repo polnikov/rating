@@ -11,7 +11,7 @@ router = routers.SimpleRouter()
 router.register('students', views.StudentViewSet)
 router.register('results', views.ResultViewSet)
 router.register('groups', views.GroupsViewSet)  # [+]
-router.register('cathedras', views.CathedraViewSet)
+router.register('cathedras', views.CathedraViewSet)  # [+]
 router.register('faculties', views.FacultyViewSet)  # [+]
 router.register('subjects', views.SubjectViewSet)
 router.register('groupsubjects', views.GroupSubjectViewSet)
@@ -33,6 +33,7 @@ urlpatterns = [
 
     path('v1/groupmarks/', views.group_marks),  # [+]
     path('v1/import/results/', views.import_results),  # [+]
+    path('v1/import/cathedras/', views.import_cathedras),  # [+]
     # path('v1/import/subjects/', views.import_subjects),
 ]
 

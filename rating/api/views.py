@@ -16,7 +16,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 from groups.models import Group
 from groups.forms import GroupForm
-from subjects.forms import FacultyForm
+from subjects.forms import FacultyForm, CathedraForm
 from students.models import Result, Semester, Student, StudentLog, Basis
 from students.validators import validate_mark, check_mark
 from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
@@ -248,7 +248,6 @@ class ResultViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ResultSerializer
 
 
-# @api_view(['POST'])
 def import_results(request):
     '''Import results from EXCEL file | files.'''
     logger.info('Импорт оценок...')
@@ -741,6 +740,95 @@ class FacultyViewSet(viewsets.ModelViewSet):
 class CathedraViewSet(viewsets.ModelViewSet):
     queryset = Cathedra.objects.all()
     serializer_class = serializers.CathedraSerializer
+
+
+    @action(methods=['post'], detail=False)
+    def create_cathedra(self, request):
+        form = CathedraForm(request.data)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=201)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['patch'], detail=True)
+    def update_cathedra(self, request, pk=None):
+        try:
+            cathedra = Cathedra.objects.get(id=pk)
+        except Cathedra.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Cathedra not found'}, status=404)
+
+        form = CathedraForm(request.POST, instance=cathedra)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=200)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['delete'], detail=True)
+    def delete_cathedra(self, request, pk=None):
+        queryset = Cathedra.objects.all()
+
+        try:
+            cathedra = queryset.get(id=pk)
+        except Cathedra.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Cathedra not found'}, status=404)
+
+        cathedra.delete()
+        return JsonResponse({'success': True}, status=201)
+
+
+def import_cathedras(request):
+    '''Import cathedras from CSV file.'''
+    logger.info('Импорт кафедр...')
+    serialized_data = []
+    success = False
+    errors = []  # list of non-imported cathedras
+
+    if request.method == 'POST':
+        import_file = request.FILES['import_files'] if request.FILES else False
+
+        # checking that the file has been selected and its format is CSV
+        if not import_file or str(import_file).split('.')[-1] != 'csv':
+            serialized_data.append({'error': 'file_validation', 'success': success})
+            logger.error('Файл не выбран или неверный формат')
+            return JsonResponse({'data': serialized_data})
+
+        try:
+            for n, line in enumerate(import_file):
+                row = line.decode().strip().split(IMPORT_DELIMITER)
+                if n == 0:
+                    pass
+                else:
+                    is_faculty = Faculty.objects.filter(short_name=row[2]).exists()
+                    if not is_faculty:
+                        faculty = ''
+                    else:
+                        faculty = Faculty.objects.get(short_name=row[2]).id
+
+                    if row[0].startswith('"'):
+                        row[0] = row[0].replace('"', "")
+
+                    obj, created = Cathedra.objects.get_or_create(
+                        name=row[0],
+                        defaults={
+                            'short_name': row[1],
+                            'faculty_id': faculty,
+                        }
+                    )
+                    if not created:
+                        errors.append(f'[{n+1}] {row[0]} {row[1]}')
+            if not errors:
+                success = True
+            logger.info('|---> Запись кафедр в БД успешно выполнена')
+
+        except Exception as import_cathedras_error:
+            print('[!] ---> Ошибка импорта кафедр:', import_cathedras_error, sep='\n')
+
+    serialized_data.append({'errors': errors, 'success': success})
+    return JsonResponse({'data': serialized_data})
 
 
 # Subjects
