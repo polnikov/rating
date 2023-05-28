@@ -229,11 +229,10 @@ class SubjectLogSerializer(serializers.ModelSerializer):
 
 # Cathedras
 class CathedraSerializer(serializers.ModelSerializer):
-    faculty = serializers.SlugRelatedField(slug_field='name', queryset=Faculty.objects)
-
     class Meta:
         model = Cathedra
         fields = ('id', 'name', 'short_name', 'faculty',)
+        depth = 1
 
 
 # Faculties

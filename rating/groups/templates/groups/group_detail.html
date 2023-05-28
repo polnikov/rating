@@ -32,7 +32,7 @@
                   <button id="transfer" class="ui green small circular button" style="display: none" onclick="transferStudents()"><i class="level up alternate icon"></i>Перевести</button>
                   <button id="cancel-button" class="ui red small circular button" style="display: none" onclick="closeCheckboxColumn()"><i class="times circle icon"></i></i>Отмена</button>
                   <button id="transfer-button" class="ui violet small circular button" onclick="openCheckboxColumn()"><i class="level up alternate icon"></i>Перевод</button>
-                  <button id="import-button" class="ui orange small circular button" onclick="showImportResultsModal()"><i class="icon download"></i>Импорт ведомости</button>
+                  <button id="import-button" class="ui orange small circular button" onclick="showModal('import-results')"><i class="icon download"></i>Импорт ведомости</button>
                {% endif %}
                <a href="{% url 'groups:cards' %}">
                   <button id="back-button" class="ui grey small circular button"><i class="left arrow icon"></i>Назад</button></a>
@@ -82,6 +82,9 @@
 </div>
 
 <div class="ui basic segment" style="margin-top: 0px; padding-top: 0px">
+   <div id="success" class="ui green nag">
+      Успешно!
+   </div>
    {% if students or subjects %}
 
       <!-- Table -->
@@ -193,7 +196,7 @@
 
 <!-- Modal for errors -->
 <div id="errors" class="ui small modal">
-   <div class="basic header" style="font-family: Hack">Возникли следующие ошибки</div>
+   <div class="basic center aligned header" style="font-family: Hack">Возникли ошибки по следующим данным</div>
    <div class="scrolling content" >
       <div id="errors-list" class="ui list" style="font-family: Hack"></div>
    </div>

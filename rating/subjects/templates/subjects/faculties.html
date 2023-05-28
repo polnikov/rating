@@ -19,7 +19,7 @@
                     <td><h2 style="font-family: Hack">Факультеты</h2></td>
                     {% if request.user|has_group:"Сотрудники" %}
                         <td class="right aligned">
-                            <button id="add-button" class="ui positive small circular button" onclick="showAddModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
+                            <button id="add-button" class="ui positive small circular button" onclick="showModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
                         </td>
                     {% endif %}
                 </tr>
@@ -27,13 +27,13 @@
         </table>
     </div>
 
-        <!-- Table -->
+    <!-- Table -->
     <div class="ui basic segment">
-        <div id="success" class="ui green inverted nag">
+        <div id="success" class="ui green nag">
             Успешно!
         </div>
         {% if faculties %}
-            <table id="faculties-table" class="ui selectable celled compact small table">
+            <table id="faculties-table" class="ui selectable celled compact table">
                 <thead>
                     <tr class="center aligned">
                         <th class="collapsing"><i class="hashtag small icon"></i></th>
@@ -72,8 +72,8 @@
         </form>
     </div>
     <div class="basic actions">
-        <div id="cancel-button" class="ui circular cancel button" onclick="resetAddForm()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="save-button" class="ui green circular button" onclick="saveModalForm('faculties/create_faculty')" style="font-family: Hack"><i class="save icon"></i>Сохранить</div>
+        <div class="ui circular cancel button" onclick="resetAddForm()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div class="ui green circular button" onclick="saveFacultyForm()" style="font-family: Hack"><i class="save icon"></i>Сохранить</div>
     </div>
 </div>
 
@@ -97,8 +97,8 @@
         </form>
     </div>
     <div class="basic actions">
-        <div id="cancel-button" class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="update-button" class="ui blue circular button" onclick="updateFaculty()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="update-btn" class="ui blue circular button" onclick="updateFaculty()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
     </div>
 </div>
 
@@ -109,8 +109,8 @@
         <h4 id="del-info" style="font-family: Hack"></h4>
     </div>
     <div class="basic actions">
-        <div id="cancel-button" class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="delete-button" class="ui red circular button" onclick="deleteFaculty()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="delete-btn" class="ui red circular button" onclick="deleteFaculty()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
     </div>
 </div>
 

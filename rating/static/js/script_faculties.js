@@ -39,12 +39,12 @@ function fetchFacultiesDataAndPopulate(hasGroup) {
                     updFunc = '';
                 };
                 let rowData = `
-                    <tr class="center aligned">
-                        <td class="collapsing">${index + 1}</td>
-                        <td class="collapsing">${faculty.short_name}</td>
-                        <td class="left aligned">${faculty.name}</td>
-                        <td><button id="trash-button" ${defFunc} class="circular ui red mini icon button"><i class="trash alternate outline icon"></i></button></td>
-                        <td><button id="edit-button" ${updFunc} class="circular ui blue mini icon button"><i class="edit icon"></i></button></td>
+                    <tr>
+                        <td class="center aligned collapsing">${index + 1}</td>
+                        <td class="center aligned collapsing">${faculty.short_name}</td>
+                        <td>${faculty.name}</td>
+                        <td class="center aligned collapsing"><button id="trash-button" ${defFunc} class="circular ui red mini icon button"><i class="trash alternate outline icon"></i></button></td>
+                        <td class="center aligned collapsing"><button id="edit-button" ${updFunc} class="circular ui blue mini icon button"><i class="edit icon"></i></button></td>
                     </tr>
                 `;
                 tbody.insertAdjacentHTML('beforeend', rowData);
@@ -56,6 +56,47 @@ function fetchFacultiesDataAndPopulate(hasGroup) {
         });
 };
 
+function saveFacultyForm() {
+    var url = window.location.origin + `/api/v1/faculties/create_faculty/`;
+    var addModal = document.getElementById('add-modal');
+    var form = document.querySelector('#add-form');
+    var formData = new FormData(form);
+ 
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+        },
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.errors) {
+            fetchFacultiesDataAndPopulate(hasGroup);
+            $(addModal).modal({blurring: true}).modal('hide');
+            resetAddForm();
+            $('#success')
+                .transition({
+                    animation: 'slide',
+                    duration: 1000,
+                })
+            ;
+            setTimeout(function() {
+                $('#success')
+                    .transition({
+                        animation: 'slide',
+                        duration: 1000,
+                    })
+                ;
+            }, 1500);
+        };
+    })
+    .catch(error => {
+        console.error(error);
+        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+        $(addModal).modal({blurring: true}).modal('hide');
+    });
+};
 function showUpdateFaculty(facultyId) {
     const url = window.location.origin + `/api/v1/faculties/${facultyId}/`;
     var updateModal = document.getElementById('update-modal');
@@ -67,7 +108,7 @@ function showUpdateFaculty(facultyId) {
         form.elements.name.value = data.name;
         form.elements.short_name.value = data.short_name;
 
-        var updateButton = document.getElementById('update-button');
+        var updateButton = document.getElementById('update-btn');
         updateButton.dataset.facultyId = facultyId;
 
         $(updateModal).modal({blurring: true}).modal('show');
@@ -79,7 +120,7 @@ function showUpdateFaculty(facultyId) {
 };
 
 function updateFaculty() {
-    var button = document.getElementById("update-button");
+    var button = document.getElementById("update-btn");
     var facultyId = button.getAttribute("data-faculty-id");
     var url = window.location.origin + `/api/v1/faculties/${facultyId}/update_faculty/`;
     var updateModal = document.getElementById('update-modal');
@@ -98,7 +139,20 @@ function updateFaculty() {
         if (!data.errors) {
             fetchFacultiesDataAndPopulate(hasGroup);
             $(updateModal).modal({blurring: true}).modal('hide');
-            $('#success').nag({displayTime: 1500}).show();
+            $('#success')
+                .transition({
+                    animation: 'slide',
+                    duration: 1000,
+                })
+            ;
+            setTimeout(function() {
+                $('#success')
+                    .transition({
+                        animation: 'slide',
+                        duration: 1000,
+                    })
+                ;
+            }, 1500);
         };
     })
     .catch(error => {
@@ -116,7 +170,7 @@ function showDeleteFaculty(facultyId) {
     .then(response => response.json())
     .then(data => {
         document.querySelector('#del-info').textContent = `Вы уверены, что хотите удалить факультет: ${data.name} (${data.short_name})`;
-        var deleteButton = document.getElementById('delete-button');
+        var deleteButton = document.getElementById('delete-btn');
         deleteButton.dataset.facultyId = facultyId;
 
         $(deleteModal).modal({blurring: true}).modal('show');
@@ -128,7 +182,7 @@ function showDeleteFaculty(facultyId) {
 };
 
 function deleteFaculty() {
-    var button = document.getElementById("delete-button");
+    var button = document.getElementById("delete-btn");
     var facultyId = button.getAttribute("data-faculty-id");
     var url = window.location.origin + `/api/v1/faculties/${facultyId}/delete_faculty/`;
     var deleteModal = document.getElementById('delete-modal');
@@ -143,7 +197,20 @@ function deleteFaculty() {
         if (response.ok) {
             fetchFacultiesDataAndPopulate(hasGroup);
             $(deleteModal).modal({blurring: true}).modal('hide');
-            $('#success').nag({displayTime: 1500}).show();
+            $('#success')
+                .transition({
+                    animation: 'slide',
+                    duration: 1000,
+                })
+            ;
+            setTimeout(function() {
+                $('#success')
+                    .transition({
+                        animation: 'slide',
+                        duration: 1000,
+                    })
+                ;
+            }, 1500);
         };
     })
     .catch(error => {

@@ -23,13 +23,7 @@ urlpatterns = [
     path('faculties/', views.FacultyView.as_view(), name='faculties'),
 
     # Cathedras
-    path('cathedras/', views.CathedraListView.as_view(), name='cathedras'),
-    path('cathedras/add/', views.CathedraCreateView.as_view(), name='cathedra_add'),
-    path('cathedras/<int:pk>/delete/', views.CathedraDeleteView.as_view(), name='cathedra_delete'),
-    path('cathedras/<int:pk>/update/', views.CathedraUpdateView.as_view(), name='cathedra_update'),
-
-    # Cathedras actions
-    path('cathedras/import/', views.import_cathedras, name='cathedras_import'),
+    path('cathedras/', views.CathedraView.as_view(), name='cathedras'),
 
     # GroupSubject
     path('groupsubjects/', views.GroupSubjectListView.as_view(), name='groupsubjects'),

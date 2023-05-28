@@ -433,12 +433,6 @@ function transferStudents() {
    } else {closeCheckboxColumn()};
 };
 
-// функция отображения модального окна для импорта оценок
-function showImportResultsModal() {
-   var importModal = document.getElementById('import-results');
-   $(importModal).modal({blurring: true}).modal('show');
-};
-
 // функция импорта оценок
 function importResults() {
    const url = window.location.origin + "/api/v1/import/results/";
@@ -449,7 +443,8 @@ function importResults() {
    for (var i = 0; i < files.length; i++) {
       var file = files[i];
       formData.append('import_files', file);
-   }
+   };
+   document.getElementById("errors-list").textContent = '';
 
    fetch(url, {
       method: "POST",
@@ -508,7 +503,20 @@ function importResults() {
          };
       } else {
          $('#import-results').modal('hide');
-         $('#success').modal({blurring: true}).modal('show');
+         $('#success')
+            .transition({
+               animation: 'slide',
+               duration: 1000,
+            })
+         ;
+         setTimeout(function() {
+            $('#success')
+               .transition({
+                  animation: 'slide',
+                  duration: 1000,
+               })
+            ;
+         }, 1500);
       };
    })
    .catch(function(error) {

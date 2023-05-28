@@ -15,41 +15,33 @@ function getCookie(name) {
     return cookieValue;
 };
 const csrftoken = getCookie('csrftoken');
-
+ 
 const hasGroup = document.getElementById('has-group').textContent;
-fetchGroupsDataAndPopulate(hasGroup);
+fetchCathedrasDataAndPopulate(hasGroup);
 
-function fetchGroupsDataAndPopulate(hasGroup) {
-    let url;
-    if (location.href.includes('archive')) {
-        url = window.location.origin + "/api/v1/groups/?is_archived=true";
-    } else {
-        url = window.location.origin + "/api/v1/groups/";
-    }
+function fetchCathedrasDataAndPopulate(hasGroup) {
+    const url = window.location.origin + "/api/v1/cathedras/";
 
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            const table = $('#groups-table').DataTable();
+            const table = $('#cathedras-table').DataTable();
             table.clear();
 
-            data.forEach((group, index) => {
-                console.log(hasGroup);
+            data.forEach((cathedra, index) => {
                 let defFunc, updFunc;
                 if (hasGroup === 'True') {
-                    defFunc = `onclick="showDeleteGroup(${group.id})"`;
-                    updFunc = `onclick="showUpdateGroup(${group.id})"`;
+                    defFunc = `onclick="showDeleteCathedra(${cathedra.id})"`;
+                    updFunc = `onclick="showUpdateCathedra(${cathedra.id})"`;
                 } else {
                     defFunc = '';
                     updFunc = '';
                 };
                 let rowData = [
                     index + 1,
-                    group.name,
-                    group.level,
-                    group.direction,
-                    group.profile,
-                    group.code,
+                    (cathedra.faculty !== null) ? cathedra.faculty.short_name : "-",
+                    (cathedra.short_name) ? cathedra.short_name : "-",
+                    cathedra.name,
                     `<button id="trash-button" ${defFunc} class="circular ui red mini icon button"><i class="trash alternate outline icon"></i></button>`,
                     `<button id="edit-button" ${updFunc} class="circular ui blue mini icon button"><i class="edit icon"></i></button>`,
                 ];
@@ -63,8 +55,8 @@ function fetchGroupsDataAndPopulate(hasGroup) {
         });
 };
 
-function saveGroupForm() {
-    var url = window.location.origin + `/api/v1/groups/create_group/`;
+function saveCathedraForm() {
+    var url = window.location.origin + `/api/v1/cathedras/create_cathedra/`;
     var addModal = document.getElementById('add-modal');
     var form = document.querySelector('#add-form');
     var formData = new FormData(form);
@@ -79,7 +71,7 @@ function saveGroupForm() {
     .then(response => response.json())
     .then(data => {
         if (!data.errors) {
-            fetchGroupsDataAndPopulate(hasGroup);
+            fetchCathedrasDataAndPopulate(hasGroup);
             $(addModal).modal({blurring: true}).modal('hide');
             resetAddForm();
             $('#success')
@@ -103,32 +95,26 @@ function saveGroupForm() {
         alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
         $(addModal).modal({blurring: true}).modal('hide');
     });
-};
-
-function showUpdateGroup(groupId) {
-    let url;
-    if (location.href.includes('archive')) {
-        url = window.location.origin + `/api/v1/groups/${groupId}/?is_archived=true`;
-    } else {
-        url = window.location.origin + `/api/v1/groups/${groupId}/`;
-    }
-    var updateGroupModal = document.getElementById('update-modal');
+ };
+ 
+function showUpdateCathedra(cathedraId) {
+    const url = window.location.origin + `/api/v1/cathedras/${cathedraId}/`;
+    var updateModal = document.getElementById('update-modal');
     
     fetch(url)
     .then(response => response.json())
     .then(data => {
         var form = document.querySelector('#update-form');
         form.elements.name.value = data.name;
-        form.elements.direction.value = data.direction;
-        form.elements.profile.value = data.profile;
-        form.elements.level.value = data.level;
-        form.elements.code.value = data.code;
-        form.elements.is_archived.checked = data.is_archived;
+        form.elements.short_name.value = data.short_name;
+        if (data.faculty) {
+            $('.ui.dropdown').dropdown('set selected', data.faculty.id);
+        };
 
         var updateButton = document.getElementById('update-btn');
-        updateButton.dataset.groupId = groupId;
+        updateButton.dataset.cathedraId = cathedraId;
 
-        $(updateGroupModal).modal({blurring: true}).modal('show');
+        $(updateModal).modal({blurring: true}).modal('show');
     })
     .catch(error => {
         console.error(error);
@@ -136,10 +122,10 @@ function showUpdateGroup(groupId) {
     });
 };
 
-function updateGroup() {
+function updateCathedra() {
     var button = document.getElementById("update-btn");
-    var groupId = button.getAttribute("data-group-id");
-    var url = window.location.origin + `/api/v1/groups/${groupId}/update_group/`;
+    var cathedraId = button.getAttribute("data-cathedra-id");
+    var url = window.location.origin + `/api/v1/cathedras/${cathedraId}/update_cathedra/`;
     var updateModal = document.getElementById('update-modal');
     var form = document.querySelector('#update-form');
     var formData = new FormData(form);
@@ -154,22 +140,9 @@ function updateGroup() {
     .then(response => response.json())
     .then(data => {
         if (!data.errors) {
-            fetchGroupsDataAndPopulate(hasGroup);
+            fetchCathedrasDataAndPopulate(hasGroup);
             $(updateModal).modal({blurring: true}).modal('hide');
-            $('#success')
-                .transition({
-                    animation: 'slide',
-                    duration: 1000,
-                })
-            ;
-            setTimeout(function() {
-                $('#success')
-                    .transition({
-                        animation: 'slide',
-                        duration: 1000,
-                    })
-                ;
-            }, 1500);
+            $('#success').nag({displayTime: 1500}).show();
         };
     })
     .catch(error => {
@@ -179,26 +152,22 @@ function updateGroup() {
     });
 };
 
-function showDeleteGroup(groupId) {
-    let url;
-    if (location.href.includes('archive')) {
-        url = window.location.origin + `/api/v1/groups/${groupId}/?is_archived=true`;
-    } else {
-        url = window.location.origin + `/api/v1/groups/${groupId}/`;
-    }
+function showDeleteCathedra(cathedraId) {
+    const url = window.location.origin + `/api/v1/cathedras/${cathedraId}/`;
     var deleteModal = document.getElementById('delete-modal');
     
     fetch(url)
     .then(response => response.json())
     .then(data => {
         document.querySelector('#del-name').textContent = data.name;
-        document.querySelector('#del-direction').textContent = data.direction;
-        document.querySelector('#del-profile').textContent = data.profile;
-        document.querySelector('#del-level').textContent = data.level;
-        document.querySelector('#del-code').textContent = data.code;
+        if (data.faculty) {
+            document.querySelector('#del-fac').textContent = data.faculty.name;
+        } else {
+            document.querySelector('#del-fac').textContent = "-";
+        };
 
         var deleteButton = document.getElementById('delete-btn');
-        deleteButton.dataset.groupId = groupId;
+        deleteButton.dataset.cathedraId = cathedraId;
 
         $(deleteModal).modal({blurring: true}).modal('show');
     })
@@ -208,11 +177,11 @@ function showDeleteGroup(groupId) {
     });
 };
 
-function deleteGroup() {
+function deleteCathedra() {
     var button = document.getElementById("delete-btn");
-    var groupId = button.getAttribute("data-group-id");
-    var url = window.location.origin + `/api/v1/groups/${groupId}/delete_group/`;
-    var deleteGroupModal = document.getElementById('delete-modal');
+    var cathedraId = button.getAttribute("data-cathedra-id");
+    var url = window.location.origin + `/api/v1/cathedras/${cathedraId}/delete_cathedra/`;
+    var deleteModal = document.getElementById('delete-modal');
 
     fetch(url, {
         method: 'DELETE',
@@ -222,8 +191,8 @@ function deleteGroup() {
     })
     .then(response => {
         if (response.ok) {
-            fetchGroupsDataAndPopulate(hasGroup);
-            $(deleteGroupModal).modal({blurring: true}).modal('hide');
+            fetchCathedrasDataAndPopulate(hasGroup);
+            $(deleteModal).modal({blurring: true}).modal('hide');
             $('#success')
                 .transition({
                     animation: 'slide',
@@ -243,6 +212,88 @@ function deleteGroup() {
     .catch(error => {
         console.error(error);
         alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
-        $(updateGroupModal).modal({blurring: true}).modal('hide');
+        $(deleteModal).modal({blurring: true}).modal('hide');
     });
 };
+
+// функция импорта кафедр
+function importCathedras() {
+    const url = window.location.origin + "/api/v1/import/cathedras/";
+    var fileInput = document.querySelector('input[type="file"]');
+    var formData = new FormData();
+    var file = fileInput.files[0];
+    formData.append('import_files', file);
+    document.getElementById("errors-list").textContent = '';
+ 
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": csrftoken,
+        },
+        body: formData,
+    })
+    .then(function(response) {
+        console.log(response);
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Network response was not ok.');
+        };
+    })
+    .then(function(data) {
+        var success = data.data[0].success;
+        if (!success) {
+            $('#import-cathedras').modal('hide');
+            
+            var errorText = document.getElementById("error-text");
+            var error = data.data[0].error;
+            if (error) {
+                $('#error').modal({blurring: true}).modal('show');
+                errorText.innerHTML = '<i class="times red icon"></i><font color="red">Ничего не выбрано для импорта или неверный формат файла!</font>';
+            };
+    
+            var errors = data.data[0].errors;
+            if (errors) {
+                console.log('ERRORS', errors)
+                $('#errors').modal({blurring: true}).modal('show');
+                
+                var errorsList = document.getElementById("errors-list");
+                for (var i = 0; i < errors.length; i++) {
+                    console.log(errors[i])
+                    var errorString = `
+                    <div class="item">
+                        <i class="bug red icon"></i>
+                        <div class="content">
+                            <div class="description">${errors[i]}</div>
+                        </div>
+                    </div>
+                    `;
+                    errorsList.insertAdjacentHTML('beforeend', errorString);
+                };
+            };
+        } else {
+            $('#import-cathedras').modal('hide');
+            fetchCathedrasDataAndPopulate(hasGroup);
+            $('#success')
+                .transition({
+                    animation: 'slide',
+                    duration: 1000,
+                })
+            ;
+            setTimeout(function() {
+                $('#success')
+                    .transition({
+                        animation: 'slide',
+                        duration: 1000,
+                    })
+                ;
+            }, 1500);
+        };
+    })
+    .catch(function(error) {
+       console.log(error);
+       alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+    });
+    fileInput.value = '';
+};
+ 

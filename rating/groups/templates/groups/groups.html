@@ -21,7 +21,7 @@
                     <td><h2 style="font-family: Hack">Группы</h2></td>
                     {% if request.user|has_group:"Сотрудники" %}
                         <td class="right aligned">
-                            <button id="add-button" class="ui positive small circular button" onclick="showAddModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
+                            <button id="add-button" class="ui positive small circular button" onclick="showModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
                         </td>
                     {% endif %}
                 </tr>
@@ -31,11 +31,11 @@
     
     <!-- Table -->
     <div class="ui basic segment">
-        <div id="success" class="ui green inverted nag">
+        <div id="success" class="ui green nag">
             Успешно!
         </div>
         {% if groups %}
-            <table id="groups-table" class="ui selectable compact small celled table">
+            <table id="groups-table" class="ui selectable compact celled table">
                 <thead>
                     <tr class="center aligned">
                         <th><i class="hashtag small icon"></i></th>
@@ -96,8 +96,8 @@
         </form>
     </div>
     <div class="basic actions">
-        <div id="cancel-button" class="ui circular cancel button" onclick="resetAddForm()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="save-button" class="ui green circular button" onclick="saveModalForm('groups/create_group')" style="font-family: Hack"><i class="save icon"></i>Сохранить</div>
+        <div class="ui circular cancel button" onclick="resetAddForm()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div class="ui green circular button" onclick="saveGroupForm()" style="font-family: Hack"><i class="save icon"></i>Сохранить</div>
     </div>
 </div>
 
@@ -139,8 +139,8 @@
         </form>
     </div>
     <div class="basic actions">
-        <div id="cancel-button" class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="update-button" class="ui blue circular button" onclick="updateGroup()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="update-btn" class="ui blue circular button" onclick="updateGroup()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
     </div>
 </div>
 
@@ -174,8 +174,8 @@
         </table>
     </div>
     <div class="basic actions">
-        <div id="cancel-button" class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="delete-button" class="ui red circular button" onclick="deleteGroup()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="delete-btn" class="ui red circular button" onclick="deleteGroup()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
     </div>
 </div>
 
@@ -189,25 +189,13 @@
 
         const dataTableOptions = {
             language: {
-                lengthMenu: '_MENU_ записей на страницу',
                 zeroRecords: 'Записей нет...',
                 info: 'Всего записей: _MAX_',
                 infoEmpty: '',
                 infoFiltered: 'Найдено: _TOTAL_',
                 search: '',
                 searchPlaceholder: 'поиск',
-                paginate: {
-                    first:    '«',
-                    previous: '‹',
-                    next:     '›',
-                    last:     '»'
-                },
             },
-            lengthMenu: [
-                [20, 50, -1],
-                [20, 50, 'Все']
-            ],
-            pageLength: 20,
             paging: false,
             searching: true,
             ordering: true,
