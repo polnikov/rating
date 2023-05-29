@@ -20,6 +20,12 @@ const hasGroup = document.getElementById('has-group').textContent;
 fetchGroupsDataAndPopulate(hasGroup);
 
 function fetchGroupsDataAndPopulate(hasGroup) {
+    $('#datatable-segment').dimmer({
+        displayLoader: true,
+        loaderVariation: 'slow orange medium elastic',
+        loaderText: 'Загрузка данных...'
+    }).dimmer('show');
+
     let url;
     if (location.href.includes('archive')) {
         url = window.location.origin + "/api/v1/groups/?is_archived=true";
@@ -34,7 +40,6 @@ function fetchGroupsDataAndPopulate(hasGroup) {
             table.clear();
 
             data.forEach((group, index) => {
-                console.log(hasGroup);
                 let defFunc, updFunc;
                 if (hasGroup === 'True') {
                     defFunc = `onclick="showDeleteGroup(${group.id})"`;
@@ -56,10 +61,17 @@ function fetchGroupsDataAndPopulate(hasGroup) {
                 table.row.add(rowData);
             });
             table.draw();
+            $('#datatable-segment').dimmer('hide');
         })
         .catch(error => {
+            $('#datatable-segment').dimmer('hide');
             console.error(error);
-            alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+            $.toast({
+                class: 'error',
+                showIcon: 'exclamation',
+                position: 'centered',
+                message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            });
         });
 };
 
@@ -82,26 +94,23 @@ function saveGroupForm() {
             fetchGroupsDataAndPopulate(hasGroup);
             $(addModal).modal({blurring: true}).modal('hide');
             resetAddForm();
-            $('#success')
-                .transition({
-                    animation: 'slide',
-                    duration: 1000,
-                })
-            ;
-            setTimeout(function() {
-                $('#success')
-                    .transition({
-                        animation: 'slide',
-                        duration: 1000,
-                    })
-                ;
-            }, 1500);
+            $.toast({
+                class: 'success',
+                showIcon: 'check',
+                position: 'centered',
+                message: 'Добавлено!'
+            });
         };
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
         $(addModal).modal({blurring: true}).modal('hide');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
 
@@ -132,7 +141,12 @@ function showUpdateGroup(groupId) {
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
 
@@ -156,26 +170,23 @@ function updateGroup() {
         if (!data.errors) {
             fetchGroupsDataAndPopulate(hasGroup);
             $(updateModal).modal({blurring: true}).modal('hide');
-            $('#success')
-                .transition({
-                    animation: 'slide',
-                    duration: 1000,
-                })
-            ;
-            setTimeout(function() {
-                $('#success')
-                    .transition({
-                        animation: 'slide',
-                        duration: 1000,
-                    })
-                ;
-            }, 1500);
+            $.toast({
+                class: 'success',
+                showIcon: 'check',
+                position: 'centered',
+                message: 'Обновлено!'
+            });
         };
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
         $(updateModal).modal({blurring: true}).modal('hide');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
 
@@ -204,7 +215,12 @@ function showDeleteGroup(groupId) {
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
 
@@ -224,25 +240,22 @@ function deleteGroup() {
         if (response.ok) {
             fetchGroupsDataAndPopulate(hasGroup);
             $(deleteGroupModal).modal({blurring: true}).modal('hide');
-            $('#success')
-                .transition({
-                    animation: 'slide',
-                    duration: 1000,
-                })
-            ;
-            setTimeout(function() {
-                $('#success')
-                    .transition({
-                        animation: 'slide',
-                        duration: 1000,
-                    })
-                ;
-            }, 1500);
+            $.toast({
+                class: 'success',
+                showIcon: 'check',
+                position: 'centered',
+                message: 'Удалено!'
+            });
         };
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
         $(updateGroupModal).modal({blurring: true}).modal('hide');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };

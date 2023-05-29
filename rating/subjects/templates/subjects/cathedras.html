@@ -31,11 +31,8 @@
     </div>
 
     <!-- Table -->
-    <div class="ui basic segment">
-        <div id="success" class="ui green nag">
-            Успешно!
-        </div>
-            {% if cathedras %}
+    <div id="datatable-segment" class="ui basic segment">
+        {% if cathedras %}
             <table id="cathedras-table" class="ui selectable celled compact table">
                 <thead>
                     <tr class="center aligned">
@@ -49,7 +46,7 @@
                 </thead>
 
                 <tbody>
-                    <!-- data from JavaScript -->
+                    <!-- data from script -->
                 </tbody>
             </table>
         {% else %}

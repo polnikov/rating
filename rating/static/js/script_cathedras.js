@@ -20,6 +20,12 @@ const hasGroup = document.getElementById('has-group').textContent;
 fetchCathedrasDataAndPopulate(hasGroup);
 
 function fetchCathedrasDataAndPopulate(hasGroup) {
+    $('#datatable-segment').dimmer({
+        displayLoader: true,
+        loaderVariation: 'slow orange medium elastic',
+        loaderText: 'Загрузка данных...'
+    }).dimmer('show');
+
     const url = window.location.origin + "/api/v1/cathedras/";
 
     fetch(url)
@@ -48,10 +54,17 @@ function fetchCathedrasDataAndPopulate(hasGroup) {
                 table.row.add(rowData);
             });
             table.draw();
+            $('#datatable-segment').dimmer('hide');
         })
         .catch(error => {
+            $('#datatable-segment').dimmer('hide');
             console.error(error);
-            alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+            $.toast({
+                class: 'error',
+                showIcon: 'exclamation',
+                position: 'centered',
+                message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            });
         });
 };
 
@@ -74,26 +87,23 @@ function saveCathedraForm() {
             fetchCathedrasDataAndPopulate(hasGroup);
             $(addModal).modal({blurring: true}).modal('hide');
             resetAddForm();
-            $('#success')
-                .transition({
-                    animation: 'slide',
-                    duration: 1000,
-                })
-            ;
-            setTimeout(function() {
-                $('#success')
-                    .transition({
-                        animation: 'slide',
-                        duration: 1000,
-                    })
-                ;
-            }, 1500);
+            $.toast({
+                class: 'success',
+                showIcon: 'check',
+                position: 'centered',
+                message: 'Добавлено!'
+            });
         };
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
         $(addModal).modal({blurring: true}).modal('hide');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
  };
  
@@ -118,7 +128,12 @@ function showUpdateCathedra(cathedraId) {
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
 
@@ -142,13 +157,23 @@ function updateCathedra() {
         if (!data.errors) {
             fetchCathedrasDataAndPopulate(hasGroup);
             $(updateModal).modal({blurring: true}).modal('hide');
-            $('#success').nag({displayTime: 1500}).show();
+            $.toast({
+                class: 'success',
+                showIcon: 'check',
+                position: 'centered',
+                message: 'Обновлено!'
+            });
         };
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
         $(updateModal).modal({blurring: true}).modal('hide');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
 
@@ -173,7 +198,12 @@ function showDeleteCathedra(cathedraId) {
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
 
@@ -193,26 +223,23 @@ function deleteCathedra() {
         if (response.ok) {
             fetchCathedrasDataAndPopulate(hasGroup);
             $(deleteModal).modal({blurring: true}).modal('hide');
-            $('#success')
-                .transition({
-                    animation: 'slide',
-                    duration: 1000,
-                })
-            ;
-            setTimeout(function() {
-                $('#success')
-                    .transition({
-                        animation: 'slide',
-                        duration: 1000,
-                    })
-                ;
-            }, 1500);
+            $.toast({
+                class: 'success',
+                showIcon: 'check',
+                position: 'centered',
+                message: 'Удалено!'
+            });
         };
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
         $(deleteModal).modal({blurring: true}).modal('hide');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
 
@@ -274,25 +301,22 @@ function importCathedras() {
         } else {
             $('#import-cathedras').modal('hide');
             fetchCathedrasDataAndPopulate(hasGroup);
-            $('#success')
-                .transition({
-                    animation: 'slide',
-                    duration: 1000,
-                })
-            ;
-            setTimeout(function() {
-                $('#success')
-                    .transition({
-                        animation: 'slide',
-                        duration: 1000,
-                    })
-                ;
-            }, 1500);
+            $.toast({
+                class: 'success',
+                showIcon: 'check',
+                position: 'centered',
+                message: 'Импортировано!'
+            });
         };
     })
     .catch(function(error) {
-       console.log(error);
-       alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+        console.log(error);
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
     fileInput.value = '';
 };
