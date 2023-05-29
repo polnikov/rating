@@ -14,40 +14,22 @@
 <div id="segments" class="ui basic segments">
 
     <!-- Title & button -->
-    <div class="ui basic segment" style="padding-bottom: 0">
-        <table class="ui very basic table">
-            <tbody>
-                <tr>
-                    <td><h2 style="font-family: Hack">Группы</h2></td>
-                    {% if request.user|has_group:"Сотрудники" %}
-                        <td class="right aligned">
-                            <button id="add-button" class="ui positive small circular button" onclick="showModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
-                        </td>
-                    {% endif %}
-                </tr>
-            </tbody>
-        </table>
+    <div class="ui basic segment">
+        <div class="ui stackable two column grid">
+            <div class="column"><h2 style="font-family: Hack">Группы</h2></div>
+            <div class="column right aligned">
+                {% if request.user|has_group:"Сотрудники" %}
+                    <button id="add-button" class="ui positive small circular button" onclick="showModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
+                {% endif %}
+            </div>
+        </div>
     </div>
     
     <!-- Table -->
     <div id="datatable-segment" class="ui basic segment">
         {% if groups %}
             <table id="groups-table" class="ui selectable compact celled table">
-                <thead>
-                    <tr class="center aligned">
-                        <th><i class="hashtag small icon"></i></th>
-                        <th>Название</th>
-                        <th>Уровень</th>
-                        <th>Направление</th>
-                        <th>Профиль | Специализация</th>
-                        <th>Шифр</th>
-                        <th class="collapsing">Удалить</th>
-                        <th class="collapsing">Изменить</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- data from JavaScript -->
-                </tbody>
+                <!-- data from script -->
             </table>
         {% else %}
             {% include 'empty_records.html' %}
@@ -61,7 +43,7 @@
     <div class="content" style="font-family: Hack">
         <form id="add-form" method="POST">
             {% csrf_token %}
-            <div class="ui large form">
+            <div class="ui form">
                 <div class="required field">
                     <label>Название</label>
                     {{ form.name }}
@@ -185,6 +167,16 @@
         };
 
         const dataTableOptions = {
+            columns: [
+                { title: '<i class="hashtag small icon"></i>' },
+                { title: 'Название' },
+                { title: 'Уровень' },
+                { title: 'Направление' },
+                { title: 'Профиль | Специализация' },
+                { title: 'Шифр' },
+                { title: 'Удалить', orderable: false },
+                { title: 'Изменить', orderable: false },
+            ],
             language: {
                 zeroRecords: 'Записей нет...',
                 info: 'Всего записей: _MAX_',
@@ -206,6 +198,9 @@
                 { orderable: false, targets: [6, 7] },
                 { className: 'center aligned', targets: [0, 2, 5, 6, 7] },
             ],
+            headerCallback: function(thead, data, start, end, display) {
+                $(thead).find('th').addClass('center aligned');
+            },
         };
 
         $('#groups-table').DataTable(dataTableOptions);
@@ -220,6 +215,7 @@
             };
         };
         changeDatatableInputFont();
+        deletePaddingTopForDatatableSegment();
     });
 </script>
 {% endblock %}

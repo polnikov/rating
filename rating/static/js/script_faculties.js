@@ -20,12 +20,6 @@ const hasGroup = document.getElementById('has-group').textContent;
 fetchFacultiesDataAndPopulate(hasGroup);
 
 function fetchFacultiesDataAndPopulate(hasGroup) {
-    $('#datatable-segment').dimmer({
-        displayLoader: true,
-        loaderVariation: 'slow orange medium elastic',
-        loaderText: 'Загрузка данных...'
-    }).dimmer('show');
-
     const url = window.location.origin + "/api/v1/faculties/";
 
     fetch(url)
@@ -55,16 +49,13 @@ function fetchFacultiesDataAndPopulate(hasGroup) {
                 `;
                 tbody.insertAdjacentHTML('beforeend', rowData);
             });
-            $('#datatable-segment').dimmer('hide');
         })
         .catch(error => {
-            $('#datatable-segment').dimmer('hide');
             console.error(error);
             $.toast({
-                class: 'error',
-                showIcon: 'exclamation',
+                class: 'error center aligned',
                 position: 'centered',
-                message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+                message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
             });
         });
 };
@@ -89,10 +80,9 @@ function saveFacultyForm() {
             $(addModal).modal({blurring: true}).modal('hide');
             resetAddForm();
             $.toast({
-                class: 'success',
-                showIcon: 'check',
+                class: 'success center aligned',
                 position: 'centered',
-                message: 'Добавлено!'
+                message: '<i class="checkmark icon"></i> Добавлено!'
             });
         };
     })
@@ -100,10 +90,9 @@ function saveFacultyForm() {
         console.error(error);
         $(addModal).modal({blurring: true}).modal('hide');
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
 };
@@ -127,10 +116,9 @@ function showUpdateFaculty(facultyId) {
     .catch(error => {
         console.error(error);
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
 };
@@ -156,10 +144,9 @@ function updateFaculty() {
             fetchFacultiesDataAndPopulate(hasGroup);
             $(updateModal).modal({blurring: true}).modal('hide');
             $.toast({
-                class: 'success',
-                showIcon: 'check',
+                class: 'success center aligned',
                 position: 'centered',
-                message: 'Обновлено!'
+                message: '<i class="checkmark icon"></i> Обновлено!'
             });
         };
     })
@@ -167,10 +154,9 @@ function updateFaculty() {
         console.error(error);
         $(updateModal).modal({blurring: true}).modal('hide');
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
 };
@@ -191,10 +177,9 @@ function showDeleteFaculty(facultyId) {
     .catch(error => {
         console.error(error);
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
 };
@@ -216,10 +201,9 @@ function deleteFaculty() {
             fetchFacultiesDataAndPopulate(hasGroup);
             $(deleteModal).modal({blurring: true}).modal('hide');
             $.toast({
-                class: 'success',
-                showIcon: 'check',
+                class: 'success center aligned',
                 position: 'centered',
-                message: 'Удалено!'
+                message: '<i class="checkmark icon"></i> Удалено!'
             });
         };
     })
@@ -227,10 +211,9 @@ function deleteFaculty() {
         console.error(error);
         $(deleteModal).modal({blurring: true}).modal('hide');
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
 };

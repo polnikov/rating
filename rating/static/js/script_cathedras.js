@@ -20,12 +20,6 @@ const hasGroup = document.getElementById('has-group').textContent;
 fetchCathedrasDataAndPopulate(hasGroup);
 
 function fetchCathedrasDataAndPopulate(hasGroup) {
-    $('#datatable-segment').dimmer({
-        displayLoader: true,
-        loaderVariation: 'slow orange medium elastic',
-        loaderText: 'Загрузка данных...'
-    }).dimmer('show');
-
     const url = window.location.origin + "/api/v1/cathedras/";
 
     fetch(url)
@@ -54,16 +48,13 @@ function fetchCathedrasDataAndPopulate(hasGroup) {
                 table.row.add(rowData);
             });
             table.draw();
-            $('#datatable-segment').dimmer('hide');
         })
         .catch(error => {
-            $('#datatable-segment').dimmer('hide');
             console.error(error);
             $.toast({
-                class: 'error',
-                showIcon: 'exclamation',
+                class: 'error center aligned',
                 position: 'centered',
-                message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+                message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
             });
         });
 };
@@ -88,10 +79,9 @@ function saveCathedraForm() {
             $(addModal).modal({blurring: true}).modal('hide');
             resetAddForm();
             $.toast({
-                class: 'success',
-                showIcon: 'check',
+                class: 'success center aligned',
                 position: 'centered',
-                message: 'Добавлено!'
+                message: '<i class="checkmark icon"></i> Добавлено!'
             });
         };
     })
@@ -99,10 +89,9 @@ function saveCathedraForm() {
         console.error(error);
         $(addModal).modal({blurring: true}).modal('hide');
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
  };
@@ -129,10 +118,9 @@ function showUpdateCathedra(cathedraId) {
     .catch(error => {
         console.error(error);
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
 };
@@ -158,10 +146,9 @@ function updateCathedra() {
             fetchCathedrasDataAndPopulate(hasGroup);
             $(updateModal).modal({blurring: true}).modal('hide');
             $.toast({
-                class: 'success',
-                showIcon: 'check',
+                class: 'success center aligned',
                 position: 'centered',
-                message: 'Обновлено!'
+                message: '<i class="checkmark icon"></i> Обновлено!'
             });
         };
     })
@@ -169,10 +156,9 @@ function updateCathedra() {
         console.error(error);
         $(updateModal).modal({blurring: true}).modal('hide');
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
 };
@@ -199,10 +185,9 @@ function showDeleteCathedra(cathedraId) {
     .catch(error => {
         console.error(error);
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
 };
@@ -224,10 +209,9 @@ function deleteCathedra() {
             fetchCathedrasDataAndPopulate(hasGroup);
             $(deleteModal).modal({blurring: true}).modal('hide');
             $.toast({
-                class: 'success',
-                showIcon: 'check',
+                class: 'success center aligned',
                 position: 'centered',
-                message: 'Удалено!'
+                message: '<i class="checkmark icon"></i> Удалено!'
             });
         };
     })
@@ -235,10 +219,9 @@ function deleteCathedra() {
         console.error(error);
         $(deleteModal).modal({blurring: true}).modal('hide');
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
 };
@@ -272,11 +255,15 @@ function importCathedras() {
         if (!success) {
             $('#import-cathedras').modal('hide');
             
-            var errorText = document.getElementById("error-text");
             var error = data.data[0].error;
             if (error) {
-                $('#error').modal({blurring: true}).modal('show');
-                errorText.innerHTML = '<i class="times red icon"></i><font color="red">Ничего не выбрано для импорта или неверный формат файла!</font>';
+                $.toast({
+                    class: 'error center aligned',
+                    closeIcon: true,
+                    displayTime: 0,
+                    position: 'centered',
+                    message: '<i class="exclamation circle large icon"></i> Ничего не выбрано для импорта или неверный формат файла!'
+                });
             };
     
             var errors = data.data[0].errors;
@@ -302,20 +289,18 @@ function importCathedras() {
             $('#import-cathedras').modal('hide');
             fetchCathedrasDataAndPopulate(hasGroup);
             $.toast({
-                class: 'success',
-                showIcon: 'check',
+                class: 'success center aligned',
                 position: 'centered',
-                message: 'Импортировано!'
+                message: '<i class="checkmark icon"></i> Импортировано!'
             });
         };
     })
     .catch(function(error) {
         console.log(error);
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
     fileInput.value = '';
