@@ -97,7 +97,12 @@ $(document).ready(function() {
       })
       .fail(function() {
          console.log("Ошибка данных!");
-         alert("Данные недоступны!")
+         $.toast({
+            class: 'error center aligned',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: '<i class="exclamation circle large icon"></i> Данные недоступны!'
+         });
       });
    };
    getFromServer(groupName, semester);
@@ -162,8 +167,12 @@ $(document).ready(function() {
                sendToServer(resId, studentId, groupSubId, form, window.newValue, td);
             } else {
                td.textContent = window.oldValue.trim();
-               // отправляется сообщение о неверном формате оценки и перезагружается страница для сброса введенного значения
-               alert("Неверный формат оценки!");
+               // отправляется сообщение о неверном формате оценки
+               $.toast({
+                  class: 'error center aligned',
+                  position: 'centered',
+                  message: '<i class="exclamation circle large icon"></i> Неверный формат оценки!'
+               });
             };
          } else {
             // валидация вводимых оценок
@@ -173,8 +182,12 @@ $(document).ready(function() {
                sendToServer(resId, studentId, groupSubId, form, window.newValue, td);
             } else {
                td.textContent = window.oldValue.trim();
-               // отправляется сообщение о неверном формате оценки и перезагружается страница для сброса введенного значения
-               alert("Неверный формат оценки!");
+               // отправляется сообщение о неверном формате оценки
+               $.toast({
+                  class: 'error center aligned',
+                  position: 'centered',
+                  message: '<i class="exclamation circle large icon"></i> Неверный формат оценки!'
+               });
             };
          };
       };
@@ -241,7 +254,12 @@ $(document).ready(function() {
       .fail(function() {
          console.log("Ошибка сохранения | обновления!");
          obj.textContent = window.oldValue;
-         alert("Ошибка сохранения | обновления!");
+         $.toast({
+            class: 'error center aligned',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: '<i class="exclamation circle large icon"></i> Ошибка сохранения | обновления!'
+         });
       });
    };
 
@@ -422,13 +440,19 @@ function transferStudents() {
       })
       .done(function(response) {
          console.log('Перевод студентов прошел успешно', response);
-         alert("Перевод студентов прошел успешно");
-         document.location.reload();
+         $.toast({
+            class: 'success center aligned',
+            position: 'centered',
+            message: '<i class="checkmark large icon"></i> Перевод студентов прошел успешно!'
+         });
+         setTimeout(function() {document.location.reload()}, 1500);
       })
       .fail(function() {
-         console.log("Ошибка перевода студентов!");
-         alert("Ошибка перевода студентов!");
-         //document.location.reload();
+         $.toast({
+            class: 'error center aligned',
+            position: 'centered',
+            message: '<i class="exclamation circle large icon"></i> Ошибка перевода студентов!'
+         });
       });
    } else {closeCheckboxColumn()};
 };
@@ -458,7 +482,7 @@ function importResults() {
          return response.json();
       } else {
          throw new Error('Network response was not ok.');
-      }
+      };
    })
    .then(function(data) {
       var success = data.data[0].success;
@@ -503,25 +527,20 @@ function importResults() {
          };
       } else {
          $('#import-results').modal('hide');
-         $('#success')
-            .transition({
-               animation: 'slide',
-               duration: 1000,
-            })
-         ;
-         setTimeout(function() {
-            $('#success')
-               .transition({
-                  animation: 'slide',
-                  duration: 1000,
-               })
-            ;
-         }, 1500);
+         $.toast({
+            class: 'success center aligned',
+            position: 'centered',
+            message: '<i class="checkmark large icon"></i> Импортировано!'
+         });
       };
    })
    .catch(function(error) {
       console.log(error);
-      alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+      $.toast({
+         class: 'error center aligned',
+         position: 'centered',
+         message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+      });
    });
    fileInput.value = '';
 };

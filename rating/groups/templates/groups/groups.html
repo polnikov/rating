@@ -30,10 +30,7 @@
     </div>
     
     <!-- Table -->
-    <div class="ui basic segment">
-        <div id="success" class="ui green nag">
-            Успешно!
-        </div>
+    <div id="datatable-segment" class="ui basic segment">
         {% if groups %}
             <table id="groups-table" class="ui selectable compact celled table">
                 <thead>
@@ -225,5 +222,4 @@
         changeDatatableInputFont();
     });
 </script>
-
 {% endblock %}

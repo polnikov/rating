@@ -20,6 +20,12 @@ const hasGroup = document.getElementById('has-group').textContent;
 fetchFacultiesDataAndPopulate(hasGroup);
 
 function fetchFacultiesDataAndPopulate(hasGroup) {
+    $('#datatable-segment').dimmer({
+        displayLoader: true,
+        loaderVariation: 'slow orange medium elastic',
+        loaderText: 'Загрузка данных...'
+    }).dimmer('show');
+
     const url = window.location.origin + "/api/v1/faculties/";
 
     fetch(url)
@@ -49,10 +55,17 @@ function fetchFacultiesDataAndPopulate(hasGroup) {
                 `;
                 tbody.insertAdjacentHTML('beforeend', rowData);
             });
+            $('#datatable-segment').dimmer('hide');
         })
         .catch(error => {
+            $('#datatable-segment').dimmer('hide');
             console.error(error);
-            alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+            $.toast({
+                class: 'error',
+                showIcon: 'exclamation',
+                position: 'centered',
+                message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            });
         });
 };
 
@@ -75,28 +88,26 @@ function saveFacultyForm() {
             fetchFacultiesDataAndPopulate(hasGroup);
             $(addModal).modal({blurring: true}).modal('hide');
             resetAddForm();
-            $('#success')
-                .transition({
-                    animation: 'slide',
-                    duration: 1000,
-                })
-            ;
-            setTimeout(function() {
-                $('#success')
-                    .transition({
-                        animation: 'slide',
-                        duration: 1000,
-                    })
-                ;
-            }, 1500);
+            $.toast({
+                class: 'success',
+                showIcon: 'check',
+                position: 'centered',
+                message: 'Добавлено!'
+            });
         };
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
         $(addModal).modal({blurring: true}).modal('hide');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
+
 function showUpdateFaculty(facultyId) {
     const url = window.location.origin + `/api/v1/faculties/${facultyId}/`;
     var updateModal = document.getElementById('update-modal');
@@ -115,7 +126,12 @@ function showUpdateFaculty(facultyId) {
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
 
@@ -139,26 +155,23 @@ function updateFaculty() {
         if (!data.errors) {
             fetchFacultiesDataAndPopulate(hasGroup);
             $(updateModal).modal({blurring: true}).modal('hide');
-            $('#success')
-                .transition({
-                    animation: 'slide',
-                    duration: 1000,
-                })
-            ;
-            setTimeout(function() {
-                $('#success')
-                    .transition({
-                        animation: 'slide',
-                        duration: 1000,
-                    })
-                ;
-            }, 1500);
+            $.toast({
+                class: 'success',
+                showIcon: 'check',
+                position: 'centered',
+                message: 'Обновлено!'
+            });
         };
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
         $(updateModal).modal({blurring: true}).modal('hide');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
 
@@ -177,7 +190,12 @@ function showDeleteFaculty(facultyId) {
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };
 
@@ -197,25 +215,22 @@ function deleteFaculty() {
         if (response.ok) {
             fetchFacultiesDataAndPopulate(hasGroup);
             $(deleteModal).modal({blurring: true}).modal('hide');
-            $('#success')
-                .transition({
-                    animation: 'slide',
-                    duration: 1000,
-                })
-            ;
-            setTimeout(function() {
-                $('#success')
-                    .transition({
-                        animation: 'slide',
-                        duration: 1000,
-                    })
-                ;
-            }, 1500);
+            $.toast({
+                class: 'success',
+                showIcon: 'check',
+                position: 'centered',
+                message: 'Удалено!'
+            });
         };
     })
     .catch(error => {
         console.error(error);
-        alert('Упс! Похоже что-то пошло не так....попробуйте попозже снова.');
         $(deleteModal).modal({blurring: true}).modal('hide');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
     });
 };

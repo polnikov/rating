@@ -84,6 +84,12 @@ function getCookie(name) {
 
 // запрос в БД на получение данных о среднем балле студентов за указанный семестр
 function getDataFromServer(semStart, semStop, groups) {
+    $('#datatable-segment').dimmer({
+        displayLoader: true,
+        loaderVariation: 'slow orange medium elastic',
+        loaderText: 'Загрузка данных...'
+    }).dimmer('show');
+
     const url = window.location.origin + "/students/json/rating/";
     $.ajax({
         url: url,
@@ -130,10 +136,16 @@ function getDataFromServer(semStart, semStop, groups) {
             // вставляем массив в таблицу
             tableBody.insertAdjacentHTML('afterbegin', result.join(""));
         });
-        document.querySelector(".ui.active.dimmer").style.display = "none"//stop the load
+        $('#datatable-segment').dimmer('hide');
     })
     .fail(function() {
-        alert("Данные недоступны!")
+        $('#datatable-segment').dimmer('hide');
+        $.toast({
+            class: 'error',
+            showIcon: 'exclamation',
+            position: 'centered',
+            message: 'Данные недоступны!'
+        });
     });
 };
 
