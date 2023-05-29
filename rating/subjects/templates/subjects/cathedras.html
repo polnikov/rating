@@ -11,43 +11,27 @@
 {% block content %}
 
 <div id="has-group" style="display: none">{{ request.user|has_group:"Сотрудники" }}</div>
+<div id="num-cathedras" style="display: none">{{ cathedras }}</div>
 <div id="segments" class="ui basic segments">
 
     <!-- Title & button -->
-    <div class="ui basic segment" style="padding-bottom: 0">
-        <table class="ui very basic table">
-            <tbody>
-                <tr>
-                    <td><h2 style="font-family: Hack">Кафедры</h2></td>
-                    {% if request.user|has_group:"Сотрудники" %}
-                        <td class="right aligned">
-                            <button id="import-button" class="ui orange small circular button" onclick="showModal('import-cathedras')"><i class="icon download"></i>Импорт CSV</button>
-                            <button id="add-button" class="ui positive small circular button" onclick="showModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
-                        </td>
-                    {% endif %}
-                </tr>
-            </tbody>
-        </table>
+    <div class="ui basic segment">
+        <div class="ui stackable two column grid">
+            <div class="column"><h2 style="font-family: Hack">Кафедры</h2></div>
+            <div class="column right aligned">
+                {% if request.user|has_group:"Сотрудники" %}
+                    <button id="import-button" class="ui orange small circular button" onclick="showModal('import-cathedras')"><i class="icon download"></i>Импорт CSV</button>
+                    <button id="add-button" class="ui positive small circular button" onclick="showModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
     <!-- Table -->
     <div id="datatable-segment" class="ui basic segment">
         {% if cathedras %}
             <table id="cathedras-table" class="ui selectable celled compact table">
-                <thead>
-                    <tr class="center aligned">
-                        <th class="collapsing"><i class="hashtag small icon"></i></th>
-                        <th>Факультет</th>
-                        <th class="collapsing">Сокращение</th>
-                        <th>Полное название <div id="count-label" class="ui left pointing grey tiny label">{{ cathedras }}</div></th>
-                        <th class="collapsing">Удалить</th>
-                        <th class="collapsing">Изменить</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <!-- data from script -->
-                </tbody>
+                <!-- data from script -->
             </table>
         {% else %}
             {% include 'empty_records.html' %}
@@ -203,16 +187,11 @@
     </div>
 </div>
 
-<!-- Modal for error -->
-<div id="error" class="ui tiny basic modal">
-    <div id="error-text" class="center aligned header" style="font-family: Hack"></div>
-</div>
-
 <!-- Modal for errors -->
 <div id="errors" class="ui small modal">
     <div class="basic center aligned header" style="font-family: Hack">Возникли ошибки по следующим данным</div>
     <div class="scrolling content" >
-    <div id="errors-list" class="ui list" style="font-family: Hack"></div>
+        <div id="errors-list" class="ui list" style="font-family: Hack"></div>
     </div>
 </div>
  
@@ -224,8 +203,17 @@
         if ($.fn.DataTable.isDataTable('#cathedras-table')) {
             $('#cathedras-table').DataTable().destroy();
         };
+        const cathedras = document.getElementById('num-cathedras').textContent;
 
         const dataTableOptions = {
+            columns: [
+                { title: '<i class="hashtag small icon"></i>' },
+                { title: 'Факультет' },
+                { title: 'Сокращение' },
+                { title: `Полное название <div id="count-label" class="ui left pointing grey tiny label">${cathedras}</div>` },
+                { title: 'Удалить', orderable: false },
+                { title: 'Изменить', orderable: false },
+            ],
             language: {
                 zeroRecords: 'Записей нет...',
                 info: 'Всего записей: _MAX_',
@@ -245,6 +233,9 @@
                 { orderable: false, targets: [4, 5] },
                 { className: 'center aligned', targets: [0, 1, 2, 4, 5] },
             ],
+            headerCallback: function(thead, data, start, end, display) {
+                $(thead).find('th').addClass('center aligned');
+            },
         };
 
         $('#cathedras-table').DataTable(dataTableOptions);
@@ -258,8 +249,9 @@
                 };
             };
         };
-        changeDatatableInputFont();
         changeFileInputFont();
+        changeDatatableInputFont();
+        deletePaddingTopForDatatableSegment();
     });
 </script>
 
