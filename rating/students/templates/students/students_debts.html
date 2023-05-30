@@ -12,117 +12,107 @@
 
    <!-- Title & button -->
    <div id="buttons-segment" class="ui basic segment">
-      <table class="ui very basic table" id="options">
-         <tbody>
-               <tr>
-                  <td><h2 style="font-family: Hack">Задолженности по студентам</h2></td>
-                  <td class="two wide right aligned">
-                     <form id="form" action="{% url 'students:debts-to-excel' %}" method="GET">
-                        {% csrf_token %}
-                        <button id="export-button" type="submit" class="ui positive small circular button" style="font-family: Hack"><i class="cloud download alternate icon"></i> Экспорт</button>
-                  </td>
-               </tr>
-               <tr>
-                  <td>
-                  </td>
-                  <td>
-                        <div class="ui small form">
-                           <div class="inline fields">
-                              <div class="field">
-                                 <div class="ui radio checkbox checked">
-                                    <input type="radio" value="att1" name="att" id="att1" checked="" tabindex="0" class="hidden">
-                                    <label>Сессия</label>
-                                 </div>
-                              </div>
-                              <div class="field">
-                                 <div class="ui radio checkbox">
-                                    <input type="radio" value="att2" name="att" id="att2" tabindex="0" class="hidden">
-                                    <label>Пересдача</label>
-                                 </div>
-                              </div>
-                              <div class="field">
-                                 <div class="ui radio checkbox">
-                                    <input type="radio" value="att3" name="att" id="att3" tabindex="0" class="hidden">
-                                    <label>Комиссия</label>
-                                 </div>
-                              </div>
-                           </div>
+      <form id="form" action="{% url 'students:debts-to-excel' %}" method="GET">
+         {% csrf_token %}
+         <div class="ui stackable two column grid">
+            <div class="eight wide column"><h2 style="font-family: Hack">Задолженности по студентам</h2></div>
+            <div class="eight wide column right aligned">
+               <button id="export-button" type="submit" class="ui positive small circular button" style="font-family: Hack"><i class="cloud download alternate icon"></i> Экспорт</button>
+            </div>
+            <div class="sixteen wide column right aligned">
+               <div class="ui small form">
+                  <div class="inline fields">
+                     <div class="field">
+                        <div class="ui radio checkbox checked">
+                           <input type="radio" value="att1" name="att" id="att1" checked="" tabindex="0" class="hidden">
+                           <label>Сессия</label>
                         </div>
-                     </form>
-                  </td>
-               </tr>
-         </tbody>
-      </table>
+                     </div>
+                     <div class="field">
+                        <div class="ui radio checkbox">
+                           <input type="radio" value="att2" name="att" id="att2" tabindex="0" class="hidden">
+                           <label>Пересдача</label>
+                        </div>
+                     </div>
+                     <div class="field">
+                        <div class="ui radio checkbox">
+                           <input type="radio" value="att3" name="att" id="att3" tabindex="0" class="hidden">
+                           <label>Комиссия</label>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </form>
    </div>
 
 	<!-- Table -->
    <div id="datatable-segment" class="ui basic segment">
 		{% if student_list %}
-			<div class="ui segment">
-            <table id="students-debts" class="ui selectable celled compact small table">
+         <table id="students-debts" class="ui selectable celled compact small table">
 
-               <thead>
-                  <tr class="center aligned">
-							<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
-                     <th class="collapsing">Группа</th>
-                     <th id="semester" class="collapsing">Семестр</th>
-                     <th>Студент <div id="count-label" class="ui left pointing grey tiny label">{{ student_list.count }}</div></th>
-                     <th class="collapsing">Основа обучения</th>
-                     <th class="collapsing">Сессия</th>
-                     <th class="collapsing">Пересдача</th>
-                     <th class="collapsing">Комиссия</th>
+            <thead>
+               <tr class="center aligned">
+                  <th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
+                  <th class="collapsing">Группа</th>
+                  <th id="semester" class="collapsing">Семестр</th>
+                  <th>Студент <div id="count-label" class="ui left pointing grey tiny label">{{ student_list.count }}</div></th>
+                  <th class="collapsing">Основа обучения</th>
+                  <th class="collapsing">Сессия</th>
+                  <th class="collapsing">Пересдача</th>
+                  <th class="collapsing">Комиссия</th>
+               </tr>
+            </thead>
+
+            <tbody>
+               {% for item in student_list %}
+                  <tr>
+                     <td class="collapsing center aligned">{{ forloop.counter }}</td>
+                     <td class="collapsing center aligned">
+                        <a href="{% url 'groups:detail' groupname=item.group.name semester=item.semester.semester %}">
+                           {{ item.group.name }}
+                        </a>
+                     </td>
+                     <td class="collapsing center aligned">{{ item.semester.semester }}</td>
+                     <td><a href="{{ item.get_absolute_url }}">{{ item.fullname }}</a></td>
+
+                     {% if item.basis.name == 'Контракт' %}
+                        <td class="collapsing center aligned negative">{{ item.basis }}</td>
+                     {% elif item.basis.name == 'ИГ' %}
+                        <td class="collapsing center aligned blue">{{ item.basis }}</td>
+                     {% else %}
+                        <td class="collapsing center aligned">{{ item.basis }}</td>
+                     {% endif %}
+
+                     <td class="collapsing center aligned" style="width: 80px">
+                        {% if item.att1 == 0 %}
+                           <div id="att-label" class="ui red tiny label">{{ item.att1 }}</div>
+                        {% else %}
+                           <div id="att-label" class="ui grey tiny label">{{ item.att1 }}</div>
+                        {% endif %}
+                     </td>
+
+                     <td class="collapsing center aligned" style="width: 80px">
+                        {% if item.att2 %}
+                           <div id="att-label" class="ui grey tiny label">{{ item.att2 }}</div>
+                        {% else %}
+                           {{ item.att2|default:"" }}
+                        {% endif %}
+                     </td>
+
+                     <td class="collapsing center aligned" style="width: 80px">
+                        {% if item.att3 %}
+                           <div id="att-label" class="ui red tiny label">{{ item.att3 }}</div>
+                        {% else %}
+                           {{ item.att3|default:"" }}
+                        {% endif %}
+                     </td>
                   </tr>
-               </thead>
+               {% endfor %}
+            </tbody>
 
-               <tbody>
-                  {% for item in student_list %}
-                     <tr>
-								<td class="collapsing center aligned">{{ forloop.counter }}</td>
-								<td class="collapsing center aligned">
-									<a href="{% url 'groups:detail' groupname=item.group.name semester=item.semester.semester %}">
-										{{ item.group.name }}
-                           </a>
-                        </td>
-								<td class="collapsing center aligned">{{ item.semester.semester }}</td>
-                        <td><a href="{{ item.get_absolute_url }}">{{ item.fullname }}</a></td>
-
-								{% if item.basis.name == 'Контракт' %}
-									<td class="collapsing center aligned negative">{{ item.basis }}</td>
-								{% elif item.basis.name == 'ИГ' %}
-									<td class="collapsing center aligned blue">{{ item.basis }}</td>
-								{% else %}
-									<td class="collapsing center aligned">{{ item.basis }}</td>
-								{% endif %}
-
-                        <td class="collapsing center aligned" style="width: 80px">
-                           {% if item.att1 == 0 %}
-                              <div id="att-label" class="ui red tiny label">{{ item.att1 }}</div>
-                           {% else %}
-                              <div id="att-label" class="ui grey tiny label">{{ item.att1 }}</div>
-                           {% endif %}
-                        </td>
-
-                        <td class="collapsing center aligned" style="width: 80px">
-                           {% if item.att2 %}
-                              <div id="att-label" class="ui grey tiny label">{{ item.att2 }}</div>
-                           {% else %}
-                              {{ item.att2|default:"" }}
-                           {% endif %}
-                        </td>
-
-                        <td class="collapsing center aligned" style="width: 80px">
-                           {% if item.att3 %}
-                              <div id="att-label" class="ui red tiny label">{{ item.att3 }}</div>
-                           {% else %}
-                              {{ item.att3|default:"" }}
-                           {% endif %}
-                        </td>
-                     </tr>
-                  {% endfor %}
-               </tbody>
-
-            </table>
-         </div>
+         </table>
       {% else %}
 			{% include 'empty_records.html' %}
 		{% endif %}
@@ -130,11 +120,6 @@
 </div>
 
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
-
-<!-- DataTable -->
-<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
-
 <script>
    $(document).ready(function() {
       let firstRow = $('#students-debts thead tr')[0];
@@ -185,7 +170,7 @@
       });
 
       // Clean filters inputs by double-clicking above the head
-      $(document).on("dblclick",  ".ui.stackable.grid", function() {
+      $(document).on("dblclick", ".ui.stackable.grid", function() {
          let inputs = document.getElementsByName("filter");
          inputs.forEach(e => {
             e.value = "";
@@ -194,12 +179,10 @@
          table.columns().search('').draw();
       });
       changeDatatableInputFont();
+      deletePaddingTopForDatatableSegment();
    });
 
    $('.ui.radio.checkbox').checkbox();
-
-   deletePaddingBottomForTitleBlock();
-   deletePaddingTopForDatatableSegment();
 </script>
 
 {% endblock %}
