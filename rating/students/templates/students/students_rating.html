@@ -15,15 +15,11 @@
 <div id="segments" class="ui basic segments">
 
 	<!-- Title -->
-	<div id="title-segment" class="ui basic segment">
-		<table class="ui very basic table">
-			<tbody>
-				<tr>
-					<td><h2 style="font-family: Hack">Средний балл студентов</h2></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+    <div class="ui basic segment">
+        <div class="ui stackable two column grid">
+            <div class="column"><h2 style="font-family: Hack">Средний балл студентов</h2></div>
+        </div>
+    </div>
 
     <!-- Filter set -->
     <div id="filter-segment" class="ui basic segment">
@@ -74,24 +70,9 @@
    
 	<!-- Table -->
 	<div id="datatable-segment" class="ui basic segment">
-            <table id="students-rating" class="ui selectable celled compact table">
-
-                <thead>
-                    <tr class="center aligned">
-                        <th>ФИО</th>
-                        <th class="collapsing">Группа</th>
-                        <th class="collapsing">Текущий семестр<br>студента</th>
-                        <th class="collapsing">Основа обучения</th>
-                        <th class="collapsing">Уровень обучения</th>
-                        <th class="collapsing">Средний балл</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <!-- Table data -->
-                </tbody>
-
-            </table>
+        <table id="students-rating" class="ui selectable celled compact table">
+            <!-- data from script -->
+        </table>
     </div>
 </div>
 
@@ -99,18 +80,62 @@
 <script type="text/javascript" src="{% static 'js/script_students_rating.js' %}"></script>
 
 <script type="text/javascript">
-    /* on page ************************************************************************************************************/
+    $(document).ready(function() {
+        if ($.fn.DataTable.isDataTable('#students-rating')) {
+            $('#students-rating').DataTable().destroy();
+        };
 
-    // delete padding-top for segmant with table
-    function deletePaddingTopForDatatableSegment() {
-        let datatableSegment = document.getElementById("datatable-segment");
-        datatableSegment.style.paddingTop = '0';
-    };
-
-    /* script *************************************************************************************************************/
-
-    deletePaddingTopBottomForFilterSegment();
-    deletePaddingTopBottomForTitleSegment();
+        const dataTableOptions = {
+            columns: [
+                { title: 'ФИО' },
+                { title: 'Группа' },
+                { title: 'Текущий семестр студента' },
+                { title: 'Основа обучения' },
+                { title: 'Уровень обучения' },
+                { title: 'Средний балл' },
+            ],
+            language: {
+				lengthMenu: '_MENU_ записей на страницу',
+                zeroRecords: 'Записей нет...',
+                info: 'Всего записей: _MAX_',
+                infoEmpty: '',
+                infoFiltered: 'Найдено: _TOTAL_',
+                search: '',
+                searchPlaceholder: 'поиск',
+				paginate: {
+                    first:    '«',
+                    previous: '‹',
+                    next:     '›',
+                    last:     '»'
+                },
+            },
+            lengthMenu: [
+                [20, 50, -1],
+                [20, 50, 'Все']
+            ],
+            pageLength: 20,
+            paging: true,
+            searching: true,
+            ordering: true,
+            autoWidth: false,
+            columnDefs: [
+                { width: "35%", targets: 0 },
+                { width: "17%", targets: 2 },
+                { width: "12%", targets: [1, 3, 4, 5] },
+                { searchable: false, targets: 0 },
+                { className: 'center aligned', targets: [1, 2, 3, 4, 5] },
+            ],
+            order: [
+                [5, 'desc']
+            ],
+            headerCallback: function(thead, data, start, end, display) {
+                $(thead).find('th').addClass('center aligned');
+            },
+        };
+        $('#students-rating').DataTable(dataTableOptions);
+        changeDatatableInputFont();
+        deletePaddingTopBottomForFilterSegment();
+    });
 </script>
 
 {% endblock %}
