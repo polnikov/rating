@@ -1,3 +1,6 @@
+let segments = document.getElementById("segments");
+segments.style.marginTop = '14px';
+
 // изменить шрифт в поле <input> в формах
 function changeFormsInputFont() {
    let formElements = document.forms.form.elements;
@@ -43,12 +46,6 @@ function deleteSidePadding(attr, name) {
       element.style.paddingLeft = '0';
       element.style.paddingRight = '0';
    };
-};
-
-// убрать нижний отступ сегмента с заголовком и кнопками
-function deletePaddingBottomForTitleBlock() {
-   let segments = document.getElementById("segments");
-   segments.style.paddingBottom = '0';
 };
 
 // убрать верхний отступ сегмента с таблицей

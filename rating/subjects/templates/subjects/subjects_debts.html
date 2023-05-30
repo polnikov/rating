@@ -11,92 +11,85 @@
 <div id="segments" class="ui basic segments">
 
    <!-- Title & button -->
-   <div id="buttons-segment" class="ui basic segment">
-      <table class="ui very basic table">
-         <tbody>
-               <tr>
-                  <td><h2 style="font-family: Hack">Задолженности по дисциплинам</h2></td>
-                  <td class="right aligned"></td>
-               </tr>
-         </tbody>
-      </table>
+   <div class="ui basic segment">
+      <div class="ui stackable two column grid">
+         <div class="column"><h2 style="font-family: Hack">Задолженности по дисциплинам</h2></div>
+      </div>
    </div>
 
 	<!-- Table -->
    <div id="datatable-segment" class="ui basic segment">
       
 		{% if groupsubject_list %}
-			<div class="ui segment">
-            <table id="subjects-debts" class="ui selectable celled compact small table">
+         <table id="subjects-debts" class="ui selectable celled compact small table">
 
-					<thead>
-						<tr class="center aligned">
-							<th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
-							<th class="collapsing">Кафедра</th>
-							<th class="collapsing">Название</th>
-							<th class="collapsing" style="width: 50px">Форма контроля</th>
-							<th class="collapsing">Группа</th>
-							<th class="collapsing">Семестр</th>
-							<th class="collapsing">Преподаватель</th>
-							<th class="collapsing">Сессия</th>
-                     <th class="collapsing">Пересдача</th>
-                     <th class="collapsing">Комиссия</th>
-						</tr>
-					</thead>
+            <thead>
+               <tr class="center aligned">
+                  <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+                  <th class="collapsing">Кафедра</th>
+                  <th class="collapsing">Название</th>
+                  <th class="collapsing" style="width: 50px">Форма контроля</th>
+                  <th class="collapsing">Группа</th>
+                  <th class="collapsing">Семестр</th>
+                  <th class="collapsing">Преподаватель</th>
+                  <th class="collapsing">Сессия</th>
+                  <th class="collapsing">Пересдача</th>
+                  <th class="collapsing">Комиссия</th>
+               </tr>
+            </thead>
 
-					<tbody>
-						{% for item in groupsubject_list %}
-							<tr>
-								<td class="collapsing center aligned">{{ forloop.counter }}</td>
-								<td class="collapsing center aligned">{{ item.subjects.cathedra.short_name }}</td>
-								<td class="collapsing">
-									<a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name|truncatechars:50 }}</a>
-								</td>
-								<td class="collapsing">{{ item.subjects.form_control }}</td>
-								<td class="collapsing center aligned">
-                           <a href="{% url 'groups:detail' groupname=item.groups.name semester=item.subjects.semester.semester %}">
-                              {{ item.groups.name }}
-                           </a>
+            <tbody>
+               {% for item in groupsubject_list %}
+                  <tr>
+                     <td class="collapsing center aligned">{{ forloop.counter }}</td>
+                     <td class="collapsing center aligned">{{ item.subjects.cathedra.short_name }}</td>
+                     <td class="collapsing">
+                        <a href="{{ item.subjects.get_absolute_url }}">{{ item.subjects.name|truncatechars:50 }}</a>
+                     </td>
+                     <td class="collapsing">{{ item.subjects.form_control }}</td>
+                     <td class="collapsing center aligned">
+                        <a href="{% url 'groups:detail' groupname=item.groups.name semester=item.subjects.semester.semester %}">
+                           {{ item.groups.name }}
+                        </a>
+                     </td>
+                     <td class="collapsing center aligned">{{ item.subjects.semester.semester }}</td>
+
+                     {% if item.teacher %}
+                        <td class="collapsing">{{ item.teacher }}</td>
+                     {% else %}
+                        <td class="negative collapsing center aligned"><i class="icon close"></i>
+                           {{ item.empty_teacher }}
                         </td>
-								<td class="collapsing center aligned">{{ item.subjects.semester.semester }}</td>
+                     {% endif %}
 
-								{% if item.teacher %}
-									<td class="collapsing">{{ item.teacher }}</td>
-								{% else %}
-									<td class="negative collapsing center aligned"><i class="icon close"></i>
-										{{ item.empty_teacher }}
-									</td>
-								{% endif %}
+                     <td class="collapsing center aligned" style="width: 80px">
+                        {% if item.att1 == 0 %}
+                           <div id="att-label" class="ui red tiny label">{{ item.att1 }}</div>
+                        {% else %}
+                           <div id="att-label" class="ui grey tiny label">{{ item.att1 }}</div>
+                        {% endif %}
+                     </td>
 
-                        <td class="collapsing center aligned" style="width: 80px">
-                           {% if item.att1 == 0 %}
-                              <div id="att-label" class="ui red tiny label">{{ item.att1 }}</div>
-                           {% else %}
-                              <div id="att-label" class="ui grey tiny label">{{ item.att1 }}</div>
-                           {% endif %}
-                        </td>
+                     <td class="collapsing center aligned" style="width: 80px">
+                        {% if item.att2 %}
+                           <div id="att-label" class="ui grey tiny label">{{ item.att2 }}</div>
+                        {% else %}
+                           {{ item.att2|default:"" }}
+                        {% endif %}
+                     </td>
 
-                        <td class="collapsing center aligned" style="width: 80px">
-                           {% if item.att2 %}
-                              <div id="att-label" class="ui grey tiny label">{{ item.att2 }}</div>
-                           {% else %}
-                              {{ item.att2|default:"" }}
-                           {% endif %}
-                        </td>
+                     <td class="collapsing center aligned" style="width: 80px">
+                        {% if item.att3 %}
+                           <div id="att-label" class="ui red tiny label">{{ item.att3 }}</div>
+                        {% else %}
+                           {{ item.att3|default:"" }}
+                        {% endif %}
+                     </td>
+                  </tr>
+               {% endfor %}
+            </tbody>
 
-                        <td class="collapsing center aligned" style="width: 80px">
-                           {% if item.att3 %}
-                              <div id="att-label" class="ui red tiny label">{{ item.att3 }}</div>
-                           {% else %}
-                              {{ item.att3|default:"" }}
-                           {% endif %}
-                        </td>
-                     </tr>
-						{% endfor %}
-					</tbody>
-
-            </table>
-         </div>
+         </table>
       {% else %}
 			{% include 'empty_records.html' %}
 		{% endif %}
@@ -104,11 +97,6 @@
 </div>
 
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
-
-<!-- DataTable -->
-<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
-
 <script>
    // DataTables
    $(document).ready(function() {
@@ -165,7 +153,7 @@
       });
 
       // Clean filters inputs by double-clicking above the head
-      $(document).on("dblclick",  ".ui.stackable.grid", function() {
+      $(document).on("dblclick", ".ui.stackable.grid", function() {
          let inputs = document.getElementsByName("filter");
          inputs.forEach(e => {
             e.value = "";
@@ -174,10 +162,8 @@
          table.columns().search('').draw();
       });
       changeDatatableInputFont();
+      deletePaddingTopForDatatableSegment();
    });
-
-   deletePaddingBottomForTitleBlock();
-   deletePaddingTopForDatatableSegment();
 </script>
 
 {% endblock %}
