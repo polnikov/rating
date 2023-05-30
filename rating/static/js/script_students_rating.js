@@ -105,46 +105,39 @@ function getDataFromServer(semStart, semStop, groups) {
     })
     .done(function(response) {
         console.log('Запрос данных выполнен успешно');
+        const table = $('#students-rating').DataTable();
+        table.clear();
 
-        // определяем тело таблицы для вставки строк
-        let tableBody =  document.querySelector("table[id='students-rating'] tbody");
         response.data.forEach(e => {
-
-            // готовим массив строк
             let isIll = e.isIll, tag = e.tag;
-            let result = [];
             if(isIll & tag != 0) {
-                var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><i class="heart broken red icon"></i> <a>${e.fullname}</a> <div id="tag-label" class="ui tiny pink label">${e.tag}</div></td>`
+                var line1 = `<div id="${e.studentId}"name="student" onclick="getAbsoluteURL(${e.studentId})"><i class="heart broken red icon"></i> <a>${e.fullname}</a> <div id="tag-label" class="ui tiny pink label">${e.tag}</div></div>`
             } else if(isIll) {
-                var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><i class="heart broken red icon"></i> <a>${e.fullname}</a></td>`
+                var line1 = `<div id="${e.studentId}"name="student" onclick="getAbsoluteURL(${e.studentId})"><i class="heart broken red icon"></i> <a>${e.fullname}</a></div>`
             } else if(tag != 0) {
-                var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><a>${e.fullname}</a> <div id="tag-label" class="ui tiny pink label">${e.tag}</div></td>`
+                var line1 = `<div id="${e.studentId}"name="student" onclick="getAbsoluteURL(${e.studentId})"><a>${e.fullname}</a> <div id="tag-label" class="ui tiny pink label">${e.tag}</div></div>`
             } else {
-                var line1 = `<td id="${e.studentId}"name="student" class="collapsing" onclick="getAbsoluteURL(${e.studentId})"><a>${e.fullname}</a></td>`
+                var line1 = `<div id="${e.studentId}"name="student" onclick="getAbsoluteURL(${e.studentId})"><a>${e.fullname}</a></div>`
             };
-            
-            result.push(
-                `<tr>
-                    ${line1}
-                    <td class="collapsing center aligned">${e.group}</td>
-                    <td class="collapsing center aligned">${e.currentSemester}</td>
-                    <td name="has-negative" class="collapsing center aligned">${e.basis}</td>
-                    <td class="collapsing center aligned">${e.level}</td>
-                    <td class="collapsing center aligned">${e.rating}</td>
-                </tr>`
-            );
-            // вставляем массив в таблицу
-            tableBody.insertAdjacentHTML('afterbegin', result.join(""));
+            let rowData = [
+                line1,
+                e.group,
+                e.currentSemester,
+                e.basis,
+                e.level,
+                e.rating,
+            ];
+            table.row.add(rowData);
         });
+        table.draw();
         $('#datatable-segment').dimmer('hide');
     })
     .fail(function() {
         $('#datatable-segment').dimmer('hide');
         $.toast({
-            class: 'error',
-            showIcon: 'exclamation',
+            class: 'error center aligned',
             position: 'centered',
-            message: 'Данные недоступны!'
+            message: '<i class="exclamation circle large icon"></i> Данные недоступны!'
         });
     });
 };
