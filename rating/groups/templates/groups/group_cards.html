@@ -27,24 +27,24 @@
                         <div class="content">
                            <!-- Link button to group -->
                            <div class="header left aligned">
-                              <button id="group-label" name="groupbutton" type="button" class="fluid ui 
-                                 {% if "ИС-В" in group.name %}
-                                    blue
-                                 {% elif "ИС-Т" in group.name %}
-                                    olive
-                                 {% elif "Сб(ИС)" in group.name %}
-                                    brown
-                                 {% elif "ЭЭб" in group.name %}
-                                    yellow
-                                 {% elif "ТТб" in group.name %}
-                                    red
-                                 {% else %}
-                                    pink
-                                 {% endif %} 
-                                 small circular button" style="font-family: Hack"
-                                 data-code="{{ group.code }}"
-                                 data-direction="{{ group.direction }}"
-                                 data-profile="{{ group.profile }}">
+                              <button id="group-label"
+                                 onclick="showGroupInfo('{{ group.code }}', '{{ group.direction }}', '{{ group.profile }}')"
+                                 type="button"
+                                 class="fluid ui 
+                                    {% if "ИС-В" in group.name %}
+                                       blue
+                                    {% elif "ИС-Т" in group.name %}
+                                       olive
+                                    {% elif "Сб(ИС)" in group.name %}
+                                       brown
+                                    {% elif "ЭЭб" in group.name %}
+                                       yellow
+                                    {% elif "ТТб" in group.name %}
+                                       red
+                                    {% else %}
+                                       pink
+                                    {% endif %} 
+                                    small circular button" style="font-family: Hack">
                                  {% if group.is_archived %}<i class="archive yellow icon"></i>{% endif %}
                                  {{ group.name }}
                               </button>
@@ -123,10 +123,10 @@
                         <div class="content">
                            <!-- Link button to group -->
                            <div class="header left aligned">
-                              <button id="group-label" name="groupbutton" type="button" class="fluid ui grey small circular button" style="font-family: Hack"
-                                 data-code="{{ group.code }}"
-                                 data-direction="{{ group.direction }}"
-                                 data-profile="{{ group.profile }}">
+                              <button id="group-label"
+                                 onclick="showGroupInfo('{{ group.code }}', '{{ group.direction }}', '{{ group.profile }}')"
+                                 type="button"
+                                 class="fluid ui grey small circular button" style="font-family: Hack">
                                  {% if group.is_archived %}<i class="archive yellow icon"></i>{% endif %}
                                  {{ group.name }}
                               </button>
@@ -162,48 +162,14 @@
    </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
+<!-- Modal with group info -->
+<div id="group-info" class="ui tiny modal">
+   <div class="basic center aligned header" style="font-family: Hack">Информаци о группе</div>
+   <div id="modal-content" class="content" style="font-family: Hack"></div>
+</div>
+
+
 <script type="text/javascript">
-   // всплывающие окна с информацией о шифре, направлении, профиле группы
-   document.addEventListener('DOMContentLoaded', function() {
-
-      var groupbuttons = document.getElementsByName('groupbutton');
-      groupbuttons.forEach(function(item){
-
-         /* Назначаем каждой кнопке обработчик клика */
-         item.addEventListener('click', function(event) {
-            let code = $(this).data('code');
-            let direction = $(this).data('direction');
-            let profile = $(this).data('profile');
-            swal({
-               html: '<div class="ui small icon message right aligned" style="font-family: Hack">' +
-                     '<i class="info green icon"></i>' +
-                        '<div class="content">' +
-                           "<p>" + code + "</p>" +
-                           "<p>" + direction + "</p>" +
-                           "<p>" + profile + "</p>" +
-                        "</div>" +
-                     "</div>",
-            }),
-            false
-         });
-
-      });
-
-   });
-
-   // стилизация всплывающего окна
-   const attrObserver = new MutationObserver((mutations) => {
-      mutations.forEach(mu => {
-         if(mu.type === "attributes" && mu.attributeName === "class" && mu.target.className) {
-            document.getElementsByClassName('swal2-actions')[0].remove();
-            document.getElementsByClassName('swal2-header')[0].remove();
-         } else {return};
-      });
-   });
-   let targetNode = document.querySelectorAll('body');
-   targetNode.forEach(el => attrObserver.observe(el, {attributes: true}));
-
    // подсветка текущих семестров
    $(document).ready(function() {
       var currentMonth = new Date().getMonth() + 1;
@@ -231,6 +197,20 @@
          });
       };
    });
+
+   // всплывающие окна с информацией о шифре, направлении, профиле группы
+   function showGroupInfo(code, direction, profile) {
+      var element = document.getElementById('group-info');
+      $(element).modal({blurring: true}).modal('show');
+      var content = document.getElementById('modal-content');
+
+      content.innerHTML = `
+         <p>${code}</p>
+         <p>${direction}</p>
+         <p>${profile}</p>
+      `;
+   };
+   
 </script>
 
 {% endblock %}
