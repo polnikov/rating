@@ -342,21 +342,21 @@ function validateMark(value, form) {
         return false;
     // при наличии второй оценки - первая оценка должна быть отрицательной
     } else if (marks.length == 2) {
-        marks.forEach(element => {
-            if (!markTypes.includes(element)) {
+        for (let i = 0; i < marks.length; i++) {
+            if (!markTypes.includes(marks[i])) {
                 return false;
-            };
-        });
+            }
+        };
         if (!negative.includes(marks[0])) {
             return false;
         };
     // при наличии третьей оценки - первые две оценки должны быть отрицательными
     } else if (marks.length == 3) {
-        marks.forEach(element => {
-            if (!markTypes.includes(element)) {
+        for (let i = 0; i < marks.length; i++) {
+            if (!markTypes.includes(marks[i])) {
                 return false;
-            };
-        });
+            }
+        };
         // проверяем, что первые две оценки отрицательные
         for (let i = 0; i < 2; i++) {
             if (!negative.includes(marks[i])) {
