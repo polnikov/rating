@@ -105,7 +105,7 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
         att2 = '' if not cnt2 else cnt2
         att3 = '' if not cnt3 else cnt3
 
-        if len(marks) == 0:
+        if '-' in marks:
             student.pass_session = False
             student.pass_resession = False
             student.pass_last = False
@@ -249,7 +249,7 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
             m.att3 = '' if not cnt3 else cnt3
             
             student_marks = [i[1] for i in list(filter(lambda x: x != '-', [v for v in m.marks.values()]))]
-            if len(student_marks) == 0:
+            if '-' in [v for v in m.marks.values()]:
                 m.pass_session = False
                 m.pass_resession = False
                 m.pass_last = False
