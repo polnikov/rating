@@ -14,6 +14,7 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
     return if student=None: `objects`
     return if student: `list`
     '''
+    negative = ['ня', 'нз', '2']
     # дисциплины, назначенные текущей группе в соответствующем семестре
     subjects = GroupSubject.active_objects.select_related().filter(
         groups__name=groupname, subjects__semester=semester).order_by(
@@ -39,7 +40,6 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
                                                                        groupsubject__subjects__semester=semester,
                                                                        students=int(student))
         marks = [i.mark for i in results]
-        negative = ['ня', 'нз', '2']
         # считаем количество задолженностей по каждому этапу аттестации
         cnt1, cnt2, cnt3 = 0, 0, 0
         for m in marks:
@@ -105,15 +105,40 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
         att2 = '' if not cnt2 else cnt2
         att3 = '' if not cnt3 else cnt3
 
-        # количество аттестаций
-        q_att = len(marks)
-        if q_att == q_sub and not att1:
+        if len(marks) == 0:
+            student.pass_session = False
+            student.pass_resession = False
+            student.pass_last = False
+        elif all(map(lambda x: x[0] not in negative, marks)):
             student.pass_session = True
+            student.pass_resession = False
+            student.pass_last = False
+        elif not att2:
+            cnt_second_marks = len(list(filter(lambda x: len(x) == 2, marks)))
+            if att1 == cnt_second_marks:
+                student.pass_session = False
+                student.pass_resession = True
+                student.pass_last = False
+            else:
+                student.pass_session = False
+                student.pass_resession = False
+                student.pass_last = False
+        elif not att3:
+            cnt_third_marks = len(list(filter(lambda x: len(x) == 3, marks)))
+            if att2 == cnt_third_marks:
+                student.pass_session = False
+                student.pass_resession = False
+                student.pass_last = True
+            else:
+                student.pass_session = False
+                student.pass_resession = False
+                student.pass_last = False
         else:
             student.pass_session = False
+            student.pass_resession = False
+            student.pass_last = False
 
-        return [student.money, att1, att2, att3, student.pass_session]
-
+        return [student.money, att1, att2, att3, student.pass_session, student.pass_resession, student.pass_last]
     else:
         # студенты текущей группы
         students = Student.active_objects.select_related('basis', 'semester').filter(
@@ -128,7 +153,6 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
 
         # переносим результаты по каждому студенту
         for res in results:
-            # print('-res-res-res-res-res-', res)
             # ключ для определения студента
             res_k = (res.students.fullname, res.students.student_id)
             # ищем студента соответствующего студента в структуре
@@ -223,14 +247,40 @@ def _get_students_group_statistic_and_marks(groupname, semester, student=None):
             m.att1 = '' if not cnt1 else cnt1
             m.att2 = '' if not cnt2 else cnt2
             m.att3 = '' if not cnt3 else cnt3
-
-            # количество аттестаций
-            q_att = len([i[1] for i in list(filter(lambda x: x!='-', [v for v in m.marks.values()]))])
-
-            if q_att == q_sub and not m.att1:
+            
+            student_marks = [i[1] for i in list(filter(lambda x: x != '-', [v for v in m.marks.values()]))]
+            if len(student_marks) == 0:
+                m.pass_session = False
+                m.pass_resession = False
+                m.pass_last = False
+            elif all(map(lambda x: x[0] not in negative, student_marks)):
                 m.pass_session = True
+                m.pass_resession = False
+                m.pass_last = False
+            elif not m.att2:
+                cnt_second_marks = len(list(filter(lambda x: len(x) == 2, student_marks)))
+                if m.att1 == cnt_second_marks:
+                    m.pass_session = False
+                    m.pass_resession = True
+                    m.pass_last = False
+                else:
+                    m.pass_session = False
+                    m.pass_resession = False
+                    m.pass_last = False
+            elif not m.att3:
+                cnt_third_marks = len(list(filter(lambda x: len(x) == 3, student_marks)))
+                if m.att2 == cnt_third_marks:
+                    m.pass_session = False
+                    m.pass_resession = False
+                    m.pass_last = True
+                else:
+                    m.pass_session = False
+                    m.pass_resession = False
+                    m.pass_last = False
             else:
                 m.pass_session = False
+                m.pass_resession = False
+                m.pass_last = False
 
         return students
 

@@ -29,17 +29,31 @@ $(document).ready(function() {
                 // готовим массив оценок
                 let result = [];
                 if (e.passSession) {
-                    var text = `<td id="att1" data-student-id="${e.studentId}" class="collapsing center aligned"><i class="icon green checkmark" style="margin-right: 0px"></i></div></td>`
+                    var text1 = `<td id="att1" data-student-id="${e.studentId}" class="collapsing center aligned"><i class="icon green checkmark" style="margin-right: 0px"></i></div></td>`
                 } else {
-                    var text = `<td id="att1" data-student-id="${e.studentId}" class="collapsing center aligned">${e.att1}</div></td>`
+                    var text1 = `<td id="att1" data-student-id="${e.studentId}" class="collapsing center aligned">${e.att1}</div></td>`
                 };
+
+                if (e.passReSession) {
+                    var text2 = `<td id="att2" data-student-id="${e.studentId}" class="collapsing center aligned"><i class="icon green checkmark" style="margin-right: 0px"></i></div></td>`
+                } else {
+                    var text2 = `<td id="att2" data-student-id="${e.studentId}" class="collapsing center aligned">${e.att2}</div></td>`
+                };
+                
+                if (e.passLast) {
+                    var text3 = `<td id="att3" data-student-id="${e.studentId}" class="collapsing center aligned"><i class="icon green checkmark" style="margin-right: 0px"></i></div></td>`
+                } else {
+                    var text3 = `<td id="att3" data-student-id="${e.studentId}" class="collapsing center aligned">${e.att3}</div></td>`
+                };
+
                 result.push(
                     `<td id="money" data-student-id="${e.studentId}" class="collapsing center aligned" style="width: 30px">${e.money}</td>`
                     +
-                    `${text}`
+                    `${text1}`
                     +
-                    `<td id="att2" data-student-id="${e.studentId}" class="collapsing center aligned">${e.att2}</div></td>
-                    <td id="att3" data-student-id="${e.studentId}" class="collapsing center aligned">${e.att3}</div></td>`
+                    `${text2}`
+                    +
+                    `${text3}`
                 );
                 for (let value of Object.values(e.marks)) {
                     for (let [k, v] of Object.entries(value)) {
@@ -220,9 +234,19 @@ $(document).ready(function() {
             } else {
                 document.querySelector(`#att1[data-student-id="${studentId}"]`).textContent = dataForUpdate[1];
             };
+            
+            if (response.passReSession){
+                document.querySelector(`#att2[data-student-id="${studentId}"]`).innerHTML = `<i class="icon green checkmark" style="margin-right: 0px"></i>`;
+            } else {
+                document.querySelector(`#att2[data-student-id="${studentId}"]`).textContent = dataForUpdate[2];
+            };
 
-            document.querySelector(`#att2[data-student-id="${studentId}"]`).textContent = dataForUpdate[2];
-            document.querySelector(`#att3[data-student-id="${studentId}"]`).textContent = dataForUpdate[3];
+            if (response.passLast){
+                document.querySelector(`#att3[data-student-id="${studentId}"]`).innerHTML = `<i class="icon green checkmark" style="margin-right: 0px"></i>`;
+            } else {
+                document.querySelector(`#att3[data-student-id="${studentId}"]`).textContent = dataForUpdate[3];
+            };
+
             // смена подсветки ячейки со стипендией в зависимости от новой оценки
             let moneyCell = document.querySelector(`#money[data-student-id='${studentId}']`)
             if (moneyCell.textContent === "нет") {

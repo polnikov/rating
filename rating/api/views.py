@@ -597,6 +597,8 @@ def group_marks(request):
                 'att3': m.att3,
                 'marks': marks_data,
                 'passSession': m.pass_session,
+                'passReSession': m.pass_resession,
+                'passLast': m.pass_last,
             })
 
         # итоговая структура оценок [student.marks]
@@ -647,6 +649,8 @@ def group_marks(request):
             'att2': statistic[2],
             'att3': statistic[3],
             'passSession': statistic[4],
+            'passReSession': statistic[5],
+            'passLast': statistic[6],
         })
 
 
