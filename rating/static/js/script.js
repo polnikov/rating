@@ -1,5 +1,4 @@
-let segments = document.getElementById("segments");
-segments.style.marginTop = '14px';
+document.getElementById("segments").style.marginTop = '14px';
 
 // изменить шрифт в поле <input> в формах
 function changeFormsInputFont() {
