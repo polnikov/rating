@@ -37,19 +37,19 @@
     <div id="tabs-segment" class="ui basic segment">
 
         <!-- Tab's titles -->
-        <div class="ui top attached tabular menu" style="font-family: Hack">
-            <a class="item active" data-tab="first"><i class="info icon"></i>Сводная информация</a>
-            <a class="item" data-tab="second"><i class="graduation cap icon"></i>Оценки</a>
-            <a class="item" data-tab="third"><i class="history icon"></i>История изменений</a>
+        <div class="ui secondary menu" style="font-family: Hack">
+            <a class="item active" data-tab="first"><i class="info green icon"></i>Сводная информация</a>
+            <a class="item" data-tab="second"><i class="graduation cap blue icon"></i>Оценки</a>
+            <a class="item" data-tab="third"><i class="history red icon"></i>История изменений</a>
         </div>
 
         <!-- Tab 1 -->
         <!-- Details -->
-        <div class="ui bottom attached tab segment active" data-tab="first">
-            <div class="ui basic segment">
-                <div class="ui equal width grid">
+        <div class="ui tab active" data-tab="first">
+            <div class="ui equal width stackable grid">
+                <div class="row">
                     <div class="column">
-                        <table class="ui definition table" style="width: 700px">
+                        <table class="ui definition table" style="max-width: 700px">
                             <tbody>
                                 <tr>
                                     <td style="width: 200px">Зачетная книжка</td>
@@ -116,55 +116,57 @@
                             </tbody>
                         </table>
                     </div>
-                    <!-- Statistics -->
-                    <div class="column">
-                        <h4 style="font-family: Hack">Статистика</h4>
-                        В разработке...
-                    </div>
                 </div>
                 <!-- Ranking -->
-                <div class="ui basic segment left aligned" style="padding-left: 0px; padding-right: 0px">
-                    <h4 style="font-family: Hack">Средний балл</h4>
-                    <table class="ui compact celled fixed table center aligned">
-                        <thead>
-                            <tr>
-                                <th>1</th>
-                                <th>2</th>
-                                <th>3</th>
-                                <th>4</th>
-                                {% if student.level == "Бакалавриат" %}
-                                    <th>5</th>
-                                    <th>6</th>
-                                    <th>7</th>
-                                    <th>8</th>
-                                {% endif %}
-                                <th>Общий</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                {% for k, v in rating_by_semester.items %}
-                                    <td>{{ v }}</td>
-                                {% endfor %}
-                                <td>{{ rating }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="row">
+                    <div class="column">
+                        <h4 style="font-family: Hack">Средний балл</h4>
+                        <table class="ui compact celled fixed table center aligned" style="max-width: 700px">
+                            <thead>
+                                <tr>
+                                    <th>1</th>
+                                    <th>2</th>
+                                    <th>3</th>
+                                    <th>4</th>
+                                    {% if student.level == "Бакалавриат" %}
+                                        <th>5</th>
+                                        <th>6</th>
+                                        <th>7</th>
+                                        <th>8</th>
+                                    {% endif %}
+                                    <th>Общий</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {% for k, v in rating_by_semester.items %}
+                                        <td>{{ v }}</td>
+                                    {% endfor %}
+                                    <td>{{ rating }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Tab 2 -->
         <!-- Marks -->
-        <div class="ui bottom attached tab segment" data-tab="second">
+        <div class="ui tab" data-tab="second">
             {% if request.user|has_group:"Сотрудники" %}
                 <table class="ui very basic table">
                     <tbody>
                         <tr>
-                            <td class="right aligned">
-                                <a href="{% url 'students:result_add' %}">
-                                    <button class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
-                                </a>
+                            <td>
+                                <button
+                                    class="ui positive small animated circular icon button"
+                                    style="font-family: Hack"
+                                    tabindex="0"
+                                    onclick="window.location.href = '{% url 'students:result_add' %}'">
+                                    <div class="visible content"><i class="icon plus circle"></i> Добавить</div>
+                                    <div class="hidden content">оценку</div>
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -221,7 +223,7 @@
 
                             <td class="collapsing {% if item.mark|get_last_mark in "2нянз" %}negative{% endif %} center aligned">
                                 <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'students:result_update' item.id %}{% else %}#{% endif %}">
-                                    <div class="ui equal width grid collapsing center aligned">
+                                    <div class="ui equal width stackable grid collapsing center aligned">
                                         <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
                                         <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
                                         <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
@@ -244,7 +246,7 @@
 
         <!-- Tab 3 -->
         <!-- History -->
-        <div class="ui bottom attached tab segment" data-tab="third">
+        <div class="ui tab" data-tab="third">
             <table class="ui unstackable table">
                 <tbody>
                     <tr class="blue">
