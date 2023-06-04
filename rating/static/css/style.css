@@ -72,10 +72,11 @@
    opacity: 1;
 }
 #header,
-#cancel-button,
-#save-button,
 #group-info-label,
 #group-label,
+#cancel-button,
+#save-button,
+#reset-button,
 #back-button,
 #download-button,
 #update-button,

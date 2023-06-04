@@ -1,7 +1,8 @@
-from api import serializers
 import xlrd
 import re
+import json
 import logging
+from api import serializers
 from datetime import datetime
 from collections import Counter
 
@@ -925,3 +926,26 @@ def search(request):
         }
 
     return JsonResponse({'data': data})
+
+
+def reset_groupsubjects(request):
+    '''Сбросить назначенные дисциплины группе в семестре (отправить в архив).'''
+    if request.method == 'POST' and request.content_type == 'application/json':
+        try:
+            data = json.loads(request.body)
+            group = data.get('groupName', '')
+            semester = data.get('semester', '')
+            logger.info(f'API: Сброс назначений для группы {group} в семестре {semester}')
+            groupsubjects = data.get('subjectIds', [])
+            print(group, semester, groupsubjects)
+
+            if groupsubjects:
+                groupsubjects = map(int, groupsubjects)
+            
+            for gs in groupsubjects:
+                groupsubject = GroupSubject.objects.get(id=gs)
+                groupsubject.is_archived = True
+                groupsubject.save()
+            return JsonResponse({'success': True}, status=201)
+        except Exception as e:
+            return JsonResponse({'success': True, 'errors': str(e)}, status=400)

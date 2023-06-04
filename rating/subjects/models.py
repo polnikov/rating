@@ -219,9 +219,6 @@ class GroupSubject(CommonArchivedModel, CommonTimestampModel):
             'subjects',
             '-att_date',
         ]
-        unique_together = (
-            ('groups', 'subjects'),
-        )
 
     def __str__(self):
         if self.teacher and not self.att_date:

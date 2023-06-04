@@ -178,7 +178,7 @@ $(document).ready(function() {
                 let validate = validateMark(window.newValue, form);
                 // если валидация прошла успешно - отправляем данные в БД на сохранение/обновление
                 if(validate) {
-                        sendToServer(resId, studentId, groupSubId, form, window.newValue, td);
+                    sendToServer(resId, studentId, groupSubId, form, window.newValue, td);
                 } else {
                     td.textContent = window.oldValue.trim();
                     // отправляется сообщение о неверном формате оценки
@@ -193,7 +193,7 @@ $(document).ready(function() {
                 let validate = validateMark(window.newValue, form);
                 // если валидация прошла успешно - отправляем данные в БД на сохранение/обновление
                 if(validate) {
-                sendToServer(resId, studentId, groupSubId, form, window.newValue, td);
+                    sendToServer(resId, studentId, groupSubId, form, window.newValue, td);
                 } else {
                     td.textContent = window.oldValue.trim();
                     // отправляется сообщение о неверном формате оценки
@@ -396,10 +396,14 @@ function validateMark(value, form) {
 function openCheckboxColumn() {
     if (document.getElementById("group-detail-table")) {
         willTransferButton = document.getElementById("transfer-button");
+        resetButton = document.getElementById("reset-button");
+        importButton = document.getElementById("import-button");
         transferButton = document.getElementById("transfer");
         cancelButton = document.getElementById("cancel-button");
 
         willTransferButton.style.display = "none";
+        resetButton.style.display = "none";
+        importButton.style.display = "none";
         transferButton.style.display = "inline-block";
         cancelButton.style.display = "inline-block";
 
@@ -420,10 +424,14 @@ function openCheckboxColumn() {
 // функция удаления checkbox для выбора студентов для перевода на следующий семестр
 function closeCheckboxColumn() {
     willTransferButton = document.getElementById("transfer-button");
+    resetButton = document.getElementById("reset-button");
+    importButton = document.getElementById("import-button");
     transferButton = document.getElementById("transfer");
     cancelButton = document.getElementById("cancel-button");
 
     willTransferButton.style.display = "inline-block";
+    resetButton.style.display = "inline-block";
+    importButton.style.display = "inline-block";
     transferButton.style.display = "none";
     cancelButton.style.display = "none";
 
@@ -573,6 +581,7 @@ function importResults() {
                 position: 'centered',
                 message: '<i class="checkmark large icon"></i> Импортировано!'
             });
+            setTimeout(function() {document.location.reload()}, 1500);
         };
     })
     .catch(function(error) {
@@ -621,6 +630,84 @@ function deleteTableBorder() {
         element.style.border = '0px';
     });
 };
+
+// скрыть кнопки Перевод и Импорт при отсутствии студентов
+function hideTransferAndImportButtons() {
+    const willTransferButton = document.getElementById("transfer-button");
+    const importButton = document.getElementById("import-button");
+    const students = document.querySelectorAll('td[name="student"]');
+
+    if (students.length === 0) {
+        willTransferButton.style.display = "none";
+        importButton.style.display = "none";
+    } else {
+        willTransferButton.style.display = "inline-block";
+        importButton.style.display = "inline-block";
+    };
+};
+hideTransferAndImportButtons()
+
+// скрыть кнопку сброса назначений если нет назначений
+function hideResetButton() {
+    const resetButton = document.getElementById("reset-button");
+    const subjects = document.querySelectorAll('th[name="subjects"]');
+
+    if (subjects.length === 0) {
+        resetButton.style.display = "none";
+    } else {
+        resetButton.style.display = "inline-block";
+    };
+};
+hideResetButton()
+
+// сбросить назначения группы (отправить в архив)
+function resetGroupSubjects() {
+    const groupName = document.getElementById("groupname").textContent;
+    const semester = document.getElementById("semester").textContent;
+    const subjectLinks = document.querySelectorAll('th[name="subjects"] a');
+    const subjectIds = Array.from(subjectLinks).map(link => link.getAttribute('data-group-subject'));
+
+    if (subjectIds.length > 0) {
+        const data = {
+            subjectIds: subjectIds,
+            groupName: groupName,
+            semester: semester,
+        };
+
+        const url = window.location.origin + "/api/v1/resetgroupsubjects/"
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken,
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            $('#reset-groupsubjects').modal('hide');
+            $.toast({
+                class: 'success center aligned',
+                position: 'centered',
+                message: '<i class="checkmark large icon"></i> Назначения отправлены в архив!'
+            });
+            setTimeout(function() {document.location.reload()}, 1500);
+        })
+        .catch(error => {
+            console.log(error);
+            $.toast({
+                class: 'error center aligned',
+                position: 'centered',
+                message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            });
+        });
+    }
+};
+
+
+
+
+
 
 /* Observer ***********************************************************************************************************/
 
