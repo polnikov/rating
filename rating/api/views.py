@@ -872,7 +872,6 @@ def import_subjects(request):
         try:
             for n, line in enumerate(import_file):
                 row = line.decode().strip().split(IMPORT_DELIMITER)
-                print('ROW', row)
                 if n == 0:
                     pass
                 else:
