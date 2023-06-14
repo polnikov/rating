@@ -320,9 +320,6 @@ class Result(CommonArchivedModel, CommonTimestampModel, DynamicArrayMixin):
     def __str__(self):
         return f'{self.groupsubject} | {self.students} | {self.mark}'
 
-    def get_absolute_url(self):
-        return reverse('students:result-detail', args=[str(self.id)])
-
     @property
     def empty_mark(self):
         """Делает пометку, если не указана оценка."""
