@@ -169,7 +169,7 @@
         </table>
   
         <div class="ui basic segment center aligned">
-           <form method="post">
+           <form id="upload-file-form" method="post">
                 {% csrf_token %}
                 <div class="ui grid">
                     <div class="column">
@@ -182,7 +182,7 @@
         </div>
     </div>
     <div class="basic actions">
-        <div class="ui cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div class="ui cancel button" onclick="document.querySelector('#upload-file-form').reset()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
         <div id="import-btn" class="ui blue button" onclick="importCathedras()" style="font-family: Hack"><i class="icon download"></i>Загрузить</div>
     </div>
 </div>

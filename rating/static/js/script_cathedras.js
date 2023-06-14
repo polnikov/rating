@@ -94,7 +94,7 @@ function saveCathedraForm() {
             message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
- };
+};
  
 function showUpdateCathedra(cathedraId) {
     const url = window.location.origin + `/api/v1/cathedras/${cathedraId}/`;
@@ -226,7 +226,6 @@ function deleteCathedra() {
     });
 };
 
-// функция импорта кафедр
 function importCathedras() {
     const url = window.location.origin + "/api/v1/import/cathedras/";
     var fileInput = document.querySelector('input[type="file"]');
@@ -243,7 +242,6 @@ function importCathedras() {
         body: formData,
     })
     .then(function(response) {
-        console.log(response);
         if (response.ok) {
             return response.json();
         } else {

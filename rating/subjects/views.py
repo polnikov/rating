@@ -5,17 +5,22 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import (TemplateView, CreateView, DeleteView, DetailView, ListView, UpdateView)
 from groups.models import Group
-from students.models import Result, Semester
+from students.models import Result
 from subjects.forms import (CathedraForm, FacultyForm, GroupSubjectForm, SubjectForm)
 from subjects.models import (Cathedra, Faculty, GroupSubject, Subject, SubjectLog)
 
 from rating.settings import IMPORT_DELIMITER
 
 
-class SubjectListView(LoginRequiredMixin, ListView):
-    model = Subject
+class SubjectView(LoginRequiredMixin, TemplateView):
     template_name = 'subjects/subjects.html'
-    queryset = Subject.active_objects.select_related('semester', 'cathedra')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['subjects'] = Subject.objects.all().count()
+        context['form'] = SubjectForm()
+        return context
 
 
 class SubjectCreateView(LoginRequiredMixin, CreateView):
@@ -75,92 +80,6 @@ class SubjectUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'subjects/subject_update.html'
 
 
-def import_subjects(request):
-    '''Import subjects from CSV file.'''
-    success = False
-    errors = []  # list of non-imported subjects
-    file_validation = ''
-
-    if request.method == 'POST':
-        import_file = request.FILES['import_file'] if request.FILES else False
-
-        # checking that the file has been selected and its format is CSV
-        if not import_file or str(import_file).split('.')[-1] != 'csv':
-            file_validation = False
-            context = {'file_validation': file_validation}
-            return render(request, 'import/import_subjects.html', context)
-
-        try:
-            for n, line in enumerate(import_file):
-                row = line.decode().strip().split(IMPORT_DELIMITER)
-                if n == 0:
-                    pass
-                else:
-                    # check ZET format
-                    pattern = r'([0-9]{2,3})\s\(([0-9]{1,2})\)'  # 72 (2)
-                    if row[4] == '':
-                        zet = ''
-                    else:
-                        try:
-                            zet = re.search(pattern, row[4]).group(0)
-                        except AttributeError:
-                            errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
-                            break
-
-                    is_semester = Semester.objects.filter(id=row[2]).exists()
-                    if is_semester:
-                        semester = Semester.objects.get(id=row[2])
-                    else:
-                        errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
-                        break
-
-                    if row[3] and Cathedra.objects.filter(name=row[3]).exists():
-                        cathedra = Cathedra.objects.get(name=row[3])
-
-                    form_control = row[1].strip()
-                    choices = list(map(lambda x: x[0], Subject._meta.get_field('form_control').choices))
-                    if form_control not in choices:
-                        errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
-                        break
-
-                    if row[0].startswith('"'):
-                        subject_name = row[0].replace('"', "")
-                    else:
-                        subject_name = row[0].strip()
-
-                    if cathedra:
-                        obj, created = Subject.objects.get_or_create(
-                            name=subject_name,
-                            form_control=form_control,
-                            semester=semester,
-                            cathedra=cathedra,
-                            zet=zet
-                        )
-                    else:
-                        obj, created = Subject.objects.get_or_create(
-                            name=subject_name,
-                            form_control=form_control,
-                            semester=semester,
-                            zet=zet
-                        )
-                    if not created:
-                        errors.append(f'[{n+1}] {subject_name} {row[1]} {row[2]} семестр - уже существует')
-                        print('[!] ---> ', row)
-
-            if not errors:
-                success = True
-
-        except Exception as subjects_import_error:
-            print('[!] ---> Ошибка импорта дисциплин:', subjects_import_error, sep='\n')
-            print(errors)
-    context = {
-        'file_validation': file_validation,
-        'errors': errors,
-        'success': success,
-    }
-    return render(request, 'import/import_subjects.html', context)
-
-
 class CathedraView(LoginRequiredMixin, TemplateView):
     template_name = 'subjects/cathedras.html'
 
@@ -170,59 +89,6 @@ class CathedraView(LoginRequiredMixin, TemplateView):
         context['cathedras'] = Cathedra.objects.all().count()
         context['form'] = CathedraForm()
         return context
-
-
-# def import_cathedras(request):
-#     '''Import cathedras from CSV file.'''
-#     success = False
-#     errors = []  # list of non-imported cathedras
-#     file_validation = ''
-
-#     if request.method == 'POST':
-#         import_file = request.FILES['import_file'] if request.FILES else False
-
-#         # checking that the file has been selected and its format is CSV
-#         if not import_file or str(import_file).split('.')[-1] != 'csv':
-#             file_validation = False
-#             context = {'file_validation': file_validation}
-#             return render(request, 'import/import_cathedras.html', context)
-
-#         try:
-#             for n, line in enumerate(import_file):
-#                 row = line.decode().strip().split(IMPORT_DELIMITER)
-#                 if n == 0:
-#                     pass
-#                 else:
-#                     is_faculty = Faculty.objects.filter(short_name=row[2]).exists()
-#                     if not is_faculty:
-#                         faculty = ''
-#                     else:
-#                         faculty = Faculty.objects.get(short_name=row[2]).id
-
-#                     if row[0].startswith('"'):
-#                         row[0] = row[0].replace('"', "")
-
-#                     obj, created = Cathedra.objects.get_or_create(
-#                         name=row[0],
-#                         defaults={
-#                             'short_name': row[1],
-#                             'faculty_id': faculty,
-#                         }
-#                     )
-#                     if not created:
-#                         errors.append(f'[{n+1}] {row[0]} {row[1]}')
-#             if not errors:
-#                 success = True
-
-#         except Exception as import_cathedras_error:
-#             print('[!] ---> Ошибка импорта кафедр:', import_cathedras_error, sep='\n')
-
-#     context = {
-#         'file_validation': file_validation,
-#         'errors': errors,
-#         'success': success,
-#     }
-#     return render(request, 'import/import_cathedras.html', context)
 
 
 class FacultyView(LoginRequiredMixin, TemplateView):
