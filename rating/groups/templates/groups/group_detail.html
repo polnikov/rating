@@ -13,8 +13,8 @@
 <div id="segments" class="ui basic segments">
 
    <!-- Title & button -->
-   <div class="ui basic segment">
-      <table class="ui very basic table">
+   <div class="ui basic segment" style="padding-bottom: 0">
+      <table class="ui black very basic table" style="margin-bottom: 0">
          <tbody>
             <tr>
                <!-- Group info -->
@@ -63,37 +63,46 @@
                      <button id="back-button" class="ui grey small circular button"><i class="left arrow icon"></i>Назад</button></a>
                </td>
             </tr>
-            <tr>
-               <!-- Group counts -->
-               <td name="info-td" class="collapsing top aligned">
-                  Курс
-                  <div id="info" class="ui grey circular label">
-                     {{ course }}
-                  </div>
-                  Семестр
-                  <div id="info" class="ui grey circular label">
-                     <div id="semester">{{ semester }}</div>
-                  </div>
-                  Численность
-                  <div id="info" class="ui grey circular label">
-                     {{ students.count }}
-                  </div>
-               </td>
-            </tr>
-            <tr>
-               <td colspan="2" name="info-td" style="padding-bottom: 0">
+         </tbody>
+      </table>
+      
+      <table class="ui very basic table" style="margin-top: 0">
+         <tbody>
+            <tr style="padding-bottom: 0">
+               <!-- Previous semester -->
+               <td colspan="2" name="info-td" class="two wide left aligned">
                   {% if previous_semester %}
                      <button
-                        class="ui left floated animated tiny circular icon button"
+                        class="ui animated tiny circular icon button"
                         tabindex="0"
                         onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=previous_semester %}';">
                         <div class="visible content"><i class="angle left icon"></i></div>
                         <div class="hidden content">{{ previous_semester }}</div>
                      </button>
                   {% endif %}
+               </td>
+               <!-- Group counts -->
+               <td name="info-td" class="center aligned">
+                  <div class="ui circular label">
+                     Курс
+                     <div id="info" class="ui grey circular label">
+                        {{ course }}
+                     </div>
+                     Семестр
+                     <div id="info" class="ui grey circular label">
+                        <div id="semester">{{ semester }}</div>
+                     </div>
+                     Численность
+                     <div id="info" class="ui grey circular label">
+                        {{ students.count }}
+                     </div>
+                  </div>
+               </td>
+               <!-- Next semester -->
+               <td colspan="2" name="info-td" class="two wide right aligned">
                   {% if next_semester %}
                      <button
-                        class="ui right floated animated tiny circular icon button"
+                        class="ui animated tiny circular icon button"
                         tabindex="0"
                         onclick="window.location.href = '{% url 'groups:detail' groupname=group.name semester=next_semester %}';">
                         <div class="visible content"><i class="angle right icon"></i></div>
@@ -106,7 +115,7 @@
       </table>
    </div>
 
-   <div id="datatable-segment" class="ui basic segment">
+   <div id="datatable-segment" class="ui basic segment"style="padding-top: 0">
       {% if students or subjects %}
          <!-- Table -->
          <table id="group-detail-table" class="ui structured selectable small compact table">

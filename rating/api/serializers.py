@@ -196,14 +196,23 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'direction', 'profile', 'level', 'code', 'is_archived',)
 
 
+# Cathedras
+class CathedraSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cathedra
+        fields = ('id', 'name', 'short_name', 'faculty',)
+        depth = 1
+
+
 # Subjects
 class SubjectSerializer(serializers.ModelSerializer):
-    cathedra = serializers.SlugRelatedField(slug_field='name', queryset=Cathedra.objects)
+    cathedra = CathedraSerializer()
     history = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Subject
         fields = ('id', 'name', 'form_control', 'semester', 'cathedra', 'zet', 'comment', 'is_archived', 'history',)
+        depth = 1
 
     def get_history(self, obj):
         subject_id = obj.id
@@ -225,14 +234,6 @@ class SubjectLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubjectLog
         fields = ('id', 'record_id', 'user', 'field', 'old_value', 'new_value', 'timestamp',)
-
-
-# Cathedras
-class CathedraSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cathedra
-        fields = ('id', 'name', 'short_name', 'faculty',)
-        depth = 1
 
 
 # Faculties

@@ -142,16 +142,6 @@ function getDataFromServer(semStart, semStop, groups) {
     });
 };
 
-//  функция формирования ссылки на студента
-function getAbsoluteURL(id) {
-    let baseURL = window.location.origin;
-    let pathName = window.location.pathname.split("/")[1];
-    let url = `${baseURL}/${pathName}/${id}`;
-    let a = document.querySelector(`[id='${id}'] a`);
-    a.href = url;
-    return a.href
-};
-
 // функция удаления содержимого таблицы
 function deleteTableData() {
     let tableData =  document.querySelectorAll("table[id='students-rating'] tbody > tr");

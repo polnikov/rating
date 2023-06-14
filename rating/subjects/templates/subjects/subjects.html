@@ -1,114 +1,182 @@
-<!DOCTYPE html>
-
 {% extends "base.html" %}
 
 {% load static %}
+
+{% load semanticui %}
 
 {% load customfilters %}
 
 {% block title %}Дисциплины{% endblock %}
 
 {% block content %}
-
+<div id="num-subjects" style="display: none">{{ subjects }}</div>
 <div id="segments" class="ui basic segments">
 
 	<!-- Title & button -->
-	<div id="buttons-segment" class="ui basic segment">
-		
-		<table class="ui very basic table">
+	<div class="ui basic segment">
+        <div class="ui stackable two column grid">
+            <div class="column"><h2 style="font-family: Hack">Дисциплины</h2></div>
+            <div class="column right aligned">
+                {% if request.user|has_group:"Сотрудники" %}
+                    <button id="import-button" class="ui orange small circular button" onclick="showModal('import-subjects')"><i class="icon download"></i>Импорт CSV</button>
+                    <button id="add-button" class="ui positive small circular button" onclick="showModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+	<!-- Table -->
+	<div id="datatable-segment" class="ui basic segment">
+		<table id="subjects-table" class="ui selectable celled compact fixed single line table">
+			<!-- data from script -->
+		</table>
+	</div>
+</div>
+
+<!-- Modal for add subject -->
+<div id="add-modal" class="ui large modal">
+    <div class="basic center aligned header" style="font-family: Hack">Добавить дисциплину</div>
+    <div class="content" style="font-family: Hack">
+        <form id="add-form" method="POST">
+			{% csrf_token %}
+			<div class="ui form">
+				<div class="required field">
+					<label>Полное название дисциплины</label>
+					{{ form.name }}
+				</div>
+				<div class="four fields">
+					<div class="required three wide field">
+						<label>Форма контроля</label>
+						{% render_field form.form_control _no_label='True' placeholder='Выбрать' %}
+					</div>
+
+					<div class="required two wide field">
+						<label>Семестр</label>
+						{% render_field form.semester _no_label='True' placeholder='Выбрать' %}
+					</div>
+					<div class="nine wide field">
+						<label>Кафедра</label>
+						{% render_field form.cathedra _no_label='True' placeholder='Выбрать' %}
+					</div>
+					<div class="two wide field">
+						<label>ЗЕТ</label>
+						{% render_field form.zet _no_label='True' placeholder='72 (2)' %}
+					</div>
+				</div>
+				<div class="field">
+					<label>Примечание</label>
+					{% render_field form.comment _no_label='True' %}
+				</div>
+				<div class="field">
+					{% render_field form.is_archived _no_label='True' %}
+				</div>
+			</div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <div class="ui circular cancel button" onclick="resetAddForm()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div class="ui green circular button" onclick="saveSubjectForm()" style="font-family: Hack"><i class="save icon"></i>Сохранить</div>
+    </div>
+</div>
+
+<!-- Modal for import subjects -->
+<div id="import-subjects" class="ui modal">
+    <div class="basic center aligned header" style="font-family: Hack">Импорт дисциплин</div>
+    <div class="content" style="font-family: Hack">
+		<table class="ui celled small table center aligned">
+			<thead>
+			   <tr>
+				  <th>Название дисциплины</th>
+				  <th>Форма контроля</th>
+				  <th>Семестр</th>
+				  <th>Кафедра</th>
+				  <th>ЗЕТ</th>
+			   </tr>
+			</thead>
+			<tbody>
+			   <tr>
+				  <td><div name="point" class="ui red circular small label">1</div></td>
+				  <td><div name="point" class="ui red circular small label">2</div></td>
+				  <td><div name="point" class="ui red circular small label">3</div></td>
+				  <td><div name="point" class="ui grey circular small label">4</div></td>
+				  <td><div name="point" class="ui grey circular small label">5</div></td>
+			   </tr>
+			   <tr>
+				  <td colspan="7" class="left aligned"><strong>Разделитель <;>. Заполнение данными начинать с 2ой строки.</strong></td>
+			   </tr>
+			</tbody>
+		</table>
+   
+		<table class="ui very basic small table">
 			<tbody>
 				<tr>
-					<td><h2 style="font-family: Hack">Дисциплины</h2></td>
-					{% if request.user|has_group:"Сотрудники" %}
-						<td class="right aligned">
-							<a href="{% url 'subjects:subjects_import' %}">
-								<button id="import-button" class="ui orange small circular button" style="font-family: Hack"><i class="icon download"></i>Импорт CSV</button>
-							</a>
-							<a href="{% url 'subjects:add' %}">
-								<button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
-							</a>
-						</td>
-					{% endif %}
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label"></div></td>
+					<td>Обязательные поля</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">2</div></td>
+					<td>Экзамен | Зачет | Диффзачет | Курсовой проект | Курсовая работа</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">3</div></td>
+					<td>номер семестра дисциплины</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui grey circular small label">4</div></td>
+					<td>полное название кафедры | пусто</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui grey circular small label">5</div></td>
+					<td>формат, например: 72 (2) | пусто</td>
 				</tr>
 			</tbody>
 		</table>
-	</div>
-
-	<!-- Table -->
-	{% if subject_list %}
-		<div class="ui basic segment">
-			<table id="subjects" class="ui selectable celled compact small table">
-
-				<thead>
-					<tr class="center aligned">
-						<th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
-						<th>Название
-							<div id="count-label" class="ui left pointing grey tiny label">{{ subject_list.count }}</div>
-						</th>
-						<th class="collapsing" style="width: 50px">Форма контроля</th>
-						<th class="collapsing">Семестр</th>
-						<th class="collapsing center aligned">Кафедра</th>
-						<th>Примечание</th>
-					</tr>
-				</thead>
-
-				<tbody>
-					{% for subject in subject_list %}
-						<tr>
-							<td class="collapsing center aligned">{{ forloop.counter }}</td>
-							<td>
-								<a href="{{ subject.get_absolute_url }}">{{ subject.name|truncatechars:80 }}</a>
-								{% if subject.is_archived %}<i class="archive brown icon"></i>{% endif %}
-							</td>
-							<td class="collapsing">{{ subject.form_control }}</td>
-							<td class="collapsing center aligned">{{ subject.semester.semester }}</td>
-
-							{% if subject.cathedra.short_name %}
-								<td class="collapsing center aligned">
-									{{ subject.cathedra.short_name }}
-								</td>
-							{% else %}
-								<td class="negative collapsing center aligned">
-									<i class="icon close"></i> Нет
-								</td>
-							{% endif %}
-
-							<td class="collapsing">{{ subject.comment|truncatechars:20 }}</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-
-			</table>
+		<div class="ui basic segment center aligned">
+			<form id="upload-file-form" method="post">
+				{% csrf_token %}
+				<div class="ui grid">
+					<div class="column">
+						<div class="ui file input small">
+							<input name="import_file" type="file">
+						</div>
+					</div>
+				</div>
+			</form>
 		</div>
-	{% else %}
-		{% include 'empty_records.html' %}
-	{% endif %}
+	</div>
+	<div class="basic actions">
+		<div class="ui cancel button" onclick="document.querySelector('#upload-file-form').reset()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+		<div id="import-btn" class="ui blue button" onclick="importSubjects()" style="font-family: Hack"><i class="icon download"></i>Загрузить</div>
+	</div>
+</div>
+ 
+<!-- Modal for errors -->
+<div id="errors" class="ui small modal">
+    <div class="basic center aligned header" style="font-family: Hack">Возникли ошибки по следующим данным</div>
+    <div class="scrolling content" >
+        <div id="errors-list" class="ui list" style="font-family: Hack"></div>
+    </div>
 </div>
 
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
-
-<!-- DataTable -->
-<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
-
+<script type="text/javascript" src="{% static 'js/script_subjects.js' %}"></script>
 <script type="text/javascript">
-	// DataTable
 	$(document).ready(function() {
-		let firstRow = $('#subjects thead tr')[0];
-		let secondRow = firstRow.cloneNode(true);
-		firstRow.after(secondRow);
-
-		let filterColumns = $('#subjects thead tr')[0].children;
-		for (let i = 0; i < filterColumns.length; i++) {
-			let inputWidth = filterColumns[i].offsetWidth - 15;
-			if(i != 0) {
-				filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 150px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-			} else {filterColumns[i].innerHTML = ""};
+		if ($.fn.DataTable.isDataTable('#subjects-table')) {
+			$('#subjects-table').DataTable().destroy();
 		};
 
-		document.querySelector('#subjects').style.width = "100%";
-		// DataTable
-		var table = $('#subjects').DataTable({
+		const subjects = document.getElementById('num-subjects').textContent;
+
+		const dataTableOptions = {
+			columns: [
+                { title: '<i class="hashtag small icon"></i>' },
+                { title: `Название <div id="count-label" class="ui left pointing grey tiny label">${subjects}</div>` },
+                { title: 'Форма контроля' },
+                { title: 'Семестр' },
+                { title: 'Кафедра' },
+                { title: 'Примечание' },
+            ],
 			language: {
 				lengthMenu: '_MENU_ записей на страницу',
 				zeroRecords: 'Записей нет...',
@@ -129,17 +197,46 @@
 				[20, 50, 'Все']
 			],
 			pageLength: 20,
+            searching: true,
 			autoWidth: false,
 			columnDefs: [
 				{ width: "3%", targets: 0 },
-				{ width: "56%", targets: 1 },
-				{ width: "10%", targets: 2 },
-				{ width: "8%", targets: 3 },
-				{ width: "8%", targets: 4 },
-				{ width: "15%", targets: 5 },
-				{ searchable: false, targets: 0 }
+				{ width: "49%", targets: 1 },
+				{ width: "12%", targets: 2 },
+				{ width: "8%", targets: [3, 4] },
+				{ width: "20%", targets: 5 },
+				{ searchable: false, targets: 0 },
+                { className: 'center aligned', targets: [0, 3, 4] },
+				{
+					targets: 4,
+					createdCell: function(td, cellData, rowData, row, col) {
+						if (cellData.includes('Нет')) {
+							$(td).addClass('negative');
+						};
+					}
+				},
 			],
-		});
+			headerCallback: function(thead, cellData, start, end, display) {
+                $(thead).find('th').addClass('center aligned');
+            },
+		};
+		var table = $('#subjects-table').DataTable(dataTableOptions);
+
+		let firstRow = $('#subjects-table thead tr')[0];
+		let secondRow = firstRow.cloneNode(true);
+		firstRow.after(secondRow);
+
+		let filterColumns = $('#subjects-table thead tr')[1].children;
+		for (let i = 0; i < filterColumns.length; i++) {
+			let inputWidth = filterColumns[i].offsetWidth - 60;
+			if(i != 0) {
+				filterColumns[i].innerHTML = `
+												<div class="ui input">
+													<input name="filter" type="text" style="width: ${inputWidth}px" data-index=${i}>
+												</div>
+											`;
+			} else {filterColumns[i].innerHTML = ""};
+		};
 
 		// Filter event handler
 		$(table.table().container()).on('keyup', 'thead input', function() {table
@@ -159,6 +256,19 @@
 		});
 		changeDatatableInputFont();
 		deletePaddingTopForDatatableSegment();
+		removeSortingLabel('subjects-table');
+
+		$(document).ready(function() {
+			var forms = document.forms;
+			for (let i = 0; i < forms.length; i++) {
+				var formElements = forms[i].elements;
+				for (let j = 0; j < formElements.length; j++) {
+					if (formElements[j].localName == "input" && formElements[j].type == "text") {
+						formElements[j].style.fontFamily = "Hack";
+					};
+				};
+			};
+		});
 	});
 </script>
 

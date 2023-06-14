@@ -17,7 +17,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 from groups.models import Group
 from groups.forms import GroupForm
-from subjects.forms import FacultyForm, CathedraForm
+from subjects.forms import FacultyForm, CathedraForm, SubjectForm
 from students.models import Result, Semester, Student, StudentLog, Basis
 from students.validators import validate_mark, check_mark
 from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
@@ -839,8 +839,103 @@ def import_cathedras(request):
 
 # Subjects
 class SubjectViewSet(viewsets.ModelViewSet):
-    queryset = Subject.objects.all()
+    queryset = Subject.active_objects.all()
     serializer_class = serializers.SubjectSerializer
+
+
+    @action(methods=['post'], detail=False)
+    def create_subject(self, request):
+        form = SubjectForm(request.data)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=201)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+def import_subjects(request):
+    '''Import subjects from CSV file.'''
+    logger.info('Импорт дисциплин...')
+    serialized_data = []
+    success = False
+    errors = []  # list of non-imported subjects
+
+    if request.method == 'POST':
+        import_file = request.FILES['import_files'] if request.FILES else False
+
+        # checking that the file has been selected and its format is CSV
+        if not import_file or str(import_file).split('.')[-1] != 'csv':
+            serialized_data.append({'error': 'file_validation', 'success': success})
+            logger.error('Файл не выбран или неверный формат')
+            return JsonResponse({'data': serialized_data})
+
+        try:
+            for n, line in enumerate(import_file):
+                row = line.decode().strip().split(IMPORT_DELIMITER)
+                print('ROW', row)
+                if n == 0:
+                    pass
+                else:
+                    # check ZET format
+                    pattern = r'([0-9]{2,3})\s\(([0-9]{1,2})\)'  # 72 (2)
+                    if row[4] == '':
+                        zet = ''
+                    else:
+                        try:
+                            zet = re.search(pattern, row[4]).group(0)
+                        except AttributeError:
+                            errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
+                            break
+
+                    is_semester = Semester.objects.filter(id=row[2]).exists()
+                    if is_semester:
+                        semester = Semester.objects.get(id=row[2])
+                    else:
+                        errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
+                        break
+
+                    if row[3] and Cathedra.objects.filter(name=row[3]).exists():
+                        cathedra = Cathedra.objects.get(name=row[3])
+
+                    form_control = row[1].strip()
+                    choices = list(map(lambda x: x[0], Subject._meta.get_field('form_control').choices))
+                    if form_control not in choices:
+                        errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
+                        break
+
+                    if row[0].startswith('"'):
+                        subject_name = row[0].replace('"', "")
+                    else:
+                        subject_name = row[0].strip()
+
+                    if cathedra:
+                        obj, created = Subject.objects.get_or_create(
+                            name=subject_name,
+                            form_control=form_control,
+                            semester=semester,
+                            cathedra=cathedra,
+                            zet=zet
+                        )
+                    else:
+                        obj, created = Subject.objects.get_or_create(
+                            name=subject_name,
+                            form_control=form_control,
+                            semester=semester,
+                            zet=zet
+                        )
+                    if not created:
+                        errors.append(f'[{n+1}] {subject_name} {row[1]} {row[2]} семестр - уже существует')
+                        print('[!] ---> ', row)
+
+            if not errors:
+                success = True
+            logger.info('|---> Запись дисциплин в БД успешно выполнена')
+
+        except Exception as subjects_import_error:
+            logger.error(f'[!] ---> Ошибка импорта дисциплин: {subjects_import_error}, {errors}', exc_info=True)
+
+    serialized_data.append({'errors': errors, 'success': success})
+    return JsonResponse({'data': serialized_data})
 
 
 class SubjectLogList(generics.ListAPIView):

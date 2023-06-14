@@ -239,3 +239,21 @@ function showModal(modal) {
    var element = document.getElementById(modal);
    $(element).modal({blurring: true}).modal('show');
 };
+
+//  функция формирования ссылки на объект
+function getAbsoluteURL(id) {
+   let baseURL = window.location.origin;
+   let pathName = window.location.pathname.split("/")[1];
+   let url = `${baseURL}/${pathName}/${id}`;
+   let a = document.querySelector(`[id='${id}'] a`);
+   a.href = url;
+   return a.href
+};
+
+//  функция удаления лейбла сортировки в строке фильтрации
+function removeSortingLabel(table) {
+   var cells = document.querySelectorAll(`#${table} thead tr`)[1].children;
+   for(let i = 0; i < cells.length; i++) {
+      cells[i].classList.remove('sorting', 'sorting_asc')
+   };
+};
