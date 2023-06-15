@@ -839,7 +839,7 @@ def import_cathedras(request):
 
 # Subjects
 class SubjectViewSet(viewsets.ModelViewSet):
-    queryset = Subject.active_objects.all()
+    queryset = Subject.objects.all()
     serializer_class = serializers.SubjectSerializer
 
 
@@ -851,6 +851,34 @@ class SubjectViewSet(viewsets.ModelViewSet):
             return JsonResponse({'success': True}, status=201)
         else:
             return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['patch'], detail=True)
+    def update_subject(self, request, pk=None):
+        try:
+            subject = Subject.objects.get(id=pk)
+        except Subject.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Subject not found'}, status=404)
+
+        form = SubjectForm(request.POST, instance=subject)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=200)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['delete'], detail=True)
+    def delete_subject(self, request, pk=None):
+        queryset = Subject.objects.all()
+
+        try:
+            subject = queryset.get(id=pk)
+        except Subject.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Subject not found'}, status=404)
+
+        subject.delete()
+        return JsonResponse({'success': True}, status=201)
 
 
 def import_subjects(request):

@@ -208,10 +208,23 @@ class CathedraSerializer(serializers.ModelSerializer):
 class SubjectSerializer(serializers.ModelSerializer):
     cathedra = CathedraSerializer()
     history = serializers.SerializerMethodField(read_only=True)
+    groups = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Subject
-        fields = ('id', 'name', 'form_control', 'semester', 'cathedra', 'zet', 'comment', 'is_archived', 'history',)
+        fields = (
+            'id',
+            'name',
+            'form_control',
+            'semester',
+            'cathedra',
+            'zet',
+            'comment',
+            'is_archived',
+            'history',
+            'groups',
+        )
         depth = 1
 
     def get_history(self, obj):
@@ -226,6 +239,14 @@ class SubjectSerializer(serializers.ModelSerializer):
             'new_value',
         )
         return history
+
+    def get_groups(self, obj):
+        subject_id = obj.id
+        groups_data = GroupSubject.objects.filter(subjects=subject_id).order_by('subjects__group__name')
+        groups = []
+        for group in groups_data:
+            groups.append(f'{group.groups}-{group.subjects.semester.semester}')
+        return groups
 
 
 class SubjectLogSerializer(serializers.ModelSerializer):

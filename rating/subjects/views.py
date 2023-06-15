@@ -23,12 +23,6 @@ class SubjectView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class SubjectCreateView(LoginRequiredMixin, CreateView):
-    model = Subject
-    form_class = SubjectForm
-    template_name = 'subjects/subject_add.html'
-    success_url = '/subjects/'
-
 
 class SubjectDetailView(LoginRequiredMixin, DetailView):
     model = Subject
@@ -41,6 +35,7 @@ class SubjectDetailView(LoginRequiredMixin, DetailView):
         # выборка студентов, сдававших дисциплину в соответствующем семестре
         # students who have current subject
         students = Result.objects.select_related().filter(groupsubject__subjects=subject.id)
+        form = SubjectForm()
 
         # subjects changes history
         try:
@@ -53,31 +48,9 @@ class SubjectDetailView(LoginRequiredMixin, DetailView):
             'history': history,
             'groups': groups,
             'students': students,
+            'form': form,
         }
         return render(request, 'subjects/subject_detail.html', context=context)
-
-
-class SubjectDeleteView(LoginRequiredMixin, DeleteView):
-    model = Subject
-    template_name = 'subjects/subject_delete.html'
-    success_url = '/subjects/'
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        pk = self.kwargs.get('pk')
-        groups = GroupSubject.objects.filter(subjects=pk)
-        groups_data = []
-        for group in groups:
-            groups_data.append(f'{group.groups}-{group.subjects.semester.semester}')
-        context['groups'] = groups_data
-        return context
-
-
-class SubjectUpdateView(LoginRequiredMixin, UpdateView):
-    """Обновить информацию о предметах."""
-    model = Subject
-    form_class = SubjectForm
-    template_name = 'subjects/subject_update.html'
 
 
 class CathedraView(LoginRequiredMixin, TemplateView):
