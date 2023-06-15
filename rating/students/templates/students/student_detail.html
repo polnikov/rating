@@ -362,7 +362,6 @@
                 [20, 50, 'Все']
             ],
             autoWidth: false,
-            fixedColumns: true,
             columnDefs: [
                 { width: 150, targets: 0 },
                 { width: 130, targets: 1 },
@@ -371,6 +370,7 @@
             pageLength: 20,
             ordering: false,
         });
+        changeDatatableInputFont();
         deleteTitleBlockPaddingBottom();
         deleteTabsBlockPaddingBottom();
     });

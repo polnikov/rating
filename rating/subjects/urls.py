@@ -8,10 +8,7 @@ app_name = 'subjects'
 urlpatterns = [
     # Subjects
     path('', views.SubjectView.as_view(), name='subjects'),
-    path('add/', views.SubjectCreateView.as_view(), name='add'),
     path('<int:pk>/', views.SubjectDetailView.as_view(), name='detail'),
-    path('<int:pk>/delete/', views.SubjectDeleteView.as_view(), name='delete'),
-    path('<int:pk>/update/', views.SubjectUpdateView.as_view(), name='update'),
 
     # Subjects debts
     path('debts/', views.SubjectsDebtsListView.as_view(), name='debts'),

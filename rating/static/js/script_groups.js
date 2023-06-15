@@ -115,13 +115,13 @@ function showUpdateGroup(groupId) {
     fetch(url)
     .then(response => response.json())
     .then(data => {
-        var form = document.querySelector('#update-form');
-        form.elements.name.value = data.name;
-        form.elements.direction.value = data.direction;
-        form.elements.profile.value = data.profile;
-        form.elements.level.value = data.level;
-        form.elements.code.value = data.code;
-        form.elements.is_archived.checked = data.is_archived;
+        var form = document.querySelector('#update-form').elements;
+        form.name.value = data.name;
+        form.direction.value = data.direction;
+        form.profile.value = data.profile;
+        form.level.value = data.level;
+        form.code.value = data.code;
+        form.is_archived.checked = data.is_archived;
 
         var updateButton = document.getElementById('update-btn');
         updateButton.dataset.groupId = groupId;
