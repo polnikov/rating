@@ -504,24 +504,26 @@ class StudentsDebtsListView(LoginRequiredMixin, ListView):
 def search_results(request):
     if request.method == 'GET':
         search = request.GET.get('search')
-        search_query = SearchQuery(search)
-
-        search_vector_stu = SearchVector('student_id', 'last_name', 'first_name', 'second_name', 'comment')
-        result_students = Student.objects.annotate(
-            search=search_vector_stu, rank=SearchRank(search_vector_stu, search_query)
-            ).filter(search=search_query).order_by("-rank")
-
-        search_vector_sub = SearchVector('name', 'cathedra', 'comment')
-        result_subjects = Subject.objects.annotate(
-            search=search_vector_sub, rank=SearchRank(search_vector_sub, search_query)
-            ).filter(search=search_query).order_by("-rank")
-
+        students = Student.objects.filter(
+            Q(student_id__icontains=search) |
+            Q(last_name__icontains=search) |
+            Q(first_name__icontains=search) |
+            Q(second_name__icontains=search) |
+            Q(comment__icontains=search) |
+            Q(tag__icontains=search)
+        )
+        subjects = Subject.objects.filter(name__icontains=search)
+        groupsubjects = GroupSubject.objects.filter(
+            Q(subjects__name__icontains=search) |
+            Q(teacher__icontains=search) |
+            Q(comment__icontains=search)
+        )
         context = {
             'search': search,
-            'students': result_students,
-            'subjects': result_subjects,
+            'students': students,
+            'subjects': subjects,
+            'groupsubjects': groupsubjects,
         }
-
     return render(request, 'search_results.html', context=context)
 
 
