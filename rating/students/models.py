@@ -61,14 +61,17 @@ class Student(CommonArchivedModel, CommonTimestampModel):
         primary_key=True,
         blank=False,
         unique=True,
+        db_index=True,
     )
     last_name = models.CharField(
         verbose_name='Фамилия',
         max_length=30,
+        db_index=True,
     )
     first_name = models.CharField(
         verbose_name='Имя',
         max_length=30,
+        db_index=True,
     )
     second_name = models.CharField(
         verbose_name='Отчество',
@@ -76,6 +79,7 @@ class Student(CommonArchivedModel, CommonTimestampModel):
         blank=True,
         unique=False,
         default='',
+        db_index=True,
     )
     basis = models.ForeignKey(
         'students.Basis',
@@ -128,6 +132,7 @@ class Student(CommonArchivedModel, CommonTimestampModel):
         choices=Tag.choices,
         blank=True,
         default='',
+        db_index=True,
     )
     comment = models.CharField(
         verbose_name='Примечание',
@@ -135,6 +140,7 @@ class Student(CommonArchivedModel, CommonTimestampModel):
         blank=True,
         unique=False,
         default='',
+        db_index=True,
     )
     money = models.CharField(
         verbose_name='Стипендия',
