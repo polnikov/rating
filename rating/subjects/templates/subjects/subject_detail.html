@@ -46,10 +46,10 @@
         <!-- Tab 1 -->
         <!-- Details -->
         <div class="ui tab active" data-tab="first">
-            <table class="ui definition table">
+            <table class="ui definition table" style="max-width: 800px">
                 <tbody>
                     <tr>
-                        <td>Семестр</td>
+                        <td style="width: 400px">Семестр</td>
                         <td><div class="ui circular grey inverted label">{{ subject.semester.semester }}</div></td>
                     </tr>
                     <tr>
@@ -180,9 +180,9 @@
         <!-- Students -->
         <div class="ui tab" data-tab="third">
             {% if request.user|has_group:"Сотрудники" %}
-                <table class="ui very basic table">
+                <table class="ui unstackable table">
                     <tbody>
-                        <tr>
+                        <tr class="grey">
                             <td><h4 style="font-family: Hack">{{ subject.get_form_control_display }}</h4></td>
                             <td class="right aligned">
                                 <button
