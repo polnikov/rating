@@ -24,7 +24,6 @@ urlpatterns = [
     path('v1/money/', views.StudentMoneyList.as_view()),           # [-]
     path('v1/debts/students/', views.students_debts),              # [-]
     path('v1/rating/', views.student_rating),  # [-]
-    path('v1/search/', views.search),  # [-]
 
     path('v1/transferstudents/', views.transfer_students),  # [-]
     path('v1/import/students/', views.import_students),     # [-]
