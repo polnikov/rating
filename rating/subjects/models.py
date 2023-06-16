@@ -32,6 +32,7 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
         max_length=150,
         blank=False,
         unique=False,
+        db_index=True,
     )
     form_control = models.CharField(
         verbose_name='Форма контроля',
@@ -186,6 +187,7 @@ class GroupSubject(CommonArchivedModel, CommonTimestampModel):
         'subjects.Subject',
         on_delete=models.CASCADE,
         verbose_name='Дисциплина',
+        db_index=True,
     )
     teacher = models.CharField(
         verbose_name='Преподаватель',
@@ -194,6 +196,7 @@ class GroupSubject(CommonArchivedModel, CommonTimestampModel):
         blank=True,
         default='',
         unique=False,
+        db_index=True,
     )
     att_date = models.DateField(
         verbose_name='Дата аттестации',
@@ -209,6 +212,7 @@ class GroupSubject(CommonArchivedModel, CommonTimestampModel):
         blank=True,
         unique=False,
         default='',
+        db_index=True,
     )
 
     class Meta:
