@@ -93,7 +93,7 @@ class GroupSubjectForm(ModelForm):
                 format='%d.%m.%Y',
             ),
             'teacher': TextInput(
-                attrs={'placeholder': 'Формат: Иванов И.И.'},
+                attrs={'placeholder': 'Формат: Иванов И.И., Петров П.П.'},
             ),
         }
 
