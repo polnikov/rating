@@ -131,7 +131,7 @@
    height: 100%;
    position: fixed;
    top: 40px;
-   left: -320px;
+   left: -230px;
    /* плавный переход смещения панели */
    -webkit-transition: left 0.3s;
    -moz-transition: left 0.3s;
@@ -155,17 +155,18 @@
 /* формируем меню */
 .nav > ul {
    width: 230px;
+   padding-left: 20px;
    display: block;
-   margin-left: 75px;
+   left: 230px;
    list-style: none;
 }
 .nav > ul > li {
    line-height: 2.5;
    opacity: 1;
-   -webkit-transform: translateX(-50%);
-   -moz-transform: translateX(-50%);
-   -ms-transform: translateX(-50%);
-   transform: translateX(-50%);
+   -webkit-transform: translateX(0%);
+   -moz-transform: translateX(0%);
+   -ms-transform: translateX(0%);
+   transform: translateX(0%);
    -webkit-transition: opacity .5s .1s, -webkit-transform .5s .1s;
    -moz-transition: opacity .5s .1s, -moz-transform .5s .1s;
    -ms-transition: opacity .5s .1s, -ms-transform .5s .1s;
@@ -194,6 +195,7 @@
    color: white;
    padding-left: 15px;
 }
+
 /* линия подчеркивания разделов меню */
 .nav > ul > li > div:before {
    content: '';
@@ -202,7 +204,7 @@
    right: 0;
    bottom: 0;
    height: 1px;
-   width: 100%;
+   width: 90%;
    -webkit-transition: width 0s ease;
    transition: width 0s ease;
 }
@@ -213,7 +215,7 @@
    left: 0;
    bottom: 0;
    height: 1px;
-   width: 100%;
+   width: 90%;
    background: #949494;
    -webkit-transition: width .5s ease;
    transition: width .5s ease;
