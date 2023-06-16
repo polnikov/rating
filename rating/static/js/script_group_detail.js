@@ -396,13 +396,11 @@ function validateMark(value, form) {
 function openCheckboxColumn() {
     if (document.getElementById("group-detail-table")) {
         willTransferButton = document.getElementById("transfer-button");
-        resetButton = document.getElementById("reset-button");
         importButton = document.getElementById("import-button");
         transferButton = document.getElementById("transfer");
         cancelButton = document.getElementById("cancel-button");
 
         willTransferButton.style.display = "none";
-        resetButton.style.display = "none";
         importButton.style.display = "none";
         transferButton.style.display = "inline-block";
         cancelButton.style.display = "inline-block";
@@ -424,13 +422,11 @@ function openCheckboxColumn() {
 // функция удаления checkbox для выбора студентов для перевода на следующий семестр
 function closeCheckboxColumn() {
     willTransferButton = document.getElementById("transfer-button");
-    resetButton = document.getElementById("reset-button");
     importButton = document.getElementById("import-button");
     transferButton = document.getElementById("transfer");
     cancelButton = document.getElementById("cancel-button");
 
     willTransferButton.style.display = "inline-block";
-    resetButton.style.display = "inline-block";
     importButton.style.display = "inline-block";
     transferButton.style.display = "none";
     cancelButton.style.display = "none";
@@ -646,19 +642,6 @@ function hideTransferAndImportButtons() {
     };
 };
 hideTransferAndImportButtons()
-
-// скрыть кнопку сброса назначений если нет назначений
-function hideResetButton() {
-    const resetButton = document.getElementById("reset-button");
-    const subjects = document.querySelectorAll('th[name="subjects"]');
-
-    if (subjects.length === 0) {
-        resetButton.style.display = "none";
-    } else {
-        resetButton.style.display = "inline-block";
-    };
-};
-hideResetButton()
 
 // сбросить назначения группы (отправить в архив)
 function resetGroupSubjects() {
