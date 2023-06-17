@@ -123,7 +123,7 @@ function showUpdateGroup(groupId) {
         form.code.value = data.code;
         form.is_archived.checked = data.is_archived;
 
-        var updateButton = document.getElementById('update-btn');
+        var updateButton = document.getElementById('edit-button');
         updateButton.dataset.groupId = groupId;
 
         $(updateGroupModal).modal({blurring: true}).modal('show');
@@ -139,7 +139,7 @@ function showUpdateGroup(groupId) {
 };
 
 function updateGroup() {
-    var button = document.getElementById("update-btn");
+    var button = document.getElementById("edit-button");
     var groupId = button.getAttribute("data-group-id");
     var url = window.location.origin + `/api/v1/groups/${groupId}/update_group/`;
     var updateModal = document.getElementById('update-modal');
@@ -194,7 +194,7 @@ function showDeleteGroup(groupId) {
         document.querySelector('#del-level').textContent = data.level;
         document.querySelector('#del-code').textContent = data.code;
 
-        var deleteButton = document.getElementById('delete-btn');
+        var deleteButton = document.getElementById('trash-button');
         deleteButton.dataset.groupId = groupId;
 
         $(deleteModal).modal({blurring: true}).modal('show');
@@ -210,7 +210,7 @@ function showDeleteGroup(groupId) {
 };
 
 function deleteGroup() {
-    var button = document.getElementById("delete-btn");
+    var button = document.getElementById("trash-button");
     var groupId = button.getAttribute("data-group-id");
     var url = window.location.origin + `/api/v1/groups/${groupId}/delete_group/`;
     var deleteGroupModal = document.getElementById('delete-modal');
