@@ -58,11 +58,15 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
 
         previous_semester = semester - 1 if semester > 1 else False
         next_semester = semester + 1 if semester < max_semester else False
+        
+        # профильные группы строительства
+        groups = Group.objects.filter(is_archived=False, name__contains='Сб(ИС-')
 
         context = {
             'students': students,
             'subjects': subjects,
             'group': group,
+            'groups': groups,
             'semester': semester,
             'course': course,
             'previous_semester': previous_semester,

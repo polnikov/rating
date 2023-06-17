@@ -15,7 +15,6 @@ urlpatterns = [
 
     # Students actions
     path('import/', views.import_students, name='import'),
-    path('transfer/', views.transfer_students, name='transfer'),
 
     # Students debts
     path('debts/', views.StudentsDebtsListView.as_view(), name='debts'),

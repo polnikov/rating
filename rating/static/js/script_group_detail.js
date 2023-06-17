@@ -305,6 +305,15 @@ $(document).ready(function() {
         };
     });
 
+    const button = document.getElementById('transfer');
+    if (semester === '4' && groupName.includes('Сб(ИС)')) {
+        button.onclick = function(){
+            var element = document.getElementById('choose-profile');
+            $(element).modal({blurring: true}).modal('show');
+        }
+    } else {
+        button.onclick = transferStudentsDefault;
+    };
 });
 
 /* Functions **********************************************************************************************************/
@@ -391,7 +400,6 @@ function validateMark(value, form) {
     return true;
 };
 
-
 // функция добавления checkbox для выбора студентов для перевода на следующий семестр
 function openCheckboxColumn() {
     if (document.getElementById("group-detail-table")) {
@@ -447,7 +455,7 @@ function closeCheckboxColumn() {
 };
 
 // функция отправки данных о переводе в БД
-function transferStudents() {
+function transferStudentsDefault() {
     let checkedStudents = [];
     tdNChecks = document.querySelectorAll("tbody input.hidden");
     tdNChecks.forEach(element => {
@@ -455,11 +463,9 @@ function transferStudents() {
             checkedStudents.push(element.dataset.studentId);
         };
     });
-    console.log(checkedStudents.length);
-
-    if (checkedStudents != 0) {
+    if (checkedStudents.length) {
         $.ajax({
-            url: window.location.origin + "/students/transfer/",
+            url: window.location.origin + "/api/v1/transfer/students/",
             type: "POST",
             data: {
                 checkedStudents: checkedStudents,
@@ -482,7 +488,62 @@ function transferStudents() {
                 message: '<i class="exclamation circle large icon"></i> Ошибка перевода студентов!'
             });
         });
-    } else {closeCheckboxColumn()};
+    } else {
+        closeCheckboxColumn();
+        $.toast({
+            class: 'error center aligned',
+            position: 'centered',
+            message: '<i class="exclamation circle large icon"></i> Ни один студент не был выбран!'
+        });
+    };
+};
+
+function transferStudentsByProfile() {
+    let checkedStudents = [];
+    tdNChecks = document.querySelectorAll("tbody input.hidden");
+    tdNChecks.forEach(element => {
+        if (element.checked) {
+            checkedStudents.push(element.dataset.studentId);
+        };
+    });
+    let profile = document.querySelector('.item.selected').textContent;
+
+    if (checkedStudents.length && profile) {
+        $.ajax({
+            url: window.location.origin + "/api/v1/transfer/students/",
+            type: "POST",
+            data: {
+                checkedStudents: checkedStudents,
+                profile: profile,
+                csrfmiddlewaretoken: csrftoken
+            },
+        })
+        .done(function(response) {
+            console.log('Перевод студентов прошел успешно', response);
+            $('choose-profile').modal({blurring: true}).modal('hide');
+            $.toast({
+                class: 'success center aligned',
+                position: 'centered',
+                message: '<i class="checkmark large icon"></i> Перевод студентов прошел успешно!'
+            });
+            setTimeout(function() {document.location.reload()}, 1500);
+        })
+        .fail(function() {
+            $('choose-profile').modal({blurring: true}).modal('hide');
+            $.toast({
+                class: 'error center aligned',
+                position: 'centered',
+                message: '<i class="exclamation circle large icon"></i> Ошибка перевода студентов!'
+            });
+        });
+    } else {
+        closeCheckboxColumn();
+        $.toast({
+            class: 'error center aligned',
+            position: 'centered',
+            message: '<i class="exclamation circle large icon"></i> Ни один студент не был выбран!'
+        });
+    };
 };
 
 // функция импорта оценок

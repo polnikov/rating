@@ -1,15 +1,12 @@
 import concurrent.futures
 import re
-import xlrd
 import logging
 
 from collections import Counter
-from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.db.models import Q
 from django.http import Http404, JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
@@ -22,7 +19,6 @@ from django.views.generic import (
 from groups.models import Group
 from students.forms import ResultForm, StudentForm
 from students.models import Basis, Result, Semester, Student, StudentLog
-from students.validators import validate_mark, check_mark
 from subjects.models import Cathedra, GroupSubject, Subject
 from rating.settings import IMPORT_DELIMITER
 from rating.functions import calculate_rating
@@ -393,33 +389,6 @@ def import_students(request):
         'success': success,
     }
     return render(request, 'import/import_students.html', context)
-
-
-def transfer_students(request):
-    '''Transfer students to the next semester. In case of the last semester the student is sent to <Архив> with a status
-    change to <Выпускник>.
-    '''
-    logger.info('Перевод студентов на следующий семестр...')
-    students_for_transfer = request.POST.getlist('checkedStudents[]', False)
-    students_id = list(map(int, students_for_transfer))
-
-    for st in students_id:
-        student = Student.objects.get(student_id=st)
-        current_semester = student.semester.semester
-        level = student.level
-
-        if (level == Student.Level.BAC and current_semester != 8) or (level == Student.Level.MAG and current_semester != 4):
-            next_semester = current_semester + 1
-            semester_obj = Semester.objects.get(semester=next_semester)
-            student.semester = semester_obj
-            student.save()
-        else:
-            # change the student status to <Выпускник> and sent to <Архив>
-            student.status = Student.Status.GRADUATED
-            student.save()
-
-    logger.info('|---> Перевод студентов на следующий семестр успешно выполнен')
-    return JsonResponse({"success": "Updated"})
 
 
 class ResultCreateView(LoginRequiredMixin, CreateView):
