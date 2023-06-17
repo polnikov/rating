@@ -12,6 +12,7 @@
 
 {% block content %}
 
+<div id="has-group" style="display: none">{{ request.user|has_group:"Сотрудники" }}</div>
 <div id="segments" class="ui basic segments">
    <!-- Title & button -->
    <div id="buttons-segment" class="ui basic segment">
@@ -242,8 +243,8 @@
                      <th>Направление</th>
                      <th>Профиль | Специализация</th>
                      <th>Шифр</th>
-                     <th class="collapsing">Удалить</th>
-                     <th class="collapsing">Изменить</th>
+                     <th>Удалить</th>
+                     <th>Изменить</th>
                   </tr>
                </thead>
                <tbody>
@@ -258,7 +259,7 @@
 </div>
 
 <!-- Modal for update group -->
-<div id="update-group-modal" class="ui large modal">
+<div id="update-modal" class="ui large modal">
    <div class="basic center aligned header" style="font-family: Hack">Изменить группу</div>
    <div class="content" style="font-family: Hack">
       <form id="update-form" method="POST">
@@ -301,7 +302,7 @@
 </div>
 
 <!-- Modal for delete group -->
-<div id="delete-group-modal" class="ui modal">
+<div id="delete-modal" class="ui modal">
    <div class="basic center aligned header" style="font-family: Hack">Удалить группу</div>
    <div class="content" style="font-family: Hack">
       <form id="delete-form" method="POST">
@@ -346,6 +347,8 @@
 <script type="text/javascript" src="{% static 'js/script_groups.js' %}"></script>
 <script type="text/javascript">
    $(document).ready(function() {
+      $('.menu .item').tab();
+
       if ($.fn.DataTable.isDataTable('#groups-table')) {
          $('#groups-table').DataTable().destroy();
       };
@@ -388,7 +391,7 @@
 
       $('#groups-table').DataTable(groupsDataTableOptions);
 
-      var hasGroup = '{{ request.user|has_group:"Сотрудники" }}';
+      var hasGroup = document.getElementById('has-group').textContent;
       fetchGroupsDataAndPopulate(hasGroup);
 
       var forms = document.forms;
@@ -400,12 +403,11 @@
             };
          };
       };
+
+      // убрать нижний отступ сегмента с заголовком и кнопками
+      let segments = document.getElementById("segments");
+      segments.style.paddingBottom = '0';
    });
-
-
-
-   // tabs
-   $('.menu .item').tab();
 
    // DataTable
    $(document).ready(function() {
@@ -644,13 +646,6 @@
       });
    });
 
-   // убрать нижний отступ сегмента с заголовком и кнопками
-   let segments = document.getElementById("segments");
-   segments.style.paddingBottom = '0';
-
-   // убрать верхний отступ сегмента с таблицей
-   let datatableSegment = document.getElementById("datatable-segment");
-   datatableSegment.style.paddingTop = '0';
 </script>
 
 {% endblock %}
