@@ -52,11 +52,20 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
         course = students[0].course if students else '-'
 
         if group.level == 'Бакалавриат':
-            max_semester = 8
+            if 'Сб(ИС)' in group.name:
+                max_semester = 4
+                min_semester = 1
+            elif 'Сб(ИС-' in group.name:
+                max_semester = 8
+                min_semester = 5
+            else:
+                max_semester = 8
+                min_semester = 1
         else:
             max_semester = 4
+            min_semester = 1
 
-        previous_semester = semester - 1 if semester > 1 else False
+        previous_semester = semester - 1 if semester > min_semester else False
         next_semester = semester + 1 if semester < max_semester else False
         
         # профильные группы строительства
