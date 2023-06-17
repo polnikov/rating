@@ -46,31 +46,40 @@ class StudentMoneyList(generics.ListAPIView):
     serializer_class = serializers.StudentMoneySerializer
 
 
-@api_view(['GET'])
 def transfer_students(request):
-    '''Перевести студентов на следующий семестр. В случае последнего семестра студент отправляется в <Архив> со сменой
-    статуса на <Выпускник>.
+    '''Transfer students to the next semester. In case of the last semester the student is sent to <Архив> with a status
+    change to <Выпускник>.
     '''
-    logger.info('API: Перевод студентов на следующий семестр...')
+    logger.info('Перевод студентов на следующий семестр...')
     students_for_transfer = request.POST.getlist('checkedStudents[]', False)
+    profile = request.POST.get('profile', False)
     students_id = list(map(int, students_for_transfer))
 
-    for st in students_id:
-        student = Student.objects.get(student_id=st)
-        current_semester = student.semester.semester
-        level = student.level
+    if not profile:
+        for st in students_id:
+            student = Student.objects.get(student_id=st)
+            current_semester = student.semester.semester
+            level = student.level
 
-        if (level == 'Бакалавриат' and current_semester != 8) or (level == 'Магистратура' and current_semester != 4):
-            next_semester = current_semester + 1
-            semester_obj = Semester.objects.get(semester=next_semester)
-            student.semester = semester_obj
-            student.save()
-        else:
-            # меняем статус студента на <Выпускник> и отправляем в <Архив>
-            student.status = 'Выпускник'
-            student.is_archived = True
+            if (level == Student.Level.BAC and current_semester != 8) or (level == Student.Level.MAG and current_semester != 4):
+                next_semester = current_semester + 1
+                semester_obj = Semester.objects.get(semester=next_semester)
+                student.semester = semester_obj
+                student.save()
+            else:
+                # change the student status to <Выпускник> and sent to <Архив>
+                student.status = Student.Status.GRADUATED
+                student.save()
+    else:
+        group = Group.objects.get(name=profile)
+        for st in students_id:
+            student = Student.objects.get(student_id=st)
+            student.group = group
+            semester = Semester.objects.get(semester='5')
+            student.semester = semester
             student.save()
 
+    logger.info('|---> Перевод студентов на следующий семестр успешно выполнен')
     return JsonResponse({"success": "Updated"})
 
 

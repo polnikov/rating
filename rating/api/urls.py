@@ -25,13 +25,13 @@ urlpatterns = [
     path('v1/debts/students/', views.students_debts),              # [-]
     path('v1/rating/', views.student_rating),  # [-]
 
-    path('v1/transferstudents/', views.transfer_students),  # [-]
     path('v1/import/students/', views.import_students),     # [-]
 
 
     path('v1/resetgroupsubjects/', views.reset_groupsubjects),  # [+]
 
-    path('v1/groupmarks/', views.group_marks),  # [+]
+    path('v1/transfer/students/', views.transfer_students),  # [+]
+    path('v1/groupmarks/', views.group_marks),               # [+]
 
     path('v1/import/results/', views.import_results),      # [+]
     path('v1/import/cathedras/', views.import_cathedras),  # [+]
