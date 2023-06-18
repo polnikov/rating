@@ -39,8 +39,7 @@
         <!-- Tabs title's -->
         <div class="ui secondary menu" style="font-family: Hack">
             <a class="item active" data-tab="first"><i class="checkmark green icon"></i>Активные</a>
-            <a class="item" data-tab="second"><i class="graduation blue cap icon"></i>Выпускники</a>
-            <a class="item" data-tab="third"><i class="history red icon"></i>История изменений</a>
+            <a class="item" data-tab="second"><i class="history red icon"></i>История изменений</a>
         </div>
 
         <!-- Tab 1 -->
@@ -107,52 +106,8 @@
 		</div>
 
         <!-- Tab 2 -->
-        <!-- Graduates -->
-        <div class="ui tab" data-tab="second">
-			<!-- Table -->
-			{% if graduates %}
-				<table id="graduates" class="ui selectable celled compact small table">
-
-					<thead>
-						<tr class="center aligned">
-							<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
-							<th>ФИО
-								<div id="count-label" class="ui left pointing grey tiny label">{{ graduates.count }}</div></th>
-							<th class="collapsing">Группа</th>
-							<th class="collapsing">Семестр</th>
-							<th class="collapsing">Год выпуска</th>
-							<th class="collapsing">Примечание</th>
-						</tr>
-					</thead>
-
-					<tbody>
-						{% for student in graduates %}
-							<tr>
-								<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
-								<td class="collapsing">
-									<a href="{{ student.get_absolute_url }}">{{ student.fullname }}</a>
-									{% if student.tag %}
-										<div id="tag-label" class="ui small pink label">{{ student.tag }}</div>
-									{% endif %}
-								</td>
-								<td class="center aligned">{{ student.group }}</td>
-								<td class="center aligned">{{ student.semester.semester }}</td>
-
-								<td class="center aligned">{{ student.graduate_year|date:"Y" }}</td>
-								<td>{{ student.comment|truncatechars:25 }}</td>
-							</tr>
-						{% endfor %}
-					</tbody>
-
-				</table>
-			{% else %}
-				{% include 'empty_records.html' %}
-			{% endif %}
-		</div>
-
-		<!-- Tab 3 -->
         <!-- History -->
-        <div class="ui tab" data-tab="third">
+        <div class="ui tab" data-tab="second">
             {% if history %}
                 <table id="student-history" class="ui selectable celled compact small table">
                     <thead>
@@ -225,66 +180,6 @@
 		document.querySelector('#students').style.width = "100%";
 		// DataTable
 		var table = $('#students').DataTable({
-			language: {
-				lengthMenu: '_MENU_ записей на страницу',
-				zeroRecords: 'Записей нет...',
-				info: 'Всего записей: _MAX_',
-				infoEmpty: '',
-				infoFiltered: 'Найдено: _TOTAL_',
-				search: '',
-				searchPlaceholder: 'поиск',
-				paginate: {
-				first:    '«',
-				previous: '‹',
-				next:     '›',
-				last:     '»'
-			}
-			},
-			lengthMenu: [
-			[20, 50, -1],
-			[20, 50, 'Все']
-		],
-		pageLength: 20,
-		columnDefs: [
-			{ searchable: false, targets: 0 }
-		],
-		});
-
-		// Filter event handler
-		$(table.table().container()).on('keyup', 'thead input', function() {table
-			.column($(this).data('index'))
-			.search(this.value)
-			.draw();
-		});
-
-		// Clean filters inputs by double-clicking above the head
-		$(document).on("dblclick",  ".ui.stackable.grid", function() {
-			let inputs = document.getElementsByName("filter");
-			inputs.forEach(e => {
-				e.value = "";
-			});
-			table.search('');
-			table.columns().search('').draw();
-		});
-		changeDatatableInputFont();
-	});
-
-	$(document).ready(function() {
-		let firstRow = $('#graduates thead tr')[0];
-		let secondRow = firstRow.cloneNode(true);
-		firstRow.after(secondRow);
-
-		let filterColumns = $('#graduates thead tr')[0].children;
-		for (let i = 0; i < filterColumns.length; i++) {
-			let inputWidth = filterColumns[i].offsetWidth - 15;
-			if(i != 0) {
-				filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 250px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-			} else {filterColumns[i].innerHTML = ""};
-		};
-
-		document.querySelector('#graduates').style.width = "100%";
-		// DataTable
-		var table = $('#graduates').DataTable({
 			language: {
 				lengthMenu: '_MENU_ записей на страницу',
 				zeroRecords: 'Записей нет...',

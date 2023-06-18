@@ -13,6 +13,9 @@ urlpatterns = [
     path('<int:pk>/delete/', views.StudentDeleteView.as_view(), name='delete'),
     path('<int:pk>/update/', views.StudentUpdateView.as_view(), name='update'),
 
+    # Graduates
+    path('graduates/', views.GraduatesView.as_view(), name='graduates'),
+
     # Students actions
     path('import/', views.import_students, name='import'),
 

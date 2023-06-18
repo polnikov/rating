@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% load customfilters %}
+
+{% block title %}Выпускники{% endblock %}
+
+{% block content %}
+
+<div id="segments" class="ui basic segments">
+
+{% if graduates %}
+	<!-- Title -->
+	<div class="ui basic segment">
+        <div class="ui stackable two column grid">
+            <div class="column"><h2 style="font-family: Hack">Выпускники</h2></div>
+        </div>
+    </div>
+
+	<!-- Table -->
+	<div id="datatable-segment" class="ui basic segment">
+        <table id="graduates-table" class="ui selectable celled compact fixed single line table">
+            <thead>
+                <tr class="center aligned">
+                    <th id="numbers"><i class="hashtag small icon"></i></th>
+                    <th>ФИО
+                        <div id="count-label" class="ui left pointing grey tiny label">{{ graduates.count }}</div>
+                    </th>
+                    <th>Группа</th>
+                    <th>Семестр</th>
+                    <th>Год выпуска</th>
+                    <th>Примечание</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in graduates %}
+                    <tr>
+                        <td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
+                        <td class="collapsing">
+                            <a href="{{ student.get_absolute_url }}">{{ student.fullname }}</a>
+                            {% if student.tag %}
+                                <div id="tag-label" class="ui small pink label">{{ student.tag }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="center aligned">{{ student.group }}</td>
+                        <td class="center aligned">{{ student.semester.semester }}</td>
+
+                        <td class="center aligned">{{ student.graduate_year|date:"Y" }}</td>
+                        <td>{{ student.comment|truncatechars:25 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+{% else %}
+    {% include 'empty_records.html' %}
+{% endif %}
+
+<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        const dataTableOptions = {
+			language: {
+				lengthMenu: '_MENU_ записей на страницу',
+				zeroRecords: 'Записей нет...',
+				info: 'Всего записей: _MAX_',
+				infoEmpty: '',
+				infoFiltered: 'Найдено: _TOTAL_',
+				search: '',
+				searchPlaceholder: 'поиск',
+				paginate: {
+					first:    '«',
+					previous: '‹',
+					next:     '›',
+					last:     '»'
+				}
+			},
+			lengthMenu: [
+				[20, 50, -1],
+				[20, 50, 'Все']
+			],
+			pageLength: 20,
+            searching: true,
+			autoWidth: false,
+			columnDefs: [
+				{ width: "3%", targets: 0 },
+				{ width: "37%", targets: 1 },
+				{ width: "10%", targets: [2, 3, 4] },
+				{ width: "30%", targets: 5 },
+				{ searchable: false, targets: 0 },
+			],
+		};
+		var table = $('#graduates-table').DataTable(dataTableOptions);
+		changeDatatableInputFont();
+    })
+</script>
+
+{% endblock %}

@@ -13,7 +13,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.generic import (
-    CreateView, DeleteView, DetailView, ListView, UpdateView, View
+    CreateView, DeleteView, DetailView, ListView, UpdateView, View, TemplateView,
 )
 
 from groups.models import Group
@@ -45,8 +45,6 @@ class StudentListView(LoginRequiredMixin, ListView):
         context['students_list'] = students
         num_active_students = students.filter(status__exact='Является студентом').count()
         context['num_students'] = num_active_students
-        graduates = Student.active_objects.select_related('group', 'semester').filter(status='Выпускник')
-        context['graduates'] = graduates
         history = StudentLog.objects.select_related('user').order_by('-timestamp').values()
         context['history'] = history
         return context
@@ -283,6 +281,16 @@ class StudentUpdateView(LoginRequiredMixin, UpdateView):
     model = Student
     form_class = StudentForm
     template_name = 'students/student_update.html'
+
+
+class GraduatesView(LoginRequiredMixin, TemplateView):
+    template_name = 'students/graduates.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        graduates = Student.archived_objects.filter(status='Выпускник')
+        context['graduates'] = graduates
+        return context
 
 
 def import_students(request):
