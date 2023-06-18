@@ -30,7 +30,7 @@
                   </div>
                </td>
                <!-- Buttons -->
-               <td id="back-button-cell" class="top aligned" colspan="2">
+               <td id="buttons-cell" class="top aligned" colspan="2">
                   {% if request.user|has_group:"Сотрудники" %}
                      {% if subjects %}
                         <button
@@ -61,8 +61,6 @@
                         <div class="hidden content"> ведомости</div>
                      </button>
                   {% endif %}
-                  <a href="{% url 'groups:cards' %}">
-                     <button id="back-button" class="ui grey small circular button"><i class="left arrow icon"></i>Назад</button></a>
                </td>
             </tr>
          </tbody>
