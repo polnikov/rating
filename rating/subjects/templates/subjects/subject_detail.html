@@ -27,9 +27,6 @@
                     <button id="trash-button" class="ui red small circular button" onclick="showDeleteSubject({{ subject.id }})"><i class="trash alternate outline icon"></i>Удалить</button>
                     <button id="update-button" class="positive ui small circular button" onclick="showUpdateSubject({{ subject.id }})"><i class="sync alternate icon"></i>Обновить</button>
                 {% endif %}
-                <a href="{% url 'subjects:subjects' %}">
-                    <button id="back-button" class="ui grey small circular button"><i class="left arrow icon"></i>Назад</button>
-                </a>
             </div>
         </div>
     </div>

@@ -41,7 +41,7 @@
    transform: scale(-1);
    inline-size: 300px;
 }
-#back-button-cell {
+#buttons-cell {
    text-align: right;
 }
 .tooltip:hover
@@ -79,7 +79,6 @@
 #cancel-button,
 #save-button,
 #reset-button,
-#back-button,
 #download-button,
 #update-button,
 #transfer-button,
