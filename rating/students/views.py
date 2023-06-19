@@ -30,18 +30,10 @@ logger = logging.getLogger(__name__)
 class StudentView(LoginRequiredMixin, TemplateView):
     template_name = 'students/students.html'
 
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        students = Student.active_objects.select_related('group', 'semester').filter(status__exact='Является студентом').order_by(
-            'semester',
-            'group',
-            'level',
-            'last_name',
-            'first_name',
-            'second_name',
-            'status',
-        )
-        context['students'] = students
+        context['students'] = Student.active_objects.all().count()
         context['form'] = StudentForm()
         return context
 
