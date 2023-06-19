@@ -231,6 +231,15 @@ class CathedraSerializer(serializers.ModelSerializer):
 
 
 # Subjects
+class SubjectsListSerializer(serializers.ModelSerializer):
+    cathedra = serializers.SlugRelatedField(slug_field='short_name', queryset=Cathedra.objects)
+    semester = serializers.SlugRelatedField(slug_field='semester', queryset=Semester.objects)
+
+    class Meta:
+        model = Subject
+        fields = ('id', 'name', 'form_control', 'semester', 'cathedra', 'comment')
+
+
 class SubjectSerializer(serializers.ModelSerializer):
     cathedra = CathedraSerializer()
     history = serializers.SerializerMethodField(read_only=True)

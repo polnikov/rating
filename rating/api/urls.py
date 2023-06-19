@@ -21,6 +21,7 @@ urlpatterns = [
     path('v1/', include(router.urls)),
     path('v1/activestudents/', views.StudentsList.as_view()),      # [+]
     path('v1/history/students/', views.StudentLogList.as_view()),  # [+]
+    path('v1/activesubjects/', views.SubjectsList.as_view()),      # [+]
     path('v1/history/subjects/', views.SubjectLogList.as_view()),  # [-]
     path('v1/money/', views.StudentMoneyList.as_view()),           # [-]
     path('v1/debts/students/', views.students_debts),              # [-]
