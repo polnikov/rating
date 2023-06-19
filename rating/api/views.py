@@ -890,6 +890,11 @@ def import_cathedras(request):
 
 
 # Subjects
+class SubjectsList(generics.ListAPIView):
+    queryset = Subject.active_objects.all()
+    serializer_class = serializers.SubjectsListSerializer
+
+
 class SubjectViewSet(viewsets.ModelViewSet):
     queryset = Subject.objects.all()
     serializer_class = serializers.SubjectSerializer

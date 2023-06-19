@@ -18,7 +18,7 @@ const csrftoken = getCookie('csrftoken');
 fetchSubjectsDataAndPopulate();
  
 function fetchSubjectsDataAndPopulate() {
-    const url = window.location.origin + "/api/v1/subjects/";
+    const url = window.location.origin + "/api/v1/activesubjects/";
     $('#datatable-segment').dimmer({
         displayLoader: true,
         loaderVariation: 'slow orange medium elastic',
@@ -36,8 +36,8 @@ function fetchSubjectsDataAndPopulate() {
                     index + 1,
                     `<div id="${subject.id}" name="subject" onclick="getAbsoluteURL(${subject.id})"><a>${subject.name}</a></div>`,
                     subject.form_control,
-                    subject.semester.semester,
-                    (subject.cathedra !== null) ? subject.cathedra.short_name :  '<td class="negative"><i class="icon close"></i> Нет</td>',
+                    subject.semester,
+                    (subject.cathedra !== null) ? subject.cathedra :  '<td class="negative"><i class="icon close"></i> Нет</td>',
                     subject.comment,
                 ];
                 table.row.add(rowData);
