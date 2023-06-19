@@ -7,17 +7,11 @@ app_name = 'students'
 
 urlpatterns = [
     # Students
-    path('', views.StudentListView.as_view(), name='students'),
-    path('add/', views.StudentCreateView.as_view(), name='add'),
+    path('', views.StudentView.as_view(), name='students'),
     path('<int:pk>/', views.StudentDetailView.as_view(), name='detail'),
-    path('<int:pk>/delete/', views.StudentDeleteView.as_view(), name='delete'),
-    path('<int:pk>/update/', views.StudentUpdateView.as_view(), name='update'),
 
     # Graduates
     path('graduates/', views.GraduatesView.as_view(), name='graduates'),
-
-    # Students actions
-    path('import/', views.import_students, name='import'),
 
     # Students debts
     path('debts/', views.StudentsDebtsListView.as_view(), name='debts'),

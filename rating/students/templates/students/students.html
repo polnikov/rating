@@ -1,37 +1,29 @@
-<!DOCTYPE html>
-
 {% extends "base.html" %}
 
 {% load static %}
+
+{% load semanticui %}
 
 {% load customfilters %}
 
 {% block title %}Студенты{% endblock %}
 
 {% block content %}
-
+<div id="num-students" style="display: none">{{ students.count }}</div>
 <div id="segments" class="ui basic segments">
 
 	<!-- Title & button -->
-	<div id="buttons-segment" class="ui basic segment">
-		<table class="ui very basic table">
-			<tbody>
-				<tr>
-					<td><h2 style="font-family: Hack">Студенты</h2></td>
-					{% if request.user|has_group:"Сотрудники" %}
-						<td class="right aligned">
-							<a href="{% url 'students:import' %}">
-								<button id="import-button" class="ui orange small circular button" style="font-family: Hack"><i class="icon download"></i>Импорт CSV</button>
-							</a>
-							<a href="{% url 'students:add' %}">
-								<button id="add-button" class="ui positive small circular button" style="font-family: Hack"><i class="icon plus circle"></i>Добавить</button>
-							</a>
-						</td>
-					{% endif %}
-				</tr>
-			</tbody>
-		</table>
-	</div>
+	<div class="ui basic segment">
+        <div class="ui stackable two column grid">
+            <div class="column"><h2 style="font-family: Hack">Студенты</h2></div>
+            <div class="column right aligned">
+                {% if request.user|has_group:"Сотрудники" %}
+                    <button id="import-button" class="ui orange small circular button" onclick="showModal('import-students')"><i class="icon download"></i>Импорт CSV</button>
+                    <button id="add-button" class="ui positive small circular button" onclick="showModal('add-modal')"><i class="icon plus circle"></i>Добавить</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
     <!-- Tabs -->
     <div id="tabs-segment" class="ui basic segment">
@@ -46,21 +38,10 @@
         <!-- All students -->
         <div class="ui tab active" data-tab="first">
 			<!-- Table -->
-			{% if students_list %}
-				<table id="students" class="ui selectable celled compact small table">
-					<thead>
-						<tr class="center aligned">
-							<th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
-							<th>ФИО
-								<div id="count-label" class="ui left pointing grey tiny label">{{ num_students }}</div></th>
-							<th class="collapsing">Группа</th>
-							<th class="collapsing">Семестр</th>
-							<th class="collapsing">Статус</th>
-							<th class="collapsing">Гражданство</th>
-							<th class="collapsing">Примечание</th>
-						</tr>
-					</thead>
-					<tbody>
+			{% if students %}
+				<table id="students-table" class="ui selectable celled compact fixed single line table">
+					<!-- data from script -->
+					{% comment %} <tbody>
 						{% for student in students_list %}
 							<tr>
 								<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
@@ -98,7 +79,7 @@
 								<td>{{ student.comment|truncatechars:25 }}</td>
 							</tr>
 						{% endfor %}
-					</tbody>
+					</tbody> {% endcomment %}
 				</table>
 			{% else %}
 				{% include 'empty_records.html' %}
@@ -108,78 +89,293 @@
         <!-- Tab 2 -->
         <!-- History -->
         <div class="ui tab" data-tab="second">
-            {% if history %}
-                <table id="student-history" class="ui selectable celled compact small table">
-                    <thead>
-                        <tr class="center aligned">
-                            <th class="collapsing">Дата и время</th>
-                            <th>Автор</th>
-                            <th>Студент</th>
-                            <th>Свойство</th>
-                            <th>Было</th>
-                            <th>Стало</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for record in history %}
-                            <tr>
-                                <td class="center aligned collapsing">{{ record.timestamp|date:"d.m.y | H:i" }}</td>
-                                <td class="collapsing">{{ record.user_id|get_user_last_name }}</td>
-                                <td class="collapsing">
-									<a href="{{ record.record_id }}">
-										{{ record.record_id|get_student_fullname }}
-									</a>
-								</td>
-                                <td class="collapsing">{{ record.field }}</td>
-                                {% if record.field == 'Attestaion date' %}
-                                    <td>{{ record.old_value|date_or_else }}</td>
-                                    <td>{{ record.new_value|date_or_else }}</td>
-                                {% else %}
-                                    <td>{{ record.old_value|default:"---"|truncatechars:40 }}</td>
-                                    <td>{{ record.new_value|default:"---"|truncatechars:40 }}</td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <div class="ui one column centered grid">
-                    <div class="one column"></div>
-                    <div class="ui center aligned container">
-                        <p>Изменений пока нет...</p>
-                    </div>
-                    <div class="one column"></div>
-                </div>
-            {% endif %}
+			<table id="history-table" class="ui selectable celled compact fixed single line small table">
+				<!-- data from script -->
+					{% comment %} {% for record in history %}
+						<tr>
+							<td class="center aligned collapsing">{{ record.timestamp|date:"d.m.y | H:i" }}</td>
+							<td class="collapsing">{{ record.user_id|get_user_last_name }}</td>
+							<td class="collapsing">
+								<a href="{{ record.record_id }}">
+									{{ record.record_id|get_student_fullname }}
+								</a>
+							</td>
+							<td class="collapsing">{{ record.field }}</td>
+							{% if record.field == 'Attestaion date' %}
+								<td>{{ record.old_value|date_or_else }}</td>
+								<td>{{ record.new_value|date_or_else }}</td>
+							{% else %}
+								<td>{{ record.old_value|default:"---"|truncatechars:40 }}</td>
+								<td>{{ record.new_value|default:"---"|truncatechars:40 }}</td>
+							{% endif %}
+						</tr>
+					{% endfor %} {% endcomment %}
+			</table>
         </div>
 	</div>
 </div>
 
+<!-- Modal for add student -->
+<div id="add-modal" class="ui large modal">
+    <div class="basic center aligned header" style="font-family: Hack">Добавить студента</div>
+    <div class="content" style="font-family: Hack">
+        <form id="add-form" method="POST">
+			{% csrf_token %}
+			<div class="ui small form">
+				<div class="three fields">
+					<div class="required field">
+						<label>Фамилия</label>
+						{{ form.last_name }}
+					</div>
+					<div class="required field">
+						<label>Имя</label>
+						{{ form.first_name }}
+					</div>
+					<div class="field">
+						<label>Отчество</label>
+						{{ form.second_name }}
+					</div>
+				</div>
+
+				<div class="ui hidden divider"></div>
+
+				<div class="five fields">
+					<div class="required three wide field {% if form.student_id.errors %} error {% endif %}">
+						<label>Зачетная книжка</label>
+						{% render_field form.student_id _no_label='True' placeholder='ID студента' %}
+					</div>
+					<div class="required three wide field">
+						<label>Группа</label>
+						{% render_field form.group _no_label='True' placeholder='Выбрать' %}
+					</div>
+					<div class="required two wide field">
+						<label>Семестр</label>
+						{% render_field form.semester _no_label='True' placeholder='Выбрать' %}
+					</div>
+					<div class="required three wide field">
+						<label>Гражданство</label>
+						{% render_field form.citizenship _no_label='True' %}
+					</div>
+					<div class="required three wide field">
+						<label>Основа обучения</label>
+						{% render_field form.basis _no_label='True' placeholder='Выбрать' %}
+					</div>
+				</div>
+
+				<div class="two fields">
+					<div class="required three wide field">
+						<label>Уровень обучения</label>
+						{% render_field form.level _no_label='True' %}
+					</div>
+
+					<div class="required three wide field {% if form.start_date.errors %} error {% endif %}">
+						<label>Дата зачисления</label>
+						<div class="ui input left icon">
+							<i class="calendar alternate outline icon"></i>
+							{{ form.start_date }}
+						</div>
+					</div>
+				</div>
+
+				<div class="ui hidden divider"></div>
+
+				<div id="status" class="inline required fields">
+					<label>Статус</label>
+					{% for status in form.status %}
+						<div class="field">
+							<div class="ui label">{{ status }}</div>
+						</div>
+					{% endfor %}
+				</div>
+
+				<div class="ui hidden divider"></div>
+
+				<div class="inline fields">
+					<label>Тэг</label>
+					{% for tag in form.tag %}
+						<div class="field">
+							<div class="ui label">{{ tag }}</div>
+						</div>
+					{% endfor %}
+				</div>
+
+				<div class="ui hidden divider"></div>
+
+				<div class="inline required fields">
+					<label>Стипендия</label>
+					{% for money in form.money %}
+						<div class="field">
+							<div class="ui label">{{ money }}</div>
+						</div>
+					{% endfor %}
+				</div>
+
+				<div class="ui hidden divider"></div>
+
+                <div class="field">
+                    <label>Примечание</label>
+                    <div class="ui blue message">
+                        Для указания даты выхода в АО, используйте форму записи: <mark>АО:ДД.ММ.ГГГГ</mark><br>
+                        Для указания даты с которой студент ушёл на больничный, используйте форму записи: <mark>Болеет:ДД.ММ.ГГГГ</mark>
+                    </div>
+                    {{ form.comment }}
+                </div>
+				<div class="field">
+					{% render_field form.is_archived _no_label='True' %}
+				</div>
+			</div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <div class="ui circular cancel button" onclick="resetAddForm()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div class="ui green circular button" onclick="saveStudentForm()" style="font-family: Hack"><i class="save icon"></i>Сохранить</div>
+    </div>
+</div>
+
+<!-- Modal for import students -->
+<div id="import-students" class="ui large modal">
+    <div class="basic center aligned header" style="font-family: Hack">Импорт студентов</div>
+    <div class="content" style="font-family: Hack">
+		<table class="ui celled small table center aligned">
+			<thead>
+				<tr>
+					<th>Личный номер студента</th>
+					<th>Фамилия</th>
+					<th>Имя</th>
+					<th>Отчество</th>
+					<th>Основа обучения</th>
+					<th>Гражданство</th>
+					<th>Уровень обучения</th>
+					<th>Группа</th>
+					<th>Семестр</th>
+					<th>Дата зачисления</th>
+					<th>Статус</th>
+					<th>Тэг</th>
+					<th>Стипендия</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><div name="point" class="ui red circular small label">1</div></td>
+					<td><div name="point" class="ui red circular small label">2</div></td>
+					<td><div name="point" class="ui red circular small label">3</div></td>
+					<td><div name="point" class="ui grey circular small label">4</div></td>
+					<td><div name="point" class="ui red circular small label">5</div></td>
+					<td><div name="point" class="ui red circular small label">6</div></td>
+					<td><div name="point" class="ui red circular small label">7</div></td>
+					<td><div name="point" class="ui red circular small label">8</div></td>
+					<td><div name="point" class="ui red circular small label">9</div></td>
+					<td><div name="point" class="ui red circular small label">10</div></td>
+					<td><div name="point" class="ui red circular small label">11</div></td>
+					<td><div name="point" class="ui grey circular small label">12</div></td>
+					<td><div name="point" class="ui red circular small label">13</div></td>
+				</tr>
+				<tr>
+					<td colspan="13" class="left aligned"><strong>Разделитель <;>. Заполнение данными начинать с 2ой строки.</strong></td>
+				</tr>
+			</tbody>
+		</table>
+		<table class="ui very basic small table">
+			<tbody>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label"></div></td>
+					<td>Обязательные поля</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">5</div></td>
+					<td>Бюджет | Контракт | ИГ</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">6</div></td>
+					<td>Россия | Иностранец</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">7</div></td>
+					<td>Бакалавриат | Магистратура</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">8</div></td>
+					<td>Без указания семестра или курса. Например: ТТ</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">9</div></td>
+					<td>Номер текущего семестра студента</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">10</div></td>
+					<td>Формат даты: дд.мм.гггг</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">11</div></td>
+					<td>Является студентом | Академический отпуск | Отчислен | Выпускник</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui grey circular small label">12</div></td>
+					<td>из АО | восстановлен | перевелся на фак-т | перевелся с фак-та | пусто</td>
+				</tr>
+				<tr>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">13</div></td>
+					<td>нет | 1.0 | 1.25 | 1.5</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="ui basic segment center aligned">
+			<form id="upload-file-form" method="post">
+				{% csrf_token %}
+				<div class="ui grid">
+					<div class="column">
+						<div class="ui file input small">
+							<input name="import_file" type="file">
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="basic actions">
+		<div class="ui cancel button" onclick="document.querySelector('#upload-file-form').reset()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+		<div id="import-btn" class="ui blue button" onclick="importStudents()" style="font-family: Hack"><i class="icon download"></i>Загрузить</div>
+	</div>
+</div>
+
+<!-- Modal for errors -->
+<div id="errors" class="ui small modal">
+    <div class="basic center aligned header" style="font-family: Hack">Возникли ошибки по следующим данным</div>
+    <div class="scrolling content" >
+        <div id="errors-list" class="ui list" style="font-family: Hack"></div>
+    </div>
+</div>
+
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
-
-<!-- DataTable -->
-<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
-
+<script type="text/javascript" src="{% static 'js/script_students.js' %}"></script>
 <script type="text/javascript">
-	$('.menu .item').tab();
-
 	$(document).ready(function() {
-		let firstRow = $('#students thead tr')[0];
-		let secondRow = firstRow.cloneNode(true);
-		firstRow.after(secondRow);
-
-		let filterColumns = $('#students thead tr')[0].children;
-		for (let i = 0; i < filterColumns.length; i++) {
-			let inputWidth = filterColumns[i].offsetWidth - 15;
-			if(i != 0) {
-				filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 250px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-			} else {filterColumns[i].innerHTML = ""};
+		$('.menu .item').tab();
+		$('select.dropdown').dropdown();
+		$(function () {
+			$("#id_start_date").datepicker({
+				weekStart: 1,
+				daysMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+				monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+				format:'dd.mm.yyyy',
+				autoHide: true,
+			});
+		});
+	
+		if ($.fn.DataTable.isDataTable('#students-table')) {
+			$('#students-table').DataTable().destroy();
 		};
-
-		document.querySelector('#students').style.width = "100%";
-		// DataTable
-		var table = $('#students').DataTable({
+		const students = document.getElementById('num-students').textContent;
+		const studentsDataTableOptions = {
+			columns: [
+                { title: '<i class="hashtag small icon"></i>' },
+                { title: `ФИО <div id="count-label" class="ui left pointing grey tiny label">${students}</div>` },
+                { title: 'Группа' },
+                { title: 'Семестр' },
+                { title: 'Уровень' },
+                { title: 'Гражданство' },
+                { title: 'Примечание' },
+            ],
 			language: {
 				lengthMenu: '_MENU_ записей на страницу',
 				zeroRecords: 'Записей нет...',
@@ -189,73 +385,122 @@
 				search: '',
 				searchPlaceholder: 'поиск',
 				paginate: {
-				first:    '«',
-				previous: '‹',
-				next:     '›',
-				last:     '»'
-			}
+					first:    '«',
+					previous: '‹',
+					next:     '›',
+					last:     '»'
+				}
 			},
 			lengthMenu: [
-			[20, 50, -1],
-			[20, 50, 'Все']
-		],
-		pageLength: 20,
-		columnDefs: [
-			{ searchable: false, targets: 0 }
-		],
-		});
+				[20, 50, -1],
+				[20, 50, 'Все']
+			],
+			pageLength: 20,
+            searching: true,
+			autoWidth: false,
+			columnDefs: [
+				{ width: "3%", targets: 0 },
+				{ width: "45%", targets: 1 },
+				{ width: "8%", targets: [2, 3, 4, 5] },
+				{ width: "20%", targets: 6 },
+				{ searchable: false, targets: 0 },
+                { className: 'center aligned', targets: [0, 2, 3, 4, 5] },
+			],
+			headerCallback: function(thead, cellData, start, end, display) {
+                $(thead).find('th').addClass('center aligned');
+            },
+		};
+		var studentsTable = $('#students-table').DataTable(studentsDataTableOptions);
+		let firstRow = $('#students-table thead tr')[0];
+		let secondRow = firstRow.cloneNode(true);
+		firstRow.after(secondRow);
 
+		let filterColumns = $('#students-table thead tr')[1].children;
+		for (let i = 0; i < filterColumns.length; i++) {
+			let inputWidth = filterColumns[i].offsetWidth - 60;
+			if(i != 0) {
+				filterColumns[i].innerHTML = `
+												<div class="ui input">
+													<input name="filter" type="text" style="width: ${inputWidth}px" data-index=${i}>
+												</div>
+											`;
+			} else {filterColumns[i].innerHTML = ""};
+		};
 		// Filter event handler
-		$(table.table().container()).on('keyup', 'thead input', function() {table
+		$(studentsTable.table().container()).on('keyup', 'thead input', function() {studentsTable
 			.column($(this).data('index'))
 			.search(this.value)
 			.draw();
 		});
-
 		// Clean filters inputs by double-clicking above the head
 		$(document).on("dblclick",  ".ui.stackable.grid", function() {
 			let inputs = document.getElementsByName("filter");
 			inputs.forEach(e => {
 				e.value = "";
 			});
-			table.search('');
-			table.columns().search('').draw();
+			studentsTable.search('');
+			studentsTable.columns().search('').draw();
 		});
-		changeDatatableInputFont();
-	});
-
-	$(document).ready(function() {
-		$('#student-history').DataTable({
-            language: {
-                lengthMenu: '_MENU_ записей на страницу',
-                zeroRecords: 'Записей нет...',
-                info: 'Всего записей: _MAX_',
-                infoEmpty: '',
-                infoFiltered: 'Найдено: _TOTAL_',
-                search: '',
-                searchPlaceholder: 'поиск',
-                paginate: {
-                    first:    '«',
-                    previous: '‹',
-                    next:     '›',
-                    last:     '»'
-                }
+		
+		if ($.fn.DataTable.isDataTable('#history-table')) {
+			$('#history-table').DataTable().destroy();
+		};
+		const studentsHistoryDataTableOptions = {
+			columns: [
+                { title: 'Дата и время' },
+                { title: 'Автор' },
+                { title: 'Студент' },
+                { title: 'Свойство' },
+                { title: 'Было' },
+                { title: 'Стало' },
+            ],
+			language: {
+				lengthMenu: '_MENU_ записей на страницу',
+				zeroRecords: 'Записей нет...',
+				info: 'Всего записей: _MAX_',
+				infoEmpty: '',
+				infoFiltered: 'Найдено: _TOTAL_',
+				search: '',
+				searchPlaceholder: 'поиск',
+				paginate: {
+					first:    '«',
+					previous: '‹',
+					next:     '›',
+					last:     '»'
+				}
+			},
+			lengthMenu: [
+				[20, 50, -1],
+				[20, 50, 'Все']
+			],
+			pageLength: 20,
+            searching: true,
+			autoWidth: false,
+			columnDefs: [
+				{ width: "10%", targets: [0, 1, 3] },
+				{ width: "26%", targets: 2 },
+				{ width: "22%", targets: [4, 5] },
+				{ searchable: false, targets: 0 },
+                { className: 'center aligned', targets: [0, 3] },
+			],
+			headerCallback: function(thead, cellData, start, end, display) {
+                $(thead).find('th').addClass('center aligned');
             },
-            lengthMenu: [
-                [20, 50, -1],
-                [20, 50, 'Все']
-            ],
-            autoWidth: false,
-            columnDefs: [
-                { width: 150, targets: 0 },
-                { width: 130, targets: 1 },
-                { width: 130, targets: 2 },
-            ],
-            pageLength: 20,
-			ordering: false,
-        });
+		};
+		var historyTable = $('#history-table').DataTable(studentsHistoryDataTableOptions);
+
 		changeDatatableInputFont();
 		deletePaddingTopForDatatableSegment();
+		removeSortingLabel('students-table');
+		var forms = document.forms;
+		for (let i = 0; i < forms.length; i++) {
+			var formElements = forms[i].elements;
+			for (let j = 0; j < formElements.length; j++) {
+				if (formElements[j].localName == "input" && formElements[j].type == "text") {
+					formElements[j].style.fontFamily = "Hack";
+				};
+			};
+		};
 	});
 </script>
 

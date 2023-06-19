@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-
 {% extends "base.html" %}
 
 {% load static %}
+
+{% load semanticui %}
 
 {% load customfilters %}
 
@@ -13,22 +13,20 @@
 <div id="segments" class="ui basic segments">
 
     <!-- Title & button -->
-    <div id="buttons-segment" class="ui basic segment">
-        <table class="ui very basic table">
-            <tbody>
-                <tr>
-                    <td><h3 style="font-family: Hack">{{ student.fullname|truncatechars:70 }} {% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %}{% if student.is_archived %}<i class="archive brown icon"></i>{% endif %}</h3></td>
-                    <td class="right aligned">
-                        {% if request.user|has_group:"Сотрудники" %}
-                            <a href="{% url 'students:delete' student.student_id %}">
-                                <button id="trash-button" type="button" class="ui red small circular button" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</button></a>
-                            <a href="{% url 'students:update' student.student_id %}">
-                                <button id="update-button" type="submit" class="positive ui small circular button" style="font-family: Hack"><i class="sync alternate icon"></i>Обновить</button></a>
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="ui basic segment">
+        <div class="ui stackable two column grid">
+            <div class="column">
+                <h3 style="font-family: Hack">
+                    {{ student.fullname|truncatechars:70 }} {% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %}{% if student.is_archived %}<i class="archive brown icon"></i>{% endif %}
+                </h3>
+            </div>
+            <div class="column right aligned">
+                {% if request.user|has_group:"Сотрудники" %}
+                    <button id="trash-button" class="ui red small circular button" onclick="showDeleteStudent({{ student.student_id }})"><i class="trash alternate outline icon"></i>Удалить</button>
+                    <button id="update-button" class="positive ui small circular button" onclick="showUpdateStudent({{ student.student_id }})"><i class="sync alternate icon"></i>Обновить</button>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
     <!-- Tabs -->
@@ -153,10 +151,10 @@
         <!-- Marks -->
         <div class="ui tab" data-tab="second">
             {% if request.user|has_group:"Сотрудники" %}
-                <table class="ui very basic table">
+                <table class="ui unstackable compact table">
                     <tbody>
-                        <tr>
-                            <td>
+                        <tr class="grey">
+                            <td class="right aligned">
                                 <button
                                     class="ui positive small animated circular icon button"
                                     style="font-family: Hack"
@@ -296,10 +294,194 @@
     </div>
 </div>
 
+<!-- Modal for delete student -->
+<div id="delete-modal" class="ui modal">
+    <div class="basic center aligned header" style="font-family: Hack">Удалить cтудента</div>
+    <div class="content" style="font-family: Hack">
+        <table class="ui definition table" style="margin-top: 0">
+            <tbody>
+                <tr>
+                    <td class="three wide">Зачетная книжка</td>
+                    <td id="del-id"></td>
+                </tr>
+                <tr>
+                    <td>Гражданство</td>
+                    <td id="del-citizenship"></td>
+                </tr>
+                <tr>
+                    <td>Основа обучения</td>
+                    <td id="del-basis"></td>
+                </tr>
+                <tr>
+                    <td>Уровень обучения</td>
+                    <td id="del-level"></td>
+                </tr>
+                <tr>
+                    <td>Группа</td>
+                    <td id="del-group"></td>
+                </tr>
+                <tr>
+                    <td>Семестр</td>
+                    <td id="del-semester"></td>
+                </tr>
+                <tr>
+                    <td>Дата зачисления</td>
+                    <td id="del-date"></td>
+                </tr>
+                <tr>
+                    <td>Стипендия</td>
+                    <td id="del-money"></td>
+                </tr>
+                <tr>
+                    <td>Статус</td>
+                    <td id="del-status"></td>
+                </tr>
+                <tr>
+                    <td>Примечание</td>
+                    <td id="del-comment"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="basic actions">
+        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="delete-btn" class="ui red circular button" onclick="deleteStudent()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+    </div>
+</div>
+
+<!-- Modal for update student -->
+<div id="update-modal" class="ui large modal">
+    <div class="basic center aligned header" style="font-family: Hack">Изменить студента</div>
+    <div class="content" style="font-family: Hack">
+        <form id="update-form" method="POST">
+            {% csrf_token %}
+            <div class="ui small form">
+                <div class="three fields">
+                    <div class="required field">
+                        <label>Фамилия</label>
+                        {{ form.last_name }}
+                    </div>
+                    <div class="required field">
+                        <label>Имя</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="field">
+                        <label>Отчество</label>
+                        {{ form.second_name }}
+                    </div>
+                </div>
+
+                <div class="ui hidden divider"></div>
+
+				<div class="five fields">
+					<div class="required three wide field {% if form.student_id.errors %} error {% endif %}">
+                        <label>Зачетная книжка</label>
+                        {{ form.student_id }}
+                    </div>
+					<div class="required three wide field">
+						<label>Группа</label>
+						{% render_field form.group _no_label='True' placeholder='Выбрать' %}
+					</div>
+					<div class="required two wide field">
+						<label>Семестр</label>
+						{% render_field form.semester _no_label='True' placeholder='Выбрать' %}
+					</div>
+					<div class="required three wide field">
+						<label>Гражданство</label>
+						{% render_field form.citizenship _no_label='True' %}
+					</div>
+					<div class="required three wide field">
+						<label>Основа обучения</label>
+						{% render_field form.basis _no_label='True' placeholder='Выбрать' %}
+					</div>
+				</div>
+
+                <div class="two fields">
+                    <div class="required three wide field">
+                        <label>Уровень обучения</label>
+                        {% render_field form.level _no_label='True' %}
+                    </div>
+
+                    <div class="required three wide field {% if form.start_date.errors %} error {% endif %}">
+                        <label>Дата зачисления</label>
+                        <div class="ui input left icon">
+                            <i class="calendar alternate outline icon"></i>
+                            {{ form.start_date }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ui hidden divider"></div>
+
+				<div id="status" class="inline required fields">
+                    <label>Статус</label>
+                    {% for status in form.status %}
+                        <div class="field">
+                            <div class="ui label">{{ status }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="ui hidden divider"></div>
+
+                <div class="inline fields">
+                    <label>Тэг</label>
+                    {% for tag in form.tag %}
+                        <div class="field">
+                            <div class="ui label">{{ tag }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="ui hidden divider"></div>
+
+                <div class="inline required fields">
+                    <label>Стипендия</label>
+                    {% for money in form.money %}
+                        <div class="field">
+                            <div class="ui label">{{ money }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="ui hidden divider"></div>
+
+                <div class="field">
+                    <label>Примечание</label>
+                    <div class="ui blue message">
+                        Для указания даты выхода в АО, используйте форму записи: <mark>АО:ДД.ММ.ГГГГ</mark><br>
+                        Для указания даты с которой студент ушёл на больничный, используйте форму записи: <mark>Болеет:ДД.ММ.ГГГГ</mark>
+                    </div>
+                    {{ form.comment }}
+                </div>
+
+                <div class="field">
+                    {% render_field form.is_archived _no_label='True' %}
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="update-btn" class="ui blue circular button" onclick="updateStudent()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+    </div>
+</div>
+
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/script_student_detail.js' %}"></script>
 <script type="text/javascript">
     $('.menu .item').tab();
-    
+    $(function () {
+        $("#id_start_date").datepicker({
+            weekStart: 1,
+            daysMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+            monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+            format:'dd.mm.yyyy',
+            autoHide: true,
+        });
+    });
+
     $(document).ready(function () {
         $('#student-marks').DataTable({
             language: {
@@ -368,6 +550,15 @@
             pageLength: 20,
             ordering: false,
         });
+        var forms = document.forms;
+        for (let i = 0; i < forms.length; i++) {
+            var formElements = forms[i].elements;
+            for (let j = 0; j < formElements.length; j++) {
+                if (formElements[j].localName == "input" && formElements[j].type == "text") {
+                    formElements[j].style.fontFamily = "Hack";
+                };
+            };
+        };
         changeDatatableInputFont();
         deleteTitleBlockPaddingBottom();
         deleteTabsBlockPaddingBottom();

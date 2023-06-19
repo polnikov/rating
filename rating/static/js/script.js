@@ -245,12 +245,14 @@ function showModal(modal) {
 
 //  функция формирования ссылки на объект
 function getAbsoluteURL(id) {
+   console.log($(this))
    let baseURL = window.location.origin;
    let pathName = window.location.pathname.split("/")[1];
    let url = `${baseURL}/${pathName}/${id}`;
-   let a = document.querySelector(`[id='${id}'] a`);
-   a.href = url;
-   return a.href
+   let hrefs = document.querySelectorAll(`[id='${id}'] a`);
+   hrefs.forEach(a => {
+      a.href = url;
+   });
 };
 
 //  функция удаления лейбла сортировки в строке фильтрации
