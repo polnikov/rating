@@ -80,14 +80,35 @@ function fetchStudentsHistoryDataAndPopulate() {
                 } else {
                     var name = `<div id="${record.record_id}" name="student" onclick="getAbsoluteURL(${record.record_id})"><a>${record.fullname}</a></div>`;
                 };
+                if (record.field === 'Архив') {
+                    switch (record.old_value) {
+                        case 'True':
+                            var oldValue = 'Да';
+                            break
+                        case 'False':
+                            var oldValue = 'Нет';
+                            break
+                    };
+                    switch (record.new_value) {
+                        case 'True':
+                            var newValue = 'Да';
+                            break
+                        case 'False':
+                            var newValue = 'Нет';
+                            break
+                    };
+                } else {
+                    var oldValue = record.old_value;
+                    var newValue = record.new_value;
+                };
 
                 let rowData = [
                     formatDateString(record.timestamp),
                     record.user,
                     name,
                     record.field,
-                    record.old_value,
-                    record.new_value,
+                    oldValue,
+                    newValue,
                 ];
                 table.row.add(rowData);
             });
