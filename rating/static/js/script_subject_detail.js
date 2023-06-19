@@ -23,7 +23,6 @@ function showUpdateSubject(subjectId) {
     fetch(url)
     .then(response => response.json())
     .then(data => {
-        console.log(data);
         var form = document.querySelector('#update-form').elements;
 
         form.name.value = data.name;

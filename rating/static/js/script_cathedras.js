@@ -103,6 +103,7 @@ function showUpdateCathedra(cathedraId) {
     fetch(url)
     .then(response => response.json())
     .then(data => {
+        console.log(data);
         var form = document.querySelector('#update-form');
         form.elements.name.value = data.name;
         form.elements.short_name.value = data.short_name;
