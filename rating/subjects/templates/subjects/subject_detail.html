@@ -179,7 +179,7 @@
         <!-- Students -->
         <div class="ui tab" data-tab="third">
             {% if request.user|has_group:"Сотрудники" %}
-                <table class="ui unstackable table">
+                <table class="ui unstackable compact table">
                     <tbody>
                         <tr class="grey">
                             <td><h4 style="font-family: Hack">{{ subject.get_form_control_display }}</h4></td>
