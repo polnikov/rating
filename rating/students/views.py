@@ -27,13 +27,12 @@ from rating.functions import calculate_rating
 logger = logging.getLogger(__name__)
 
 
-class StudentListView(LoginRequiredMixin, ListView):
-    model = Student
+class StudentView(LoginRequiredMixin, TemplateView):
     template_name = 'students/students.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        students = Student.active_objects.select_related('group', 'semester').order_by(
+        students = Student.active_objects.select_related('group', 'semester').filter(status__exact='Является студентом').order_by(
             'semester',
             'group',
             'level',
@@ -42,19 +41,9 @@ class StudentListView(LoginRequiredMixin, ListView):
             'second_name',
             'status',
         )
-        context['students_list'] = students
-        num_active_students = students.filter(status__exact='Является студентом').count()
-        context['num_students'] = num_active_students
-        history = StudentLog.objects.select_related('user').order_by('-timestamp').values()
-        context['history'] = history
+        context['students'] = students
+        context['form'] = StudentForm()
         return context
-
-
-class StudentCreateView(LoginRequiredMixin, CreateView):
-    model = Student
-    form_class = StudentForm
-    template_name = 'students/student_add.html'
-    success_url = '/students/'
 
 
 class StudentDetailView(LoginRequiredMixin, DetailView):
@@ -137,13 +126,15 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             'groupsubject__subjects__semester',
             '-groupsubject__subjects__form_control',
         )
+        form = StudentForm()
 
         context = {
             'student': student,
             'history': history,
             'marks': marks,
             'rating': rating,
-            'rating_by_semester': rating_by_semester
+            'rating_by_semester': rating_by_semester,
+            'form': form,
         }
         return render(request, 'students/student_detail.html', context=context)
 
@@ -244,45 +235,6 @@ class StudentRatingApiView(LoginRequiredMixin, View):
         return JsonResponse({'data': serialized_data})
 
 
-class StudentDeleteView(LoginRequiredMixin, DeleteView):
-    model = Student
-    template_name = 'students/student_delete.html'
-    success_url = '/students/'
-
-    # overwrite the student link through ID number
-    def get_object(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset()
-
-        pk = self.kwargs.get(self.pk_url_kwarg)
-        slug = self.kwargs.get(self.slug_url_kwarg)
-        if pk is not None:
-            queryset = queryset.filter(student_id=pk)
-
-        if slug is not None and (pk is None or self.query_pk_and_slug):
-            slug_field = self.get_slug_field()
-            queryset = queryset.filter(**{slug_field: slug})
-
-        if pk is None and slug is None:
-            raise AttributeError(
-                "Generic detail view %s must be called with either an object "
-                "pk or a slug in the URLconf." % self.__class__.__name__
-            )
-
-        try:
-            obj = queryset.get()
-        except queryset.model.DoesNotExist:
-            raise Http404(_("No %(verbose_name)s found matching the query") %
-                          {'verbose_name': queryset.model._meta.verbose_name})
-        return obj
-
-
-class StudentUpdateView(LoginRequiredMixin, UpdateView):
-    model = Student
-    form_class = StudentForm
-    template_name = 'students/student_update.html'
-
-
 class GraduatesView(LoginRequiredMixin, TemplateView):
     template_name = 'students/graduates.html'
 
@@ -291,112 +243,6 @@ class GraduatesView(LoginRequiredMixin, TemplateView):
         graduates = Student.archived_objects.filter(status='Выпускник')
         context['graduates'] = graduates
         return context
-
-
-def import_students(request):
-    '''Import students from CSV file.'''
-    logger.info('Импорт студентов...')
-    success = False
-    errors = []  # list of non-imported students
-    file_validation = date_validation = ''
-
-    if request.method == 'POST':
-        import_file = request.FILES['import_file'] if request.FILES else False
-
-        # checking that the file has been selected and its format is CSV
-        if not import_file or str(import_file).split('.')[-1] != 'csv':
-            file_validation = False
-            context = {'file_validation': file_validation}
-            logger.error('|---> Файл не выбран или неверный формат')
-            return render(request, 'import/import_students.html', context)
-
-        for n, line in enumerate(import_file):
-            row = line.decode().strip().split(IMPORT_DELIMITER)
-            if n == 0:
-                pass
-            else:
-                if len(row[4]) == 2:
-                    basis = row[4].upper()
-                else:
-                    basis = row[4].capitalize()
-                is_basis = Basis.objects.filter(name=basis).exists()
-
-                group = row[7]
-                is_group = Group.objects.filter(name=group).exists()
-
-                is_semester = Semester.objects.filter(id=row[8]).exists()
-
-                citizenship = row[5].capitalize()
-                is_citizenship = citizenship in list(map(lambda x: x[0], Student._meta.get_field('citizenship').choices))
-
-                level = row[6].capitalize()
-                is_level = level in list(map(lambda x: x[0], Student._meta.get_field('level').choices))
-
-                raw_status = row[10].strip()
-                if len(raw_status) == 5:
-                    status = ' '.join(raw_status.split()[0].lower(), raw_status.split()[0].upper())
-                else:
-                    status = raw_status.capitalize()
-                is_status = status in list(map(lambda x: x[0], Student._meta.get_field('status').choices))
-
-                money = row[12]
-                is_money = money in list(map(lambda x: x[0], Student._meta.get_field('money').choices))
-
-                tag = row[11]
-                is_tag = tag in list(map(lambda x: x[0], Student._meta.get_field('tag').choices)) + ['']
-
-                if all([is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag, is_money]):
-                    basis = Basis.objects.get(name=basis).id
-                    group = Group.objects.get(name=group).id
-                    semester = Semester.objects.get(id=row[8]).id
-                else:
-                    errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-                    logger.error(f'|---> Ошибка импорта студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-                    break
-
-                # check att date format
-                pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
-                if not re.match(pattern, row[9]):
-                    date_validation = False
-                    logger.error(f'|---> Неверный формат даты зачисления: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-                    break
-                else:
-                    # att date transformation 
-                    start_date = '-'.join(row[9].split('.')[::-1])
-
-                try:
-                    obj, created = Student.objects.get_or_create(
-                        student_id=row[0],
-                        defaults={
-                            'last_name': row[1],
-                            'first_name': row[2],
-                            'second_name': row[3],
-                            'basis_id': basis,
-                            'citizenship': citizenship,
-                            'level': level,
-                            'group_id': group,
-                            'semester_id': semester,
-                            'start_date': start_date,
-                            'status': status,
-                            'tag': tag,
-                            'money': money,
-                        },
-                    )
-                    if not created:
-                        errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-                        logger.error(f'|---> Не удалось создать объект студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-                except Exception as ex:
-                    logger.error(f'|---> Не удалось создать объект студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}', extra={'Exception': ex})
-            if not errors:
-                success = True
-
-    context = {
-        'file_validation': file_validation,
-        'date_validation': date_validation,
-        'errors': errors,
-        'success': success,
-    }
-    return render(request, 'import/import_students.html', context)
 
 
 class ResultCreateView(LoginRequiredMixin, CreateView):

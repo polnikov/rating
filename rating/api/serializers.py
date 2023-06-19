@@ -10,13 +10,30 @@ from subjects.models import Subject, SubjectLog, GroupSubject, Cathedra, Faculty
 from groups.models import Group
 
 
+# Groups
+class GroupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Group
+        fields = ('id', 'name', 'direction', 'profile', 'level', 'code', 'is_archived')
+
+
+# Basis
+class BasisSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Basis
+        fields = ('id', 'name')
+
+
 # Students
 class StudentSerializer(serializers.ModelSerializer):
-    group = serializers.SlugRelatedField(slug_field='name', queryset=Group.objects)
-    basis = serializers.SlugRelatedField(slug_field='name', queryset=Basis.objects)
+    group = GroupSerializer()
+    basis = BasisSerializer()
     history = serializers.SerializerMethodField(read_only=True)
     results = serializers.SerializerMethodField(read_only=True)
     rating = serializers.SerializerMethodField(read_only=True)
+    depth = 1
 
     class Meta:
         model = Student
@@ -146,15 +163,32 @@ class StudentSerializer(serializers.ModelSerializer):
         return context
 
 
+class StudentsListSerializer(serializers.ModelSerializer):
+    group = serializers.SlugRelatedField(slug_field='name', queryset=Group.objects)
+
+    class Meta:
+        model = Student
+        fields = ('student_id', 'fullname', 'group', 'semester', 'level', 'citizenship', 'comment')
+
+
 class StudentLogSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(slug_field='username', queryset=User.objects)
+    fullname = serializers.SerializerMethodField()
 
     class Meta:
         model = StudentLog
-        fields = ('record_id', 'user', 'field', 'old_value', 'new_value', 'timestamp',)
+        fields = ('record_id', 'user', 'field', 'old_value', 'new_value', 'timestamp', 'fullname')
+        ordering = ['-timestamp']
+
+    def get_fullname(self, obj):
+        student_id = obj.record_id
+        if Student.objects.filter(student_id=student_id).exists():
+            student = Student.objects.get(student_id=student_id)
+            return student.fullname
+        else:
+            return False
 
 
-# ! TODO: API for trans students
 # ! TODO: API for students debts
 
 
@@ -182,22 +216,14 @@ class ResultSerializer(serializers.ModelSerializer):
     students = serializers.SlugRelatedField(slug_field='fullname', queryset=Student.objects)
     groupsubject = GroupSubjectSerializer()
 
-
     class Meta:
         model = Result
         fields = ('id', 'students', 'groupsubject', 'mark', 'tag', 'is_archived',)
 
 
-# Groups
-class GroupSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Group
-        fields = ('id', 'name', 'direction', 'profile', 'level', 'code', 'is_archived',)
-
-
 # Cathedras
 class CathedraSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Cathedra
         fields = ('id', 'name', 'short_name', 'faculty',)

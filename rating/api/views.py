@@ -7,20 +7,19 @@ from datetime import datetime
 from collections import Counter
 
 from rest_framework import generics, viewsets
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from django.http.response import JsonResponse
-from django.shortcuts import render
-from django.db.models import Q, F
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.db.models import Q
 
 from groups.models import Group
 from groups.forms import GroupForm
 from subjects.forms import FacultyForm, CathedraForm, SubjectForm
+from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
 from students.models import Result, Semester, Student, StudentLog, Basis
 from students.validators import validate_mark, check_mark
-from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
+from students.forms import StudentForm
 
 from rating.settings import IMPORT_DELIMITER
 from rating.functions import _get_students_group_statistic_and_marks, calculate_rating
@@ -30,9 +29,52 @@ logger = logging.getLogger(__name__)
 
 
 # Students
+class StudentsList(generics.ListAPIView):
+    queryset = Student.objects.filter(status='Является студентом')
+    serializer_class = serializers.StudentsListSerializer
+
+
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = serializers.StudentSerializer
+
+
+    @action(methods=['post'], detail=False)
+    def create_student(self, request):
+        form = StudentForm(request.data)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=201)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['patch'], detail=True)
+    def update_student(self, request, pk=None):
+        try:
+            student = Student.objects.get(student_id=pk)
+        except Student.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Student not found'}, status=404)
+
+        form = StudentForm(request.POST, instance=student)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=200)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['delete'], detail=True)
+    def delete_student(self, request, pk=None):
+        queryset = Student.objects.all()
+
+        try:
+            student = queryset.get(student_id=pk)
+        except Student.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Student not found'}, status=404)
+
+        student.delete()
+        return JsonResponse({'success': True}, status=201)
 
 
 class StudentLogList(generics.ListAPIView):
@@ -82,108 +124,110 @@ def transfer_students(request):
     return JsonResponse({"success": "Updated"})
 
 
-@api_view(['POST'])
 def import_students(request):
-    '''Импортировать студентов из CSV файла.'''
+    '''Import students from CSV file.'''
+    logger.info('Импорт студентов...')
+    serialized_data = []
     success = False
-    errors = []  # список студентов, которые не были импортированы
-    file_validation = date_validation = ''
+    errors = []  # list of non-imported students
 
     if request.method == 'POST':
-        import_file = request.FILES['import_file'] if request.FILES else False
+        import_file = request.FILES['import_files'] if request.FILES else False
 
-        # проверка, что файл выбран и формат файла CSV
+        # checking that the file has been selected and its format is CSV
         if not import_file or str(import_file).split('.')[-1] != 'csv':
-            file_validation = False
-            context = {'file_validation': file_validation}
-            return render(request, 'import/import_students.html', context)
+            serialized_data.append({'error': 'file_validation', 'success': success})
+            logger.error('Файл не выбран или неверный формат')
+            return JsonResponse({'data': serialized_data})
 
-        for n, line in enumerate(import_file):
-            row = line.decode().strip().split(IMPORT_DELIMITER)
-            if n == 0:
-                pass
-            else:
-                if len(row[4]) == 2:
-                    basis = row[4].upper()
+        try:
+            for n, line in enumerate(import_file):
+                row = line.decode().strip().split(IMPORT_DELIMITER)
+                if n == 0:
+                    pass
                 else:
-                    basis = row[4].capitalize()
-                is_basis = Basis.objects.filter(name=basis).exists()
+                    if len(row[4]) == 2:
+                        basis = row[4].upper()
+                    else:
+                        basis = row[4].capitalize()
+                    is_basis = Basis.objects.filter(name=basis).exists()
 
-                group = row[7]
-                is_group = Group.objects.filter(name=group).exists()
+                    group = row[7]
+                    is_group = Group.objects.filter(name=group).exists()
 
-                is_semester = Semester.objects.filter(id=row[8]).exists()
+                    is_semester = Semester.objects.filter(id=row[8]).exists()
 
-                citizenship = row[5].capitalize()
-                is_citizenship = citizenship in list(map(lambda x: x[0], Student._meta.get_field('citizenship').choices))
+                    citizenship = row[5].capitalize()
+                    is_citizenship = citizenship in list(map(lambda x: x[0], Student._meta.get_field('citizenship').choices))
 
-                level = row[6].capitalize()
-                is_level = level in list(map(lambda x: x[0], Student._meta.get_field('level').choices))
+                    level = row[6].capitalize()
+                    is_level = level in list(map(lambda x: x[0], Student._meta.get_field('level').choices))
 
-                raw_status = row[10].strip()
-                if len(raw_status) == 5:
-                    status = ' '.join(raw_status.split()[0].lower(), raw_status.split()[0].upper())
-                else:
-                    status = raw_status.capitalize()
-                is_status = status in list(map(lambda x: x[0], Student._meta.get_field('status').choices))
+                    raw_status = row[10].strip()
+                    if len(raw_status) == 5:
+                        status = ' '.join(raw_status.split()[0].lower(), raw_status.split()[0].upper())
+                    else:
+                        status = raw_status.capitalize()
+                    is_status = status in list(map(lambda x: x[0], Student._meta.get_field('status').choices))
 
-                money = row[12]
-                is_money = money in list(map(lambda x: x[0], Student._meta.get_field('money').choices))
+                    money = row[12]
+                    is_money = money in list(map(lambda x: x[0], Student._meta.get_field('money').choices))
 
-                tag = row[11]
-                is_tag = tag in list(map(lambda x: x[0], Student._meta.get_field('tag').choices)) + ['']
+                    tag = row[11]
+                    is_tag = tag in list(map(lambda x: x[0], Student._meta.get_field('tag').choices)) + ['']
 
-                if all([is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag, is_money]):
-                    basis = Basis.objects.get(name=basis).id
-                    group = Group.objects.get(name=group).id
-                    semester = Semester.objects.get(id=row[8]).id
-                else:
-                    print('[!] ---> Ошибка импорта студента:', [is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag, is_money])
-                    errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-                    break
-
-                # проверка формата даты зачисления
-                pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
-                if not re.match(pattern, row[9]):
-                    date_validation = False
-                    print('[!] ---> Неверный формат даты зачисления.')
-                    break
-                else:
-                    # преобразование даты к формату поля модели
-                    start_date = '-'.join(row[9].split('.')[::-1])
-
-                try:
-                    obj, created = Student.objects.get_or_create(
-                        student_id=row[0],
-                        defaults={
-                            'last_name': row[1],
-                            'first_name': row[2],
-                            'second_name': row[3],
-                            'basis_id': basis,
-                            'citizenship': citizenship,
-                            'level': level,
-                            'group_id': group,
-                            'semester_id': semester,
-                            'start_date': start_date,
-                            'status': status,
-                            'tag': tag,
-                            'money': money,
-                        },
-                    )
-                    if not created:
+                    if all([is_basis, is_group, is_semester, is_citizenship, is_level, is_status, is_tag, is_money]):
+                        basis = Basis.objects.get(name=basis).id
+                        group = Group.objects.get(name=group).id
+                        semester = Semester.objects.get(id=row[8]).id
+                    else:
                         errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-                except Exception as import_students_error:
-                    print('[!] ---> Ошибка импорта студента:', import_students_error, sep='\n')
+                        logger.error(f'|---> Ошибка импорта студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
+                        break
+
+                    # check att date format
+                    pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
+                    if not re.match(pattern, row[9]):
+                        date_validation = False
+                        logger.error(f'|---> Неверный формат даты зачисления: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
+                        break
+                    else:
+                        # att date transformation 
+                        start_date = '-'.join(row[9].split('.')[::-1])
+
+                    try:
+                        obj, created = Student.objects.get_or_create(
+                            student_id=row[0],
+                            defaults={
+                                'last_name': row[1],
+                                'first_name': row[2],
+                                'second_name': row[3],
+                                'basis_id': basis,
+                                'citizenship': citizenship,
+                                'level': level,
+                                'group_id': group,
+                                'semester_id': semester,
+                                'start_date': start_date,
+                                'status': status,
+                                'tag': tag,
+                                'money': money,
+                            },
+                        )
+                        if not created:
+                            errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
+                            logger.error(f'|---> Не удалось создать объект студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
+                    except Exception as ex:
+                        logger.error(f'|---> Не удалось создать объект студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}', extra={'Exception': ex})
+
             if not errors:
                 success = True
+            logger.info('|---> Запись студентов в БД успешно выполнена')
 
-    context = {
-        'file_validation': file_validation,
-        'date_validation': date_validation,
-        'errors': errors,
-        'success': success,
-    }
-    return render(request, 'import/import_students.html', context)
+        except Exception as students_import_error:
+            logger.error(f'[!] ---> Ошибка импорта студентов: {students_import_error}, {errors}', exc_info=True)
+
+    serialized_data.append({'errors': errors, 'success': success})
+    return JsonResponse({'data': serialized_data})
 
 
 # @api_view(['GET'])
