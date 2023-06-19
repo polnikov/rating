@@ -73,28 +73,30 @@ function fetchStudentsHistoryDataAndPopulate() {
         .then(data => {
             const table = $('#history-table').DataTable();
             table.clear();
-
+            
             data.forEach((record) => {
+                let name;
                 if (record.fullname === false) {
-                    var name = 'Удалён';
+                    name = 'Удалён';
                 } else {
-                    var name = `<div id="${record.record_id}" name="student" onclick="getAbsoluteURL(${record.record_id})"><a>${record.fullname}</a></div>`;
+                    name = `<div id="${record.record_id}" name="student" onclick="getAbsoluteURL(${record.record_id})"><a>${record.fullname}</a></div>`;
                 };
+                var oldValue, newValue;
                 if (record.field === 'Архив') {
                     switch (record.old_value) {
                         case 'True':
-                            var oldValue = 'Да';
+                            oldValue = 'Да';
                             break
                         case 'False':
-                            var oldValue = 'Нет';
+                            oldValue = 'Нет';
                             break
                     };
                     switch (record.new_value) {
                         case 'True':
-                            var newValue = 'Да';
+                            newValue = 'Да';
                             break
                         case 'False':
-                            var newValue = 'Нет';
+                            newValue = 'Нет';
                             break
                     };
                 } else {
@@ -103,7 +105,7 @@ function fetchStudentsHistoryDataAndPopulate() {
                 };
 
                 let rowData = [
-                    formatDateString(record.timestamp),
+                    new Date(record.timestamp),
                     record.user,
                     name,
                     record.field,

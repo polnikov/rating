@@ -172,13 +172,13 @@ class StudentsListSerializer(serializers.ModelSerializer):
 
 
 class StudentLogSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(slug_field='username', queryset=User.objects)
+    user = serializers.SlugRelatedField(slug_field='last_name', queryset=User.objects)
     fullname = serializers.SerializerMethodField()
 
     class Meta:
         model = StudentLog
         fields = ('record_id', 'user', 'field', 'old_value', 'new_value', 'timestamp', 'fullname')
-        ordering = ['-timestamp']
+
 
     def get_fullname(self, obj):
         student_id = obj.record_id
