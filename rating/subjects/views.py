@@ -18,10 +18,9 @@ class SubjectView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['subjects'] = Subject.objects.all().count()
+        context['subjects'] = Subject.active_objects.all().count()
         context['form'] = SubjectForm()
         return context
-
 
 
 class SubjectDetailView(LoginRequiredMixin, DetailView):
