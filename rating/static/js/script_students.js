@@ -33,9 +33,21 @@ function fetchStudentsDataAndPopulate() {
             table.clear();
 
             data.forEach((student, index) => {
+                let isIll;
+                if (student.is_ill === true) {
+                    isIll = '<i class="heart broken red icon"></i>'
+                } else {
+                    isIll = ''
+                };
+                let tag;
+                if (student.tag) {
+                    tag = `<div id="tag-label" class="ui small pink label">${student.tag}</div>`
+                } else {
+                    tag = ''
+                };
                 let rowData = [
                     index + 1,
-                    `<div id="${student.student_id}" name="student" onclick="getAbsoluteURL(${student.student_id})"><a>${student.fullname}</a></div>`,
+                    `<div id="${student.student_id}" name="student" onclick="getAbsoluteURL(${student.student_id})">${isIll}<a>${student.fullname}</a> ${tag}</div>`,
                     student.group,
                     student.semester,
                     student.level,

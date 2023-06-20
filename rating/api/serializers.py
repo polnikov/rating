@@ -168,7 +168,7 @@ class StudentsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ('student_id', 'fullname', 'group', 'semester', 'level', 'citizenship', 'comment')
+        fields = ('student_id', 'fullname', 'group', 'semester', 'level', 'citizenship', 'comment', 'is_ill', 'tag')
 
 
 class StudentLogSerializer(serializers.ModelSerializer):
