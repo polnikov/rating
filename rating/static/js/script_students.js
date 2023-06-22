@@ -89,7 +89,7 @@ function fetchStudentsHistoryDataAndPopulate() {
             data.forEach((record) => {
                 let name;
                 if (record.fullname === false) {
-                    name = 'Удалён';
+                    name = `Удалён [${record.record_id}]`;
                 } else {
                     name = `<div id="${record.record_id}" name="student" onclick="getAbsoluteURL(${record.record_id})"><a>${record.fullname}</a></div>`;
                 };
@@ -112,8 +112,22 @@ function fetchStudentsHistoryDataAndPopulate() {
                             break
                     };
                 } else {
-                    var oldValue = record.old_value;
-                    var newValue = record.new_value;
+                    switch (record.old_value) {
+                        case '':
+                            oldValue = '---';
+                            break
+                        default:
+                            oldValue = record.old_value;
+                            break
+                    };
+                    switch (record.new_value) {
+                        case '':
+                            newValue = '---';
+                            break
+                        default:
+                            newValue = record.new_value;
+                            break
+                    };
                 };
 
                 let rowData = [
