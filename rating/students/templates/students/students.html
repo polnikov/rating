@@ -41,45 +41,6 @@
 			{% if students %}
 				<table id="students-table" class="ui selectable celled compact fixed single line table">
 					<!-- data from script -->
-					{% comment %} <tbody>
-						{% for student in students_list %}
-							<tr>
-								<td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
-								<td class="collapsing">
-									{% if student.is_ill %}<i class="heart broken red icon"></i>{% endif %}
-									{% if student.is_archived %}<i class="archive brown icon"></i>{% endif %}
-									<a href="{{ student.get_absolute_url }}">
-										{{ student.fullname }}
-									</a>
-									{% if student.tag %}<div id="tag-label" class="ui mini pink label">{{ student.tag }}</div>{% endif %}
-								</td>
-								<td class="center aligned collapsing">{{ student.group }}</td>
-								<td class="center aligned collapsing">{{ student.semester.semester }}</td>
-
-								{% if student.get_status_display == 'Отчислен' %}
-								<td class="center aligned negative collapsing"><i class="icon close"></i>
-									{{ student.get_status_display }}
-								</td>
-								{% elif student.get_status_display == 'Академический отпуск' %}
-									<td class="center aligned warning collapsing"><i class="icon hourglass half"></i>
-										{{ student.get_status_display }}
-									</td>
-								{% elif student.get_status_display == 'Выпускник' %}
-									<td class="center aligned grey collapsing"><i class="icon rocket"></i>
-										{{ student.get_status_display }}
-									</td>
-								{% else %}
-									<td class="center aligned collapsing"><i class="icon green checkmark"></i>
-										{{ student.get_status_display }}
-									</td>
-								{% endif %}
-
-								<td class="center aligned">{{ student.citizenship }}</td>
-
-								<td>{{ student.comment|truncatechars:25 }}</td>
-							</tr>
-						{% endfor %}
-					</tbody> {% endcomment %}
 				</table>
 			{% else %}
 				{% include 'empty_records.html' %}
@@ -91,25 +52,6 @@
         <div class="ui tab" data-tab="second">
 			<table id="history-table" class="ui selectable celled compact fixed single line small table">
 				<!-- data from script -->
-					{% comment %} {% for record in history %}
-						<tr>
-							<td class="center aligned collapsing">{{ record.timestamp|date:"d.m.y | H:i" }}</td>
-							<td class="collapsing">{{ record.user_id|get_user_last_name }}</td>
-							<td class="collapsing">
-								<a href="{{ record.record_id }}">
-									{{ record.record_id|get_student_fullname }}
-								</a>
-							</td>
-							<td class="collapsing">{{ record.field }}</td>
-							{% if record.field == 'Attestaion date' %}
-								<td>{{ record.old_value|date_or_else }}</td>
-								<td>{{ record.new_value|date_or_else }}</td>
-							{% else %}
-								<td>{{ record.old_value|default:"---"|truncatechars:40 }}</td>
-								<td>{{ record.new_value|default:"---"|truncatechars:40 }}</td>
-							{% endif %}
-						</tr>
-					{% endfor %} {% endcomment %}
 			</table>
         </div>
 	</div>
@@ -170,9 +112,11 @@
 
 					<div class="required three wide field {% if form.start_date.errors %} error {% endif %}">
 						<label>Дата зачисления</label>
-						<div class="ui input left icon">
-							<i class="calendar alternate outline icon"></i>
-							{{ form.start_date }}
+						<div class="ui calendar">
+							<div class="ui input left icon">
+								<i class="calendar alternate outline icon"></i>
+								{{ form.start_date }}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -353,15 +297,6 @@
 	$(document).ready(function() {
 		$('.menu .item').tab();
 		$('select.dropdown').dropdown();
-		$(function () {
-			$("#id_start_date").datepicker({
-				weekStart: 1,
-				daysMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-				monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-				format:'dd.mm.yyyy',
-				autoHide: true,
-			});
-		});
 	
 		if ($.fn.DataTable.isDataTable('#students-table')) {
 			$('#students-table').DataTable().destroy();

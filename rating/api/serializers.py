@@ -198,17 +198,59 @@ class StudentMoneySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ('student_id', 'fullname', 'group', 'semester', 'money', 'basis',)
+        fields = ('student_id', 'fullname', 'group', 'semester', 'money', 'basis')
 
 
 # GroupSubjects
-class GroupSubjectSerializer(serializers.ModelSerializer):
-    groups = serializers.SlugRelatedField(slug_field='name', queryset=Group.objects)
-    subjects = serializers.SlugRelatedField(slug_field='name', queryset=Subject.objects)
+class SubjectsForGroupSubjectsListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Subject
+        fields = ('id', 'name', 'form_control')
+
+
+class GroupsForGroupSubjectsListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Group
+        fields = ('id', 'name')
+
+
+class GroupSubjectsListSerializer(serializers.ModelSerializer):
+    groups = GroupsForGroupSubjectsListSerializer()
+    subjects = SubjectsForGroupSubjectsListSerializer()
+    semester = serializers.SerializerMethodField()
+    cathedra = serializers.SerializerMethodField()
 
     class Meta:
         model = GroupSubject
-        fields = ('id', 'groups', 'subjects', 'teacher', 'att_date')
+        fields = ('id', 'groups', 'subjects', 'semester', 'teacher', 'att_date', 'cathedra', 'comment')
+
+    def get_semester(self, obj):
+        semester = obj.subjects.semester.semester
+        return semester
+
+    def get_cathedra(self, obj):
+        if obj.subjects.cathedra:
+            return obj.subjects.cathedra.short_name
+        else:
+            return False
+
+
+class GroupSubjectSerializer(serializers.ModelSerializer):
+    groups = GroupsForGroupSubjectsListSerializer()
+    subjects = SubjectsForGroupSubjectsListSerializer()
+    cathedra = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GroupSubject
+        fields = ('id', 'groups', 'subjects', 'teacher', 'att_date', 'comment', 'cathedra')
+
+    def get_cathedra(self, obj):
+        if obj.subjects.cathedra:
+            return obj.subjects.cathedra.short_name
+        else:
+            return False
 
 
 # Results
@@ -218,7 +260,7 @@ class ResultSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Result
-        fields = ('id', 'students', 'groupsubject', 'mark', 'tag', 'is_archived',)
+        fields = ('id', 'students', 'groupsubject', 'mark', 'tag', 'is_archived')
 
 
 # Cathedras
@@ -226,7 +268,7 @@ class CathedraSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cathedra
-        fields = ('id', 'name', 'short_name', 'faculty',)
+        fields = ('id', 'name', 'short_name', 'faculty')
         depth = 1
 
 
@@ -289,7 +331,7 @@ class SubjectLogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SubjectLog
-        fields = ('id', 'record_id', 'user', 'field', 'old_value', 'new_value', 'timestamp',)
+        fields = ('id', 'record_id', 'user', 'field', 'old_value', 'new_value', 'timestamp')
 
 
 # Faculties
@@ -297,7 +339,7 @@ class FacultySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Faculty
-        fields = ('id', 'name', 'short_name',)
+        fields = ('id', 'name', 'short_name')
 
 
 # Semesters
@@ -305,4 +347,4 @@ class SemesterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Semester
-        fields = ('id', 'semester',)
+        fields = ('id', 'semester')

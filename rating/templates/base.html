@@ -132,6 +132,21 @@
 <script type="text/javascript">
     $('.ui.dropdown').dropdown();
     $('.ui.rating').rating();
+    $('div.ui.calendar')
+        .calendar({
+            type: 'date',
+            blur: true,
+            formatter: {
+                date: 'DD.MM.YYYY'
+            },
+            text: {
+                days: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+                months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+                monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+            },
+            firstDayOfWeek: 1,
+    });
+
 
     // функция закрытия меню
     function closeMenu() {

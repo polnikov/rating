@@ -15,7 +15,7 @@ from django.db.models import Q
 
 from groups.models import Group
 from groups.forms import GroupForm
-from subjects.forms import FacultyForm, CathedraForm, SubjectForm
+from subjects.forms import FacultyForm, CathedraForm, SubjectForm, GroupSubjectForm
 from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
 from students.models import Result, Semester, Student, StudentLog, Basis
 from students.validators import validate_mark, check_mark
@@ -185,14 +185,14 @@ def import_students(request):
                         logger.error(f'|---> Ошибка импорта студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
                         break
 
-                    # check att date format
+                    # check start date format
                     pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
                     if not re.match(pattern, row[9]):
-                        date_validation = False
+                        errors.append(f'Неверный формат даты зачисления: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
                         logger.error(f'|---> Неверный формат даты зачисления: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
                         break
                     else:
-                        # att date transformation 
+                        # att date transformation
                         start_date = '-'.join(row[9].split('.')[::-1])
 
                     try:
@@ -224,7 +224,7 @@ def import_students(request):
             logger.info('|---> Запись студентов в БД успешно выполнена')
 
         except Exception as students_import_error:
-            logger.error(f'[!] ---> Ошибка импорта студентов: {students_import_error}, {errors}', exc_info=True)
+            logger.error(f'[!] |---> Ошибка импорта студентов: {students_import_error}, {errors}', exc_info=True)
 
     serialized_data.append({'errors': errors, 'success': success})
     return JsonResponse({'data': serialized_data})
@@ -1028,15 +1028,150 @@ class SubjectLogList(generics.ListAPIView):
 
 
 # GroupSubjects
+class GroupSubjectsList(generics.ListAPIView):
+    queryset = GroupSubject.active_objects.all()
+    serializer_class = serializers.GroupSubjectsListSerializer
+
+
 class GroupSubjectViewSet(viewsets.ModelViewSet):
     queryset = GroupSubject.objects.all()
-    serializer_class = serializers.GroupSubjectSerializer
+    serializer_class = serializers.GroupSubjectsListSerializer
 
 
-# Semesters
-class SemesterViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Semester.objects.all()
-    serializer_class = serializers.SemesterSerializer
+    @action(methods=['post'], detail=False)
+    def create_groupsubject(self, request):
+        subject = request.POST['subjects'].replace('<option value=&quot;', '').split('&')[0]
+        group = request.POST['groups'].replace('<option value=&quot;', '').split('&')[0]
+        teacher = request.POST['teacher']
+        att_date = request.POST['att_date']
+        comment = request.POST['comment']
+
+        if request.POST.get('is_archived', False):
+            is_archived = True
+        else:
+            is_archived = False
+        
+        form = GroupSubjectForm(data={
+            'subjects': subject,
+            'groups': group,
+            'teacher': teacher,
+            'att_date': att_date,
+            'comment': comment,
+            'is_archived': is_archived,
+        })
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=201)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['patch'], detail=True)
+    def update_groupsubject(self, request, pk=None):
+        try:
+            group_subject = GroupSubject.objects.get(id=pk)
+        except GroupSubject.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'GroupSubject not found'}, status=404)
+
+        form = GroupSubjectForm(request.POST, instance=group_subject)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=200)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['delete'], detail=True)
+    def delete_groupsubject(self, request, pk=None):
+        queryset = GroupSubject.objects.all()
+
+        try:
+            group_subject = queryset.get(id=pk)
+        except GroupSubject.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'GroupSubject not found'}, status=404)
+
+        group_subject.delete()
+        return JsonResponse({'success': True}, status=201)
+
+
+def import_groupsubjects(request):
+    '''Import groupsubjects from CSV file.'''
+    logger.info('Импорт назначений...')
+    serialized_data = []
+    success = False
+    errors = []  # list of non-imported groupsubjects
+
+    if request.method == 'POST':
+        import_file = request.FILES['import_files'] if request.FILES else False
+
+        # checking that the file has been selected and its format is CSV
+        if not import_file or str(import_file).split('.')[-1] != 'csv':
+            serialized_data.append({'error': 'file_validation', 'success': success})
+            logger.error('Файл не выбран или неверный формат')
+            return JsonResponse({'data': serialized_data})
+
+        try:
+            for n, line in enumerate(import_file):
+                row = line.decode().strip().split(IMPORT_DELIMITER)
+                if n == 0:
+                    pass
+                else:
+                    is_subject = Subject.objects.filter(
+                        name=row[0],
+                        form_control=row[1],
+                        semester=row[2],
+                    ).exists()
+                    is_group = Group.objects.filter(name=row[3])
+
+                    if all([is_subject, is_group]):
+                        subject = Subject.objects.get(name=row[0], form_control=row[1], semester=row[2])
+                        group = Group.objects.get(name=row[3])
+
+                        # check att date format
+                        if row[5] != '':
+                            pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
+                            if not re.match(pattern, row[5]):
+                                errors.append(f'{n+1}: Неверный формат даты аттестации: {row[0]} [{row[5]}]')
+                                logger.error(f'|---> {n+1}: Неверный формат даты аттестации: {row[0]} [{row[5]}]')
+                                break
+                            else:
+                                # att date transformation
+                                att_date = '-'.join(row[5].split('.')[::-1])
+
+                                defaults = {
+                                    'groups': group,
+                                    'subjects': subject,
+                                    'att_date': att_date,
+                                    'teacher': row[4],
+                                }
+                        else:
+                            defaults = {
+                                'groups': group,
+                                'subjects': subject,
+                                'teacher': row[4],
+                            }
+
+                        if not GroupSubject.objects.filter(groups=group, subjects=subject).exists():
+                            GroupSubject.objects.create(**defaults)
+                        else:
+                            errors.append(f'{n+1}: [{row[0]}] уже существует')
+                            logger.error(f'[!] |---> [{row[0]}] уже существует')
+                    else:
+                        if not is_subject:
+                            errors.append(f'{n+1}: [{row[0]}] дисциплины нет в [{row[2]}] семестре')
+                            logger.error(f'[!] |---> {n+1}: [{row[0]}] дисциплины нет в [{row[2]}] семестре')
+                        if not is_group:
+                            errors.append(f'{n+1}: [{row[3]}] группа отсутствует')
+                            logger.error(f'[!] |--->{n+1}: [{row[3]}] группа отсутствует')
+            if not errors:
+                success = True
+            logger.info('|---> Запись назначений в БД успешно выполнена')
+
+        except Exception as groupsubjects_import_error:
+            logger.error(f'[!] |---> Ошибка импорта назначений: {groupsubjects_import_error}, {errors}', exc_info=True)
+
+    serialized_data.append({'errors': errors, 'success': success})
+    return JsonResponse({'data': serialized_data})
 
 
 def reset_groupsubjects(request):

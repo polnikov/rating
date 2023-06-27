@@ -245,7 +245,6 @@ function showModal(modal) {
 
 //  функция формирования ссылки на объект
 function getAbsoluteURL(id) {
-   console.log($(this))
    let baseURL = window.location.origin;
    let pathName = window.location.pathname.split("/")[1];
    let url = `${baseURL}/${pathName}/${id}`;
@@ -253,6 +252,15 @@ function getAbsoluteURL(id) {
    hrefs.forEach(a => {
       a.href = url;
    });
+};
+
+//  функция формирования ссылки на карточку группы
+function getAbsoluteURLforGroup([id, name, semester]) {
+   let baseURL = window.location.origin;
+   let pathName = 'groups/cards';
+   let url = `${baseURL}/${pathName}/${name}-${semester}`;
+   let hrefs = document.querySelector(`[id='${id}'] a`);
+   hrefs.href = url;
 };
 
 //  функция удаления лейбла сортировки в строке фильтрации
