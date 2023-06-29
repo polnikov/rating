@@ -2,21 +2,21 @@
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
-       var cookies = document.cookie.split(';');
-       for (let i = 0; i < cookies.length; i++) {
-          var cookie = jQuery.trim(cookies[i]);
-          // Does this cookie string begin with the name we want?
-          if (cookie.substring(0, name.length + 1) === (name + '=')) {
-             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-             break;
-          }
-       }
+        var cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
     }
     return cookieValue;
 };
-const csrftoken = getCookie('csrftoken');
+var csrftoken = getCookie('csrftoken');
 
-const hasGroup = document.getElementById('has-group').textContent;
+var hasGroup = document.getElementById('has-group').textContent;
 fetchGroupsDataAndPopulate(hasGroup);
 
 function fetchGroupsDataAndPopulate(hasGroup) {
@@ -25,8 +25,7 @@ function fetchGroupsDataAndPopulate(hasGroup) {
         url = window.location.origin + "/api/v1/groups/?is_archived=true";
     } else {
         url = window.location.origin + "/api/v1/groups/";
-    }
-
+    };
     fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -110,12 +109,12 @@ function showUpdateGroup(groupId) {
     } else {
         url = window.location.origin + `/api/v1/groups/${groupId}/`;
     }
-    var updateGroupModal = document.getElementById('update-modal');
+    var updateGroupModal = document.getElementById('group-update-modal');
     
     fetch(url)
     .then(response => response.json())
     .then(data => {
-        var form = document.querySelector('#update-form').elements;
+        var form = document.querySelector('#group-update-form').elements;
         form.name.value = data.name;
         form.direction.value = data.direction;
         form.profile.value = data.profile;
@@ -142,8 +141,8 @@ function updateGroup() {
     var button = document.getElementById("edit-button");
     var groupId = button.getAttribute("data-group-id");
     var url = window.location.origin + `/api/v1/groups/${groupId}/update_group/`;
-    var updateModal = document.getElementById('update-modal');
-    var form = document.querySelector('#update-form');
+    var updateModal = document.getElementById('group-update-modal');
+    var form = document.querySelector('#group-update-form');
     var formData = new FormData(form);
 
     fetch(url, {
@@ -183,7 +182,7 @@ function showDeleteGroup(groupId) {
     } else {
         url = window.location.origin + `/api/v1/groups/${groupId}/`;
     }
-    var deleteModal = document.getElementById('delete-modal');
+    var deleteModal = document.getElementById('group-delete-modal');
     
     fetch(url)
     .then(response => response.json())
@@ -213,7 +212,7 @@ function deleteGroup() {
     var button = document.getElementById("trash-button");
     var groupId = button.getAttribute("data-group-id");
     var url = window.location.origin + `/api/v1/groups/${groupId}/delete_group/`;
-    var deleteGroupModal = document.getElementById('delete-modal');
+    var deleteGroupModal = document.getElementById('group-delete-modal');
 
     fetch(url, {
         method: 'DELETE',

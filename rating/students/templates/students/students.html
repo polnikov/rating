@@ -41,6 +41,17 @@
 			{% if students %}
 				<table id="students-table" class="ui selectable celled compact fixed single line table">
 					<!-- data from script -->
+					<thead>
+						<tr>
+						   <th><i class="hashtag small icon"></i></th>
+						   <th>ФИО</th>
+						   <th>Группа</th>
+						   <th>Семестр</th>
+						   <th>Уровень</th>
+						   <th>Гражданство</th>
+						   <th>Примечание</th>
+						</tr>
+					</thead>
 				</table>
 			{% else %}
 				{% include 'empty_records.html' %}
@@ -303,15 +314,6 @@
 		};
 		const students = document.getElementById('num-students').textContent;
 		const studentsDataTableOptions = {
-			columns: [
-                { title: '<i class="hashtag small icon"></i>' },
-                { title: `ФИО <div id="count-label" class="ui left pointing grey tiny label">${students}</div>` },
-                { title: 'Группа' },
-                { title: 'Семестр' },
-                { title: 'Уровень' },
-                { title: 'Гражданство' },
-                { title: 'Примечание' },
-            ],
 			language: {
 				lengthMenu: '_MENU_ записей на страницу',
 				zeroRecords: 'Записей нет...',

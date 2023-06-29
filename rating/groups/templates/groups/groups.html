@@ -81,10 +81,10 @@
 </div>
 
 <!-- Modal for update group -->
-<div id="update-modal" class="ui large modal">
+<div id="group-update-modal" class="ui large modal">
     <div class="basic center aligned header" style="font-family: Hack">Изменить группу</div>
     <div class="content" style="font-family: Hack">
-        <form id="update-form" method="POST">
+        <form id="group-update-form" method="POST">
             {% csrf_token %}
             <div class="ui form">
                 <div class="required field">
@@ -124,7 +124,7 @@
 </div>
 
 <!-- Modal for delete group -->
-<div id="delete-modal" class="ui modal">
+<div id="group-delete-modal" class="ui modal">
     <div class="basic center aligned header" style="font-family: Hack">Удалить группу</div>
     <div class="content" style="font-family: Hack">
         <table class="ui definition table" style="margin-top: 0">
@@ -196,7 +196,7 @@
                 { width: "42%", targets: 4 },
                 { width: "5%", targets: 5 },
                 { orderable: false, targets: [6, 7] },
-                { className: 'center aligned', targets: [0, 2, 5, 6, 7] },
+                { className: 'center aligned', targets: [0, 1, 2, 5, 6, 7] },
             ],
             headerCallback: function(thead, data, start, end, display) {
                 $(thead).find('th').addClass('center aligned');

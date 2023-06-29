@@ -14,7 +14,7 @@ function getCookie(name) {
     }
     return cookieValue;
 };
-const csrftoken = getCookie('csrftoken');
+var csrftoken = getCookie('csrftoken');
 
 fetchStudentsDataAndPopulate();
 function fetchStudentsDataAndPopulate() {
@@ -47,7 +47,7 @@ function fetchStudentsDataAndPopulate() {
                 };
                 let rowData = [
                     index + 1,
-                    `<div id="${student.student_id}" name="student" onclick="getAbsoluteURL(${student.student_id})">${isIll}<a>${student.fullname}</a> ${tag}</div>`,
+                    `<div id="${student.student_id}" name="student" onclick="getAbsoluteURLforStudent(${student.student_id})">${isIll}<a>${student.fullname}</a> ${tag}</div>`,
                     student.group,
                     student.semester,
                     student.level,

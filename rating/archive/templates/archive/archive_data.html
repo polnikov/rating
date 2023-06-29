@@ -30,10 +30,10 @@
    <div id="tabs-segment" class="ui basic segment">
       <!-- Tabs title's -->
       <div class="ui secondary menu" style="font-family: Hack">
-         <a class="item active" data-tab="first">Студенты <div class="ui grey circular small label">{{ students.count }}</div></a>
-         <a class="item" data-tab="second">Оценки <div class="ui grey circular small label">{{ marks.count }}</div></a>
-         <a class="item" data-tab="third">Дисциплины <div class="ui grey circular small label">{{ subjects.count }}</div></a>
-         <a class="item" data-tab="fourth">Назначения дисциплин <div class="ui grey circular small label">{{ groupsubjects.count }}</div></a>
+         <a class="item active" data-tab="first">Студенты <div class="ui grey circular small label">{{ students }}</div></a>
+         <a class="item" data-tab="second">Оценки <div class="ui grey circular small label">{{ marks }}</div></a>
+         <a class="item" data-tab="third">Дисциплины <div class="ui grey circular small label">{{ subjects }}</div></a>
+         <a class="item" data-tab="fourth">Назначения дисциплин <div class="ui grey circular small label">{{ groupsubjects }}</div></a>
          <a class="item" data-tab="fifth">Группы <div class="ui grey circular small label">{{ groups }}</div></a>
       </div>
 
@@ -42,36 +42,20 @@
       <div class="ui tab active" data-tab="first">
          <!-- Table -->
          {% if students %}
-            <table id="students" class="ui selectable celled compact small table">
-
+            <table id="students-table" class="ui selectable celled compact fixed single line small table">
+               <!-- data from JavaScript -->
                <thead>
-                  <tr class="center aligned">
-                     <th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
+                  <tr>
+                     <th><i class="hashtag small icon"></i></th>
                      <th>ФИО</th>
-                     <th class="collapsing">Группа</th>
-                     <th class="collapsing">Семестр</th>
-                     <th class="collapsing">Статус</th>
-                     <th class="collapsing">Примечание</th>
+                     <th>Группа</th>
+                     <th>Семестр</th>
+                     <th>Уровень</th>
+                     <th>Гражданство</th>
+                     <th>Статус</th>
+                     <th>Примечание</th>
                   </tr>
                </thead>
-
-               <tbody>
-                  {% for student in students %}
-                     <tr>
-                        <td class="center aligned collapsing" style="width: 50px">{{ forloop.counter }}</td>
-                        <td class="collapsing"><a href="{{ student.get_absolute_url }}">{{ student.fullname }} </a>
-                           {% if student.tag %}
-                              <div id="tag-label" class="ui small pink label">{{ student.tag }}</div>
-                           {% endif %}
-                        </td>
-                        <td class="center aligned">{{ student.group }}</td>
-                        <td class="center aligned">{{ student.semester.semester }}</td>
-                        <td class="center aligned collapsing">{{ student.get_status_display }}</td>
-                        <td>{{ student.comment|truncatechars:25 }}</td>
-                     </tr>
-                  {% endfor %}
-               </tbody>
-
             </table>
          {% else %}
             {% include 'empty_records.html' %}
@@ -83,50 +67,21 @@
       <div class="ui tab" data-tab="second">
          <!-- Table -->
          {% if marks %}
-            <table id="marks" class="ui selectable celled compact small table">
-
+            <table id="marks-table" class="ui selectable celled compact fixed single line small table">
                <thead>
-                  <tr class="center aligned">
-                     <th id="semester" class="collapsing">Семестр</th>
-                     <th class="collapsing">Группа</th>
+                  <tr>
+                     <th><i class="hashtag small icon"></i></th>
                      <th>Студент</th>
+                     <th>Группа</th>
                      <th>Дисциплина</th>
                      <th>Форма контроля</th>
-                     <th name="mark" class="collapsing">Оценка</th>
+                     <th>Семестр</th>
                      <th>Дата аттестации</th>
+                     <th>Оценка</th>
+                     <th></th>
                   </tr>
                </thead>
-
-               <tbody>
-                  {% for item in marks %}
-                     <tr style="padding-right: 0">
-                           <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
-                           <td class="collapsing center aligned">{{ item.groupsubject.groups }}</td>
-                           <td class="collapsing">
-                              <a href="{{ item.students.get_absolute_url }}">
-                                 {{ item.students.fullname }}
-                              </a>
-                           </td>
-                           <td>
-                              <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
-                                 {{ item.groupsubject.subjects.name|truncatechars:80 }}
-                              </a>
-                           </td>
-                           <td class="collapsing">{{ item.groupsubject.subjects.form_control }}</td>
-
-                           <td class="collapsing center aligned"><a href="{{ item.get_absolute_url }}">
-                              <div class="ui equal width grid collapsing center aligned">
-                                       <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
-                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
-                                       <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
-                              </div></a>
-                           </td>
-
-                           <td class="center aligned" style="width: 150px">{{ item.groupsubject.subjects.empty_att_date }}</td>
-                     </tr>
-                  {% endfor %}
-               </tbody>
-
+               <!-- data from JavaScript -->
             </table>
          {% else %}
             {% include 'empty_records.html' %}
@@ -138,33 +93,18 @@
       <div class="ui tab" data-tab="third">
          <!-- Table -->
          {% if subjects %}
-            <table id="subjects" class="ui selectable celled compact small table">
-
+            <table id="subjects-table" class="ui selectable celled compact fixed single line small table">
                <thead>
                   <tr class="center aligned">
-                     <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+                     <th><i class="hashtag small icon"></i></th>
                      <th>Название</th>
-                     <th class="collapsing">Форма контроля</th>
-                     <th class="collapsing">Семестр</th>
-                     
+                     <th>Форма контроля</th>
+                     <th>Семестр</th>
+                     <th>Кафедра</th>
                      <th>Примечание</th>
                   </tr>
                </thead>
-
-               <tbody>
-                  {% for subject in subjects %}
-                     <tr>
-                        <td class="collapsing center aligned">{{ forloop.counter }}</td>
-                        <td class="collapsing">
-                           <a href="{{ subject.get_absolute_url }}">{{ subject.name|truncatechars:50 }}</a>
-                        </td>
-                        <td class="collapsing center aligned">{{ subject.form_control }}</td>
-                        <td class="collapsing center aligned">{{ subject.semester.semester }}</td>
-                        <td class="collapsing">{{ subject.comment|truncatechars:20 }}</td>
-                     </tr>
-                  {% endfor %}
-               </tbody>
-
+               <!-- data from JavaScript -->
             </table>
          {% else %}
             {% include 'empty_records.html' %}
@@ -176,53 +116,22 @@
       <div class="ui tab" data-tab="fourth">
          <!-- Table -->
          {% if groupsubjects %}
-            <table id="groupsubjects" class="ui selectable celled compact small table">
-
+            <table id="groupsubjects-table" class="ui selectable celled compact fixed single line small table">
+               <!-- data from JavaScript -->
                <thead>
-                  <tr class="center aligned">
-                     <th id="numbers" class="collapsing"><i class="hashtag small icon"></i></th>
+                  <tr>
+                     <th><i class="hashtag small icon"></i></th>
                      <th>Дисциплина</th>
-                     <th class="collapsing">Форма контроля</th>
-                     <th class="collapsing">Группа</th>
-                     <th class="collapsing">Семестр</th>
-                     <th class="collapsing">Преподаватель {% if empty_teacher %}<div id="count-label" class="ui left pointing red tiny label">
-                        {{ empty_teacher }}</div>{% endif %}
-                     </th>
-                     <th class="collapsing">Кафедра</th>
+                     <th>Форма контроля</th>
+                     <th>Группа</th>
+                     <th>Семестр</th>
+                     <th>Преподаватель</th>
+                     <th>Дата аттестации</th>
+                     <th>Кафедра</th>
+                     <th>Удалить</th>
+                     <th>Изменить</th>
                   </tr>
                </thead>
-
-               <tbody>
-                     {% for item in groupsubjects %}
-                        <tr>
-                           <td class="collapsing center aligned">{{ forloop.counter }}</td>
-                           <td><a href="{% url 'subjects:groupsubject_update' item.id %}">{{ item.subjects.name }}</a></td>
-                           <td class="center aligned collapsing">{{ item.subjects.form_control }}</td>
-                           <td class="center aligned collapsing">{{ item.groups }}</td>
-                           <td class="center aligned collapsing">{{ item.subjects.semester.semester }}</td>
-
-                           {% if item.teacher %}
-                              <td>{{ item.teacher }}</td>
-                           {% else %}
-                              <td class="negative collapsing center aligned"><i class="icon close"></i>
-                                 {{ item.empty_teacher }}
-                              </td>
-                           {% endif %}
-
-                           {% if item.subjects.cathedra %}
-                              <td class="collapsing">
-                                 {{ item.subjects.cathedra }}
-                              </td>
-                           {% else %}
-                              <td class="negative collapsing center aligned"><i class="icon close"></i>
-                                 {{ item.subjects.empty_cathedra }}
-                              </td>
-                           {% endif %}
-
-                        </tr>
-                     {% endfor %}
-               </tbody>
-
             </table>
          {% else %}
             {% include 'empty_records.html' %}
@@ -236,7 +145,7 @@
          {% if groups %}
             <table id="groups-table" class="ui selectable compact small celled table">
                <thead>
-                  <tr class="center aligned">
+                  <tr>
                      <th><i class="hashtag small icon"></i></th>
                      <th>Название</th>
                      <th>Уровень</th>
@@ -247,9 +156,7 @@
                      <th>Изменить</th>
                   </tr>
                </thead>
-               <tbody>
-                  <!-- data from JavaScript -->
-               </tbody>
+               <!-- data from JavaScript -->
             </table>
          {% else %}
             {% include 'empty_records.html' %}
@@ -259,10 +166,10 @@
 </div>
 
 <!-- Modal for update group -->
-<div id="update-modal" class="ui large modal">
+<div id="group-update-modal" class="ui large modal">
    <div class="basic center aligned header" style="font-family: Hack">Изменить группу</div>
    <div class="content" style="font-family: Hack">
-      <form id="update-form" method="POST">
+      <form id="group-update-form" method="POST">
          {% csrf_token %}
          <div class="ui form">
             <div class="required field">
@@ -302,7 +209,7 @@
 </div>
 
 <!-- Modal for delete group -->
-<div id="delete-modal" class="ui modal">
+<div id="group-delete-modal" class="ui modal">
    <div class="basic center aligned header" style="font-family: Hack">Удалить группу</div>
    <div class="content" style="font-family: Hack">
       <form id="delete-form" method="POST">
@@ -339,20 +246,209 @@
    </div>
 </div>
 
-<!-- DataTable -->
-<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
+<!-- Modal for update groupsubject -->
+<div id="group-subject-update-modal" class="ui large modal">
+   <div class="basic center aligned header" style="font-family: Hack">Изменить назначение</div>
+   <div class="content" style="font-family: Hack">
+       <form id="group-subject-update-form" method="POST">
+           {% csrf_token %}
+           <div class="ui large form">
+               <div class="required field">
+                   <label>Дисциплина</label>
+                   {% render_field groupsubject_form.subjects _no_label='True' %}
+               </div>
 
+               <div class="required field">
+                   <label>Группа</label>
+                   {% render_field groupsubject_form.groups _no_label='True' %}
+               </div>
+
+               <div class="two fields">
+                   <div class="seven wide field {% if groupsubject_form.teacher.errors %} error {% endif %}">
+                       <label>Фамилия И.О. преподавателя</label>
+                       {{ groupsubject_form.teacher }}
+                   </div>
+
+                   <div class="four wide field {% if groupsubject_form.att_date.errors %} error {% endif %}">
+                       <label>Дата аттестации</label>
+                       <div class="ui calendar">
+                           <div class="ui input left icon">
+                               <i class="calendar alternate outline icon"></i>
+                               {{ groupsubject_form.att_date }}
+                           </div>
+                       </div>
+                   </div>
+               </div>
+
+               <div class="field">
+                   <label>Примечание</label>
+                   {{ groupsubject_form.comment }}
+               </div>
+
+               <div class="field">
+                   {% render_field groupsubject_form.is_archived _no_label='True' %}
+               </div>
+           </div>
+
+       </form>
+   </div>
+   <div class="basic actions">
+       <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+       <div id="update-btn" class="ui blue circular button" onclick="updateGroupSubject()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+   </div>
+</div>
+
+<!-- Modal for delete groupsubject -->
+<div id="group-subject-delete-modal" class="ui modal">
+   <div class="basic center aligned header" style="font-family: Hack">Удалить назначение</div>
+   <div class="content" style="font-family: Hack">
+       <table class="ui definition table" style="margin-top: 0">
+           <tbody>
+               <tr>
+                   <td class="three wide">Дисциплина</td>
+                   <td id="del-subject"></td>
+               </tr>
+               <tr>
+                   <td>Форма контроля</td>
+                   <td id="del-formcontrol"></td>
+               </tr>
+               <tr>
+                   <td>Группа</td>
+                   <td id="del-group"></div></td>
+               </tr>
+               <tr>
+                   <td>Преподаватель</td>
+                   <td id="del-teacher"></td>
+               </tr>
+               <tr>
+                   <td>Дата аттестации</td>
+                   <td id="del-date"></td>
+               </tr>
+               <tr>
+                   <td>Кафедра</td>
+                   <td id="del-cathedra"></td>
+               </tr>
+               <tr>
+                   <td>Примечание</td>
+                   <td id="del-comment"></td>
+               </tr>
+           </tbody>
+       </table>
+   </div>
+   <div class="basic actions">
+       <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+       <div id="delete-btn" class="ui red circular button" onclick="deleteGroupSubject()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+   </div>
+</div>
+
+<!-- Modal for update result -->
+<div id="result-update-modal" class="ui large modal">
+   <div class="basic center aligned header" style="font-family: Hack">Изменить оценку</div>
+   <div class="content" style="font-family: Hack">
+       <form id="result-update-form" method="POST">
+           {% csrf_token %}
+           <div class="ui form">
+            <table class="ui very basic table">
+               <tbody>
+                  <tr>
+                     <td>
+                        <div class="required field">
+                           <label>Студент</label>
+                           {% render_field result_form.students _no_label='True' placeholder='Выбрать...' _style='ChoiceField' %}
+                        </div>
+                        
+                        <div class="required field">
+                           <label>Назначение</label>
+                           {% render_field result_form.groupsubject _no_label='True' placeholder='Выбрать...' %}
+                        </div>
+                     </td>
+                     <td class="two wide top center aligned">
+                        <div class="required {% if result_form.mark.errors %} error {% endif %} field">
+                           <label>Оценки</label>
+                           {% render_field result_form.mark _no_label='True' _help='True' %}
+                        </div>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+            <div class="inline fields">
+               <label>Тэг</label>
+               {% for tag in result_form.tag %}
+                  <div class="field">
+                     <div class="ui basic circular label">{{ tag }}</div>
+                  </div>
+               {% endfor %}
+            </div>
+
+            <div class="field">
+               {% render_field result_form.is_archived _no_label='True' %}
+            </div>
+         </div>
+      </form>
+   </div>
+   <div class="basic actions">
+       <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+       <div id="update-btn" class="ui blue circular button" onclick="updateResult()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+   </div>
+</div>
+
+<!-- Modal for delete result -->
+<div id="result-delete-modal" class="ui modal">
+   <div class="basic center aligned header" style="font-family: Hack">Удалить оценку</div>
+   <div class="content" style="font-family: Hack">
+      <table class="ui definition table" style="margin-top: 0">
+         <tbody>
+            <tr>
+               <td style="width: 150px">Студент</td>
+               <td id="del-name"></td>
+            </tr>
+            <tr>
+               <td>Группа</td>
+               <td id="del-group"></td>
+            </tr>
+            <tr>
+               <td>Семестр</td>
+               <td id="del-semester"></td>
+            </tr>
+            <tr>
+               <td>Дисциплина</td>
+               <td id="del-subject"></td>
+            </tr>
+            <tr>
+               <td>Форма контроя</td>
+               <td id="del-formcontrol"></td>
+            </tr>
+            <tr>
+               <td>Дата аттестации</td>
+               <td id="del-date"></td>
+            </tr>
+            <tr>
+               <td>Оценки</td>
+               <td id="del-marks"></td>
+            </tr>
+         </tbody>
+     </table>
+   </div>
+   <div class="basic actions">
+      <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+      <div id="delete-btn" class="ui red circular button" onclick="deleteResult()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+   </div>
+</div>
+
+<script type="text/javascript" src="{% static 'js/moment.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ru.js"></script>
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/script_groups.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/script_groupsubjects.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/script_archive.js' %}"></script>
 <script type="text/javascript">
    $(document).ready(function() {
       $('.menu .item').tab();
+      var hasGroup = document.getElementById('has-group').textContent;
 
       if ($.fn.DataTable.isDataTable('#groups-table')) {
          $('#groups-table').DataTable().destroy();
       };
-
       const groupsDataTableOptions = {
          language: {
             lengthMenu: '_MENU_ записей на страницу',
@@ -374,7 +470,7 @@
             [20, 50, 'Все']
          ],
          pageLength: 20,
-         paging: false,
+         paging: true,
          searching: true,
          ordering: true,
          autoWidth: false,
@@ -387,12 +483,209 @@
             { orderable: false, targets: [6, 7] },
             { className: 'center aligned', targets: [0, 2, 5, 6, 7] },
          ],
+         headerCallback: function(thead, cellData, start, end, display) {
+            $(thead).find('th').addClass('center aligned');
+         },
       };
-
       $('#groups-table').DataTable(groupsDataTableOptions);
-
-      var hasGroup = document.getElementById('has-group').textContent;
       fetchGroupsDataAndPopulate(hasGroup);
+
+      if ($.fn.DataTable.isDataTable('#groupsubjects-table')) {
+         $('#groupsubjects-table').DataTable().destroy();
+      };
+      const groupSubjectsDataTableOptions = {
+			language: {
+				lengthMenu: '_MENU_ записей на страницу',
+				zeroRecords: 'Записей нет...',
+				info: 'Всего записей: _MAX_',
+				infoEmpty: '',
+				infoFiltered: 'Найдено: _TOTAL_',
+				search: '',
+				searchPlaceholder: 'поиск',
+				paginate: {
+					first:    '«',
+					previous: '‹',
+					next:     '›',
+					last:     '»'
+				}
+			},
+			lengthMenu: [
+				[20, 50, -1],
+				[20, 50, 'Все']
+			],
+			pageLength: 20,
+            searching: true,
+			autoWidth: false,
+			columnDefs: [
+				{ width: "3%", targets: 0 },
+				{ width: "5%", targets: [8, 9] },
+            { width: "35%", targets: 1 },
+            { width: "10%", targets: [2, 5, 6] },
+            { width: "8%", targets: 3 },
+            { width: "7%", targets: [4, 7] },
+				{ searchable: false, targets: [0, 8, 9] },
+            { orderable: false, targets: [8, 9] },
+            { className: 'center aligned', targets: [0, 3, 4, 5, 6, 7, 8, 9] },
+				{
+					targets: 6,
+					createdCell: function(td, cellData, rowData, row, col) {
+						if (!(cellData instanceof Date) && cellData.includes('Нет')) {
+							$(td).text('---');
+						} else {
+                     moment.locale('ru');
+                     $(td).text(moment(cellData).format('DD.MM.YY'));
+                  };
+					}
+				},
+			],
+			headerCallback: function(thead, cellData, start, end, display) {
+            $(thead).find('th').addClass('center aligned');
+         },
+		};
+      $('#groupsubjects-table').DataTable(groupSubjectsDataTableOptions);
+      fetchArchivedGroupSubjectsDataAndPopulate(hasGroup);
+
+      if ($.fn.DataTable.isDataTable('#students-table')) {
+         $('#students-table').DataTable().destroy();
+      };
+		const studentsDataTableOptions = {
+			language: {
+				lengthMenu: '_MENU_ записей на страницу',
+				zeroRecords: 'Записей нет...',
+				info: 'Всего записей: _MAX_',
+				infoEmpty: '',
+				infoFiltered: 'Найдено: _TOTAL_',
+				search: '',
+				searchPlaceholder: 'поиск',
+				paginate: {
+					first:    '«',
+					previous: '‹',
+					next:     '›',
+					last:     '»'
+				}
+			},
+			lengthMenu: [
+				[20, 50, -1],
+				[20, 50, 'Все']
+			],
+			pageLength: 20,
+         searching: true,
+			autoWidth: false,
+			columnDefs: [
+				{ width: "3%", targets: 0 },
+				{ width: "25%", targets: 1 },
+				{ width: "8%", targets: [2, 3, 4, 5] },
+				{ width: "20%", targets: 6 },
+				{ width: "20%", targets: 7 },
+				{ searchable: false, targets: 0 },
+            { className: 'center aligned', targets: [0, 2, 3, 4, 5, 6] },
+			],
+			headerCallback: function(thead, cellData, start, end, display) {
+            $(thead).find('th').addClass('center aligned');
+         },
+		};
+		var studentsTable = $('#students-table').DataTable(studentsDataTableOptions);
+      fetchArchivedStudentsDataAndPopulate();
+
+      if ($.fn.DataTable.isDataTable('#subjects-table')) {
+         $('#subjects-table').DataTable().destroy();
+      };
+      const subjectsDataTableOptions = {
+			language: {
+				lengthMenu: '_MENU_ записей на страницу',
+				zeroRecords: 'Записей нет...',
+				info: 'Всего записей: _MAX_',
+				infoEmpty: '',
+				infoFiltered: 'Найдено: _TOTAL_',
+				search: '',
+				searchPlaceholder: 'поиск',
+				paginate: {
+					first:    '«',
+					previous: '‹',
+					next:     '›',
+					last:     '»'
+				}
+			},
+			lengthMenu: [
+				[20, 50, -1],
+				[20, 50, 'Все']
+			],
+			pageLength: 20,
+         searching: true,
+			autoWidth: false,
+			columnDefs: [
+				{ width: "3%", targets: 0 },
+				{ width: "49%", targets: 1 },
+				{ width: "12%", targets: 2 },
+				{ width: "8%", targets: [3, 4] },
+				{ width: "20%", targets: 5 },
+				{ searchable: false, targets: 0 },
+            { className: 'center aligned', targets: [0, 3, 4] },
+			],
+			headerCallback: function(thead, cellData, start, end, display) {
+            $(thead).find('th').addClass('center aligned');
+         },
+		};
+		var subjectsTable = $('#subjects-table').DataTable(subjectsDataTableOptions);
+      fetchArchivedSubjectsDataAndPopulate();
+
+      if ($.fn.DataTable.isDataTable('#marks-table')) {
+         $('#marks-table').DataTable().destroy();
+      };
+      const marksDataTableOptions = {
+			language: {
+				lengthMenu: '_MENU_ записей на страницу',
+				zeroRecords: 'Записей нет...',
+				info: 'Всего записей: _MAX_',
+				infoEmpty: '',
+				infoFiltered: 'Найдено: _TOTAL_',
+				search: '',
+				searchPlaceholder: 'поиск',
+				paginate: {
+					first:    '«',
+					previous: '‹',
+					next:     '›',
+					last:     '»'
+				}
+			},
+			lengthMenu: [
+				[20, 50, -1],
+				[20, 50, 'Все']
+			],
+			pageLength: 20,
+         searching: true,
+			autoWidth: false,
+			columnDefs: [
+				{ width: "3%", targets: 0 },
+				{ width: "20%", targets: 1 },
+				{ width: "7%", targets: 2 },
+				{ width: "31%", targets: 3 },
+				{ width: "10%", targets: 4 },
+				{ width: "6%", targets: 5 },
+				{ width: "10%", targets: 6 },
+				{ width: "10%", targets: 7 },
+				{ width: "3%", targets: 8 },
+				{ searchable: false, targets: 0 },
+            { orderable: false, targets: 8 },
+            { className: 'center aligned', targets: [0, 2, 4, 5, 6, 7, 8] },
+            {
+					targets: 6,
+					createdCell: function(td, cellData, rowData, row, col) {
+						if (!(cellData instanceof Date) && cellData.includes('Нет')) {
+							$(td).text('---');
+						} else {
+                     moment.locale('ru');
+                     $(td).text(moment(cellData).format('DD.MM.YY'));
+                  };
+					}
+				},
+         ],
+			headerCallback: function(thead, cellData, start, end, display) {
+            $(thead).find('th').addClass('center aligned');
+         },
+		};
+		var marksTable = $('#marks-table').DataTable(marksDataTableOptions);
+      fetchArchivedMarksDataAndPopulate();
 
       var forms = document.forms;
       for (let i = 0; i < forms.length; i++) {
@@ -403,249 +696,7 @@
             };
          };
       };
-
-      // убрать нижний отступ сегмента с заголовком и кнопками
-      let segments = document.getElementById("segments");
-      segments.style.paddingBottom = '0';
    });
-
-   // DataTable
-   $(document).ready(function() {
-      let firstRow = $('#students thead tr')[0];
-      let secondRow = firstRow.cloneNode(true);
-      firstRow.after(secondRow);
-
-      let filterColumns = $('#students thead tr')[0].children;
-      for (let i = 0; i < filterColumns.length; i++) {
-         let inputWidth = filterColumns[i].offsetWidth - 15;
-         if(i != 0) {
-            filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-         } else {filterColumns[i].innerHTML = ""};
-      };
-
-      document.querySelector('#students').style.width = "100%";
-      // DataTable
-      var table = $('#students').DataTable({
-         language: {
-            lengthMenu: '_MENU_ записей на страницу',
-            zeroRecords: 'Записей нет...',
-            info: 'Всего записей: _MAX_',
-            infoEmpty: '',
-            infoFiltered: 'Найдено: _TOTAL_',
-            search: '',
-            searchPlaceholder: 'поиск',
-            paginate: {
-               first:    '«',
-               previous: '‹',
-               next:     '›',
-               last:     '»'
-            }
-         },
-         lengthMenu: [
-            [20, 50, -1],
-            [20, 50, 'Все']
-         ],
-         pageLength: 20,
-         columnDefs: [
-            { searchable: false, targets: 0 }
-         ],
-      });
-
-      // Filter event handler
-      $(table.table().container()).on('keyup', 'thead input', function() {table
-         .column($(this).data('index'))
-         .search(this.value)
-         .draw();
-      });
-      changeDatatableInputFont();
-
-      // Очистка фильтров двойным кликом выше head
-      $(document).on("dblclick",  ".ui.stackable.grid", function() {
-         let inputs = document.getElementsByName("filter");
-         inputs.forEach(e => {
-            e.value = "";
-         });
-         table.search('');
-         table.columns().search('').draw();
-      });
-   });
-
-   $(document).ready(function() {
-      let firstRow = $('#marks thead tr')[0];
-      let secondRow = firstRow.cloneNode(true);
-      firstRow.after(secondRow);
-
-      let filterColumns = $('#marks thead tr')[0].children;
-      for (let i = 0; i < filterColumns.length; i++) {
-         let inputWidth = filterColumns[i].offsetWidth - 15;
-         filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 250px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-      };
-
-      document.querySelector('#marks').style.width = "100%";
-      // DataTable
-      var table = $('#marks').DataTable({
-         language: {
-            lengthMenu: '_MENU_ записей на страницу',
-            zeroRecords: 'Записей нет...',
-            info: 'Всего записей: _MAX_',
-            infoEmpty: '',
-            infoFiltered: '|_TOTAL_ найдено',
-            search: '',
-            searchPlaceholder: 'поиск',
-            paginate: {
-               first:    '«',
-               previous: '‹',
-               next:     '›',
-               last:     '»'
-            }
-         },
-         lengthMenu: [
-            [20, 50, -1],
-            [20, 50, 'Все']
-         ],
-         pageLength: 20,
-         //autoWidth: false,
-      });
-      // Filter event handler
-      $(table.table().container()).on('keyup', 'thead input', function() {
-         table
-            .column($(this).data('index'))
-            .search(this.value)
-            .draw();
-      });
-      changeDatatableInputFont();
-
-      // Очистка фильтров двойным кликом выше head
-      $(document).on("dblclick",  ".ui.stackable.grid", function() {
-         let inputs = document.getElementsByName("filter");
-         inputs.forEach(e => {
-            e.value = "";
-         });
-         table.search('');
-         table.columns().search('').draw();
-      });
-   });
-
-   $(document).ready(function() {
-      let firstRow = $('#subjects thead tr')[0];
-      let secondRow = firstRow.cloneNode(true);
-      firstRow.after(secondRow);
-
-      let filterColumns = $('#subjects thead tr')[0].children;
-      for (let i = 0; i < filterColumns.length; i++) {
-         let inputWidth = filterColumns[i].offsetWidth - 15;
-         if(i != 0) {
-            filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 150px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-         } else {filterColumns[i].innerHTML = ""};
-      };
-
-      document.querySelector('#subjects').style.width = "100%";
-      // DataTable
-      var table = $('#subjects').DataTable({
-         language: {
-            lengthMenu: '_MENU_ записей на страницу',
-            zeroRecords: 'Записей нет...',
-            info: 'Всего записей: _MAX_',
-            infoEmpty: '',
-            infoFiltered: 'Найдено: _TOTAL_',
-            search: '',
-            searchPlaceholder: 'поиск',
-            paginate: {
-               first:    '«',
-               previous: '‹',
-               next:     '›',
-               last:     '»'
-            }
-         },
-         lengthMenu: [
-            [20, 50, -1],
-            [20, 50, 'Все']
-         ],
-         pageLength: 20,
-         columnDefs: [
-            { searchable: false, targets: 0 }
-         ],
-      });
-      // Filter event handler
-      $(table.table().container()).on('keyup', 'thead input', function() {
-         table
-            .column($(this).data('index'))
-            .search(this.value)
-            .draw();
-      });
-      changeDatatableInputFont();
-
-      // Очистка фильтров двойным кликом выше head
-      $(document).on("dblclick",  ".ui.stackable.grid", function() {
-         let inputs = document.getElementsByName("filter");
-         inputs.forEach(e => {
-            e.value = "";
-         });
-         table.search('');
-         table.columns().search('').draw();
-      });
-   });
-
-   $(document).ready(function() {
-      let firstRow = $('#groupsubjects thead tr')[0];
-      let secondRow = firstRow.cloneNode(true);
-      firstRow.after(secondRow);
-
-      let filterColumns = $('#groupsubjects thead tr')[0].children;
-      for (let i = 0; i < filterColumns.length; i++) {
-         let inputWidth = filterColumns[i].offsetWidth - 15;
-         if(i != 0) {
-            filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 250px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-         } else {filterColumns[i].innerHTML = ""};
-      };
-
-      document.querySelector('#groupsubjects').style.width = "100%";
-      // DataTable
-      var table = $('#groupsubjects').DataTable({
-         language: {
-            lengthMenu: '_MENU_ записей на страницу',
-            zeroRecords: 'Записей нет...',
-            info: 'Всего записей: _MAX_',
-            infoEmpty: '',
-            infoFiltered: 'Найдено: _TOTAL_',
-            search: '',
-            searchPlaceholder: 'поиск',
-            paginate: {
-               first:    '«',
-               previous: '‹',
-               next:     '›',
-               last:     '»'
-            }
-         },
-         lengthMenu: [
-            [20, 50, -1],
-            [20, 50, 'Все']
-         ],
-         pageLength: 20,
-         columnDefs: [
-            { searchable: false, targets: 0 }
-         ],
-      });
-      // Filter event handler
-      $(table.table().container()).on('keyup', 'thead input', function() {
-         table
-            .column($(this).data('index'))
-            .search(this.value)
-            .draw();
-      });
-      changeDatatableInputFont();
-
-      // Очистка фильтров двойным кликом выше head
-      $(document).on("dblclick",  ".ui.stackable.grid", function() {
-         let inputs = document.getElementsByName("filter");
-         inputs.forEach(e => {
-            e.value = "";
-         });
-         table.search('');
-         table.columns().search('').draw();
-      });
-   });
-
 </script>
 
 {% endblock %}

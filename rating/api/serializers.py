@@ -168,7 +168,7 @@ class StudentsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ('student_id', 'fullname', 'group', 'semester', 'level', 'citizenship', 'comment', 'is_ill', 'tag')
+        fields = ('student_id', 'fullname', 'group', 'semester', 'level', 'citizenship', 'comment', 'is_ill', 'tag', 'status')
 
 
 class StudentLogSerializer(serializers.ModelSerializer):
@@ -206,7 +206,7 @@ class SubjectsForGroupSubjectsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subject
-        fields = ('id', 'name', 'form_control')
+        fields = ('id', 'name', 'form_control', 'semester')
 
 
 class GroupsForGroupSubjectsListSerializer(serializers.ModelSerializer):
@@ -224,7 +224,7 @@ class GroupSubjectsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GroupSubject
-        fields = ('id', 'groups', 'subjects', 'semester', 'teacher', 'att_date', 'cathedra', 'comment')
+        fields = ('id', 'groups', 'subjects', 'semester', 'teacher', 'att_date', 'cathedra', 'comment', 'is_archived')
 
     def get_semester(self, obj):
         semester = obj.subjects.semester.semester
@@ -244,7 +244,7 @@ class GroupSubjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GroupSubject
-        fields = ('id', 'groups', 'subjects', 'teacher', 'att_date', 'comment', 'cathedra')
+        fields = ('id', 'groups', 'subjects', 'teacher', 'att_date', 'comment', 'cathedra', 'is_archived')
 
     def get_cathedra(self, obj):
         if obj.subjects.cathedra:
@@ -254,13 +254,29 @@ class GroupSubjectSerializer(serializers.ModelSerializer):
 
 
 # Results
+class StudentsForResultsArchivedSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Student
+        fields = ('student_id', 'fullname')
+
+
 class ResultSerializer(serializers.ModelSerializer):
-    students = serializers.SlugRelatedField(slug_field='fullname', queryset=Student.objects)
+    students = StudentsForResultsArchivedSerializer()
     groupsubject = GroupSubjectSerializer()
 
     class Meta:
         model = Result
         fields = ('id', 'students', 'groupsubject', 'mark', 'tag', 'is_archived')
+
+
+class ResultArchivedSerializer(serializers.ModelSerializer):
+    students = StudentsForResultsArchivedSerializer()
+    groupsubject = GroupSubjectsListSerializer()
+
+    class Meta:
+        model = Result
+        fields = ('id', 'students', 'groupsubject', 'mark', 'tag')
 
 
 # Cathedras

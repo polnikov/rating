@@ -313,58 +313,11 @@
     </div>
 </div>
 
-<!-- Modal for delete subject -->
-<div id="delete-modal" class="ui modal">
-    <div class="basic center aligned header" style="font-family: Hack">Удалить дисциплину</div>
-    <div class="content" style="font-family: Hack">
-        <table class="ui definition table" style="margin-top: 0">
-            <tbody>
-                <tr>
-                    <td>Название</td>
-                    <td id="del-name"></td>
-                </tr>
-                <tr>
-                    <td>Семестр</td>
-                    <td id="del-semester"></td>
-                </tr>
-                <tr>
-                    <td class="three wide">Группы</td>
-                    <td id="del-groups" class="left aligned"></td>
-                </tr>
-                <tr>
-                    <td>Форма контроля</td>
-                    <td id="del-formcontrol"></td>
-                </tr>
-                <tr>
-                    <td>Факультет</td>
-                    <td id="del-faculty"></td>
-                </tr>
-                <tr>
-                    <td>Кафедра</td>
-                    <td id="del-cathedra"></td>
-                </tr>
-                <tr>
-                    <td>ЗЕТ</td>
-                    <td id="del-zet"></td>
-                </tr>
-                <tr>
-                    <td>Примечание</td>
-                    <td id="del-comment"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="basic actions">
-        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="delete-btn" class="ui red circular button" onclick="deleteSubject()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
-    </div>
-</div>
-
 <!-- Modal for update subject -->
-<div id="update-modal" class="ui large modal">
+<div id="subject-update-modal" class="ui large modal">
     <div class="basic center aligned header" style="font-family: Hack">Изменить дисциплину</div>
     <div class="content" style="font-family: Hack">
-        <form id="update-form" method="POST">
+        <form id="subject-update-form" method="POST">
             {% csrf_token %}
             <div class="ui form">
                 <div class="required field">
@@ -411,13 +364,58 @@
     </div>
 </div>
 
+<!-- Modal for delete subject -->
+<div id="subject-delete-modal" class="ui modal">
+    <div class="basic center aligned header" style="font-family: Hack">Удалить дисциплину</div>
+    <div class="content" style="font-family: Hack">
+        <table class="ui definition table" style="margin-top: 0">
+            <tbody>
+                <tr>
+                    <td>Название</td>
+                    <td id="del-name"></td>
+                </tr>
+                <tr>
+                    <td>Семестр</td>
+                    <td id="del-semester"></td>
+                </tr>
+                <tr>
+                    <td class="three wide">Группы</td>
+                    <td id="del-groups" class="left aligned"></td>
+                </tr>
+                <tr>
+                    <td>Форма контроля</td>
+                    <td id="del-formcontrol"></td>
+                </tr>
+                <tr>
+                    <td>Факультет</td>
+                    <td id="del-faculty"></td>
+                </tr>
+                <tr>
+                    <td>Кафедра</td>
+                    <td id="del-cathedra"></td>
+                </tr>
+                <tr>
+                    <td>ЗЕТ</td>
+                    <td id="del-zet"></td>
+                </tr>
+                <tr>
+                    <td>Примечание</td>
+                    <td id="del-comment"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="basic actions">
+        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="delete-btn" class="ui red circular button" onclick="deleteSubject()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+    </div>
+</div>
+
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/script_subject_detail.js' %}"></script>
 <script type="text/javascript">
-    // tabs
     $('.menu .item').tab();
 
-    // datatables
     $(document).ready(function () {
         $('#subject-students').DataTable({
             language: {

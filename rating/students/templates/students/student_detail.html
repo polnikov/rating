@@ -9,7 +9,8 @@
 {% block title %}{{ student.fullname }}{% endblock %}
 
 {% block content %}
-
+<div id="has-group" style="display: none">{{ request.user|has_group:"Сотрудники" }}</div>
+<div id="student-id" style="display: none">{{ student.student_id }}</div>
 <div id="segments" class="ui basic segments">
 
     <!-- Title & button -->
@@ -168,75 +169,20 @@
                     </tbody>
                 </table>
             {% endif %}
-            <table id="student-marks" class="ui selectable celled compact table">
+            <table id="student-marks" class="ui selectable celled compact fixed single line table">
                 <thead>
-                    <tr class="center aligned">
-                        <th id="semester" class="collapsing">Семестр</th>
-                        <th class="collapsing">Группа</th>
+                    <tr>
+                        <th>Семестр</th>
+                        <th>Группа</th>
                         <th>Дисциплина</th>
                         <th>Форма контроля</th>
                         <th>Преподаватель</th>
                         <th>Дата аттестации</th>
-                        <th name="mark" class="collapsing">Оценка</th>
-                        <th class="collapsing"></th>
+                        <th>Оценка</th>
+                        <th></th>
                     </tr>
                 </thead>
-
-                <tbody>
-                    {% for item in marks %}
-                        <tr>
-                            <td class="collapsing center aligned">{{ item.groupsubject.subjects.semester.semester }}</td>
-                            <td class="collapsing center aligned">
-                                <a href="{% url 'groups:detail' groupname=item.groupsubject.groups semester=item.groupsubject.subjects.semester.semester %}">
-                                    {{ item.groupsubject.groups }}
-                                </a>
-                            </td>
-                            <td>
-                                {% if item.groupsubject.is_archived %}<i class="archive brown icon"></i>{% endif %}
-                                <a href="{{ item.groupsubject.subjects.get_absolute_url }}">
-                                    {{ item.groupsubject.subjects.name|truncatechars:80 }}
-                                </a>
-                            </td>
-                            <td class="collapsing">{{ item.groupsubject.subjects.form_control }}</td>
-
-                            {% if item.groupsubject.teacher %}
-                                <td class="collapsing">{{ item.groupsubject.teacher }}</td>
-                            {% else %}
-                                <td class="negative collapsing center aligned"><i class="icon close"></i>
-                                    {{ item.groupsubject.empty_teacher }}
-                                </td>
-                            {% endif %}
-
-                            {% if item.groupsubject.att_date %}
-                                <td class="collapsing center aligned">
-                                    {{ item.groupsubject.empty_att_date }}
-                                </td>
-                            {% else %}
-                                <td class="negative collapsing center aligned"><i class="icon close"></i>
-                                    {{ item.groupsubject.empty_att_date }}
-                                </td>
-                            {% endif %}
-
-                            <td class="collapsing {% if item.mark|get_last_mark in "2нянз" %}negative{% endif %} center aligned">
-                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'students:result_update' item.id %}{% else %}#{% endif %}">
-                                    <div class="ui equal width stackable grid collapsing center aligned">
-                                        <div name="mark" class="column collapsing">{{ item.mark|slice:":1"|unpack_mark }}</div>
-                                        <div name="mark" class="column collapsing">{{ item.mark|slice:"1:2"|unpack_mark }}</div>
-                                        <div name="mark" class="column collapsing">{{ item.mark|slice:"2:3"|unpack_mark }}</div>
-                                    </div>
-                                </a>
-                            </td>
-
-                            <td class="center aligned collapsing">
-                                <a href="{% if request.user|has_group:"Сотрудники" %}{% url 'students:result_delete' item.id %}{% else %}#{% endif %}">
-                                    <button id="trash-button" class="circular ui red mini icon button">
-                                        <i class="trash alternate outline icon"></i>
-                                    </button>
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
+               <!-- data from JavaScript -->
             </table>
         </div>
 
@@ -294,66 +240,11 @@
     </div>
 </div>
 
-<!-- Modal for delete student -->
-<div id="delete-modal" class="ui modal">
-    <div class="basic center aligned header" style="font-family: Hack">Удалить cтудента</div>
-    <div class="content" style="font-family: Hack">
-        <table class="ui definition table" style="margin-top: 0">
-            <tbody>
-                <tr>
-                    <td class="three wide">Зачетная книжка</td>
-                    <td id="del-id"></td>
-                </tr>
-                <tr>
-                    <td>Гражданство</td>
-                    <td id="del-citizenship"></td>
-                </tr>
-                <tr>
-                    <td>Основа обучения</td>
-                    <td id="del-basis"></td>
-                </tr>
-                <tr>
-                    <td>Уровень обучения</td>
-                    <td id="del-level"></td>
-                </tr>
-                <tr>
-                    <td>Группа</td>
-                    <td id="del-group"></td>
-                </tr>
-                <tr>
-                    <td>Семестр</td>
-                    <td id="del-semester"></td>
-                </tr>
-                <tr>
-                    <td>Дата зачисления</td>
-                    <td id="del-date"></td>
-                </tr>
-                <tr>
-                    <td>Стипендия</td>
-                    <td id="del-money"></td>
-                </tr>
-                <tr>
-                    <td>Статус</td>
-                    <td id="del-status"></td>
-                </tr>
-                <tr>
-                    <td>Примечание</td>
-                    <td id="del-comment"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="basic actions">
-        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="delete-btn" class="ui red circular button" onclick="deleteStudent()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
-    </div>
-</div>
-
 <!-- Modal for update student -->
-<div id="update-modal" class="ui large modal">
+<div id="student-update-modal" class="ui large modal">
     <div class="basic center aligned header" style="font-family: Hack">Изменить студента</div>
     <div class="content" style="font-family: Hack">
-        <form id="update-form" method="POST">
+        <form id="student-update-form" method="POST">
             {% csrf_token %}
             <div class="ui small form">
                 <div class="three fields">
@@ -468,8 +359,160 @@
     </div>
 </div>
 
+<!-- Modal for delete student -->
+<div id="student-delete-modal" class="ui modal">
+    <div class="basic center aligned header" style="font-family: Hack">Удалить cтудента</div>
+    <div class="content" style="font-family: Hack">
+        <table class="ui definition table" style="margin-top: 0">
+            <tbody>
+                <tr>
+                    <td class="three wide">Зачетная книжка</td>
+                    <td id="del-id"></td>
+                </tr>
+                <tr>
+                    <td>Гражданство</td>
+                    <td id="del-citizenship"></td>
+                </tr>
+                <tr>
+                    <td>Основа обучения</td>
+                    <td id="del-basis"></td>
+                </tr>
+                <tr>
+                    <td>Уровень обучения</td>
+                    <td id="del-level"></td>
+                </tr>
+                <tr>
+                    <td>Группа</td>
+                    <td id="del-group"></td>
+                </tr>
+                <tr>
+                    <td>Семестр</td>
+                    <td id="del-semester"></td>
+                </tr>
+                <tr>
+                    <td>Дата зачисления</td>
+                    <td id="del-date"></td>
+                </tr>
+                <tr>
+                    <td>Стипендия</td>
+                    <td id="del-money"></td>
+                </tr>
+                <tr>
+                    <td>Статус</td>
+                    <td id="del-status"></td>
+                </tr>
+                <tr>
+                    <td>Примечание</td>
+                    <td id="del-comment"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="basic actions">
+        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="delete-btn" class="ui red circular button" onclick="deleteStudent()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+    </div>
+</div>
+
+<!-- Modal for update result -->
+<div id="result-update-modal" class="ui large modal">
+    <div class="basic center aligned header" style="font-family: Hack">Изменить оценку</div>
+    <div class="content" style="font-family: Hack">
+        <form id="result-update-form" method="POST">
+            {% csrf_token %}
+            <div class="ui form">
+            <table class="ui very basic table">
+                <tbody>
+                <tr>
+                    <td>
+                        <div class="required field">
+                            <label>Студент</label>
+                            {% render_field result_form.students _no_label='True' placeholder='Выбрать...' _style='ChoiceField' %}
+                        </div>
+                        
+                        <div class="required field">
+                            <label>Назначение</label>
+                            {% render_field result_form.groupsubject _no_label='True' placeholder='Выбрать...' %}
+                        </div>
+                    </td>
+                    <td class="two wide top center aligned">
+                        <div class="required {% if result_form.mark.errors %} error {% endif %} field">
+                            <label>Оценки</label>
+                            {% render_field result_form.mark _no_label='True' _help='True' %}
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="inline fields">
+                <label>Тэг</label>
+                {% for tag in result_form.tag %}
+                <div class="field">
+                    <div class="ui basic circular label">{{ tag }}</div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="field">
+                {% render_field result_form.is_archived _no_label='True' %}
+            </div>
+        </div>
+    </form>
+    </div>
+    <div class="basic actions">
+        <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div id="update-btn" class="ui blue circular button" onclick="updateResult()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+    </div>
+</div>
+ 
+<!-- Modal for delete result -->
+<div id="result-delete-modal" class="ui modal">
+    <div class="basic center aligned header" style="font-family: Hack">Удалить оценку</div>
+    <div class="content" style="font-family: Hack">
+    <table class="ui definition table" style="margin-top: 0">
+        <tbody>
+            <tr>
+                <td style="width: 150px">Студент</td>
+                <td id="del-name"></td>
+            </tr>
+            <tr>
+                <td>Группа</td>
+                <td id="del-group"></td>
+            </tr>
+            <tr>
+                <td>Семестр</td>
+                <td id="del-semester"></td>
+            </tr>
+            <tr>
+                <td>Дисциплина</td>
+                <td id="del-subject"></td>
+            </tr>
+            <tr>
+                <td>Форма контроя</td>
+                <td id="del-formcontrol"></td>
+            </tr>
+            <tr>
+                <td>Дата аттестации</td>
+                <td id="del-date"></td>
+            </tr>
+            <tr>
+                <td>Оценки</td>
+                <td id="del-marks"></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    <div class="basic actions">
+    <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+    <div id="delete-btn" class="ui red circular button" onclick="deleteResult()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+    </div>
+</div>
+ 
+<script type="text/javascript" src="{% static 'js/moment.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ru.js"></script>
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/script_student_detail.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/script_archive.js' %}"></script>
 <script type="text/javascript">
     $('.menu .item').tab();
     $(function () {
@@ -483,13 +526,16 @@
     });
 
     $(document).ready(function () {
-        $('#student-marks').DataTable({
+        if ($.fn.DataTable.isDataTable('#student-marks')) {
+            $('#student-marks').DataTable().destroy();
+        };
+        const marksDataTableOptions = {
             language: {
                 lengthMenu: '_MENU_ записей на страницу',
                 zeroRecords: 'Записей нет...',
                 info: 'Всего записей: _MAX_',
                 infoEmpty: '',
-                infoFiltered: '|_TOTAL_ найдено',
+                infoFiltered: 'Найдено: _TOTAL_',
                 search: '',
                 searchPlaceholder: 'поиск',
                 paginate: {
@@ -503,23 +549,35 @@
                 [20, 50, -1],
                 [20, 50, 'Все']
             ],
+            pageLength: 20,
+            searching: true,
             autoWidth: false,
-            fixedColumns: true,
             columnDefs: [
                 { width: '7%', targets: 0 },
                 { width: '7%', targets: 1 },
                 { width: '40%', targets: 2 },
-                { width: '10%', targets: 3 },
-                { width: '12%', targets: 4 },
-                { width: '10%', targets: 5 },
-                { width: '11%', targets: 6 },
+                { width: '11%', targets: 3 },
+                { width: '11%', targets: 4 },
+                { width: '12%', targets: 5 },
+                { width: '9%', targets: 6 },
                 { width: '3%', targets: 7 },
-                { searchable: false, targets: 7 },
+                { searchable: false, targets: 0 },
                 { orderable: false, targets: 7 },
+                { className: 'center aligned', targets: [0, 1, 4, 5, 6, 7] },
+                {
+					targets: [4, 5],
+					createdCell: function(td, cellData, rowData, row, col) {
+						if (String(cellData).includes('Нет')) {
+							$(td).addClass('negative');
+						};
+					}
+				},
             ],
-            pageLength: 20,
-            order: [[0, 'desc']],
-        });
+            headerCallback: function(thead, cellData, start, end, display) {
+                $(thead).find('th').addClass('center aligned');
+            },
+        };
+        $('#student-marks').DataTable(marksDataTableOptions);
 
         $('#student-history').DataTable({
             language: {

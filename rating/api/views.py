@@ -19,7 +19,7 @@ from subjects.forms import FacultyForm, CathedraForm, SubjectForm, GroupSubjectF
 from subjects.models import Cathedra, Faculty, GroupSubject, Subject, SubjectLog
 from students.models import Result, Semester, Student, StudentLog, Basis
 from students.validators import validate_mark, check_mark
-from students.forms import StudentForm
+from students.forms import StudentForm, ResultForm
 
 from rating.settings import IMPORT_DELIMITER
 from rating.functions import _get_students_group_statistic_and_marks, calculate_rating
@@ -31,6 +31,11 @@ logger = logging.getLogger(__name__)
 # Students
 class StudentsList(generics.ListAPIView):
     queryset = Student.objects.filter(status='Является студентом')
+    serializer_class = serializers.StudentsListSerializer
+
+
+class StudentsArchivedList(generics.ListAPIView):
+    queryset = Student.archived_objects.all()
     serializer_class = serializers.StudentsListSerializer
 
 
@@ -230,7 +235,6 @@ def import_students(request):
     return JsonResponse({'data': serialized_data})
 
 
-# @api_view(['GET'])
 def student_rating(request):
     """Расчет среднего балла студента."""
     serialized_data = []
@@ -300,6 +304,49 @@ def student_rating(request):
 class ResultViewSet(viewsets.ModelViewSet):
     queryset = Result.objects.all()
     serializer_class = serializers.ResultSerializer
+
+
+    @action(methods=['patch'], detail=True)
+    def update_result(self, request, pk=None):
+        try:
+            result = Result.objects.get(id=pk)
+        except Result.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Result not found'}, status=404)
+
+        form = ResultForm(request.POST, instance=result)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=200)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+    @action(methods=['delete'], detail=True)
+    def delete_result(self, request, pk=None):
+        queryset = Result.objects.all()
+
+        try:
+            result = queryset.get(id=pk)
+        except Result.DoesNotExist:
+            return JsonResponse({'success': False, 'errors': 'Result not found'}, status=404)
+
+        result.delete()
+        return JsonResponse({'success': True}, status=201)
+
+
+class ResultsArchivedList(generics.ListAPIView):
+    queryset = Result.objects.select_related().filter(is_archived=True)
+    serializer_class = serializers.ResultArchivedSerializer
+
+
+class ResultsForStudentList(generics.ListAPIView):
+    queryset = Result.objects.select_related().filter(is_archived=False)
+    serializer_class = serializers.ResultSerializer
+
+
+    def get_queryset(self):
+        student_id = self.request.query_params.get('student_id')
+        return Result.objects.select_related().filter(students=student_id, is_archived=False)
 
 
 def import_results(request):
@@ -628,7 +675,6 @@ class GroupsViewSet(viewsets.ModelViewSet):
         return JsonResponse({'success': True}, status=201)
 
 
-# @api_view(['GET', 'POST'])
 def group_marks(request):
     '''Статистика и оценки студентов группы.'''
     if request.method == 'GET':
@@ -707,7 +753,6 @@ def group_marks(request):
         })
 
 
-# @api_view(['GET'])
 def students_debts(request):
     """Отобразить задолженности всех студентов."""
     data = []
@@ -895,6 +940,11 @@ class SubjectsList(generics.ListAPIView):
     serializer_class = serializers.SubjectsListSerializer
 
 
+class SubjectsArchivedList(generics.ListAPIView):
+    queryset = Subject.archived_objects.all()
+    serializer_class = serializers.SubjectsListSerializer
+
+
 class SubjectViewSet(viewsets.ModelViewSet):
     queryset = Subject.objects.all()
     serializer_class = serializers.SubjectSerializer
@@ -1036,6 +1086,12 @@ class GroupSubjectsList(generics.ListAPIView):
 class GroupSubjectViewSet(viewsets.ModelViewSet):
     queryset = GroupSubject.objects.all()
     serializer_class = serializers.GroupSubjectsListSerializer
+
+
+    def get_queryset(self):
+        if self.request.GET.get('is_archived') == 'true':
+            return GroupSubject.archived_objects.all()
+        return super().get_queryset()
 
 
     @action(methods=['post'], detail=False)

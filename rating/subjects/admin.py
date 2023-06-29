@@ -198,7 +198,7 @@ class GroupSubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         'att_date',
     )
     search_fields = [
-        'subjects',
+        'subjects__name',
     ]
     list_display_links = ('get_subject_name',)
     form_class = GroupSubjectForm

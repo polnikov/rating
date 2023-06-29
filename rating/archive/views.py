@@ -5,16 +5,18 @@ from django.views.generic import ListView, TemplateView
 from groups.models import Group
 from groups.forms import GroupForm
 from students.models import Result, Student
+from students.forms import ResultForm
 from subjects.models import GroupSubject, Subject
+from subjects.forms import GroupSubjectForm
 
 
 class ArchiveDataView(LoginRequiredMixin, ListView):
 
     def get(self, request):
-        students = Student.archived_objects.select_related('group', 'semester')
-        marks = Result.objects.select_related().filter(is_archived=True)
-        subjects = Subject.archived_objects.select_related('semester', 'cathedra')
-        groupsubjects = GroupSubject.archived_objects.select_related()
+        students = Student.archived_objects.all().count()
+        marks = Result.objects.filter(is_archived=True).count()
+        subjects = Subject.archived_objects.all().count()
+        groupsubjects = GroupSubject.archived_objects.all().count()
         groups = Group.objects.filter(is_archived=True).count()
 
         return render(
@@ -27,6 +29,8 @@ class ArchiveDataView(LoginRequiredMixin, ListView):
                 'groupsubjects': groupsubjects,
                 'groups': groups,
                 'group_form': GroupForm(),
+                'groupsubject_form': GroupSubjectForm(),
+                'result_form': ResultForm(),
             },
         )
 

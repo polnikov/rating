@@ -14,16 +14,16 @@ function getCookie(name) {
     }
     return cookieValue;
 };
-const csrftoken = getCookie('csrftoken');
+var csrftoken = getCookie('csrftoken');
 
 function showUpdateStudent(studentId) {
     var url = window.location.origin + `/api/v1/students/${studentId}/`;
-    var updateModal = document.getElementById('update-modal');
+    var updateModal = document.getElementById('student-update-modal');
     
     fetch(url)
     .then(response => response.json())
     .then(data => {
-        var form = document.querySelector('#update-form').elements;
+        var form = document.querySelector('#student-update-form').elements;
 
         form.last_name.value = data.last_name;
         form.first_name.value = data.first_name;
@@ -60,8 +60,8 @@ function updateStudent() {
     var button = document.getElementById("update-btn");
     var studentId = button.getAttribute("data-student-id");
     var url = window.location.origin + `/api/v1/students/${studentId}/update_student/`;
-    var updateModal = document.getElementById('update-modal');
-    var form = document.querySelector('#update-form');
+    var updateModal = document.getElementById('student-update-modal');
+    var form = document.querySelector('#student-update-form');
     var formData = new FormData(form);
 
     fetch(url, {
@@ -96,7 +96,7 @@ function updateStudent() {
 
 function showDeleteStudent(studentId) {
     var url = window.location.origin + `/api/v1/students/${studentId}/`;
-    var deleteModal = document.getElementById('delete-modal');
+    var deleteModal = document.getElementById('student-delete-modal');
     
     fetch(url)
     .then(response => response.json())
@@ -131,7 +131,7 @@ function deleteStudent() {
     var button = document.getElementById("delete-btn");
     var studentId = button.getAttribute("data-student-id");
     var url = window.location.origin + `/api/v1/students/${studentId}/delete_student/`;
-    var deleteStudentModal = document.getElementById('delete-modal');
+    var deleteStudentModal = document.getElementById('student-delete-modal');
 
     fetch(url, {
         method: 'DELETE',
@@ -155,6 +155,78 @@ function deleteStudent() {
             message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
         });
     });
+};
+
+function formatDate(dateString) {
+    var dateParts = dateString.split("-");
+    var year = dateParts[0];
+    var month = dateParts[1];
+    var day = dateParts[2];
+    return day + "." + month + "." + year;
+};
+
+var hasGroup = document.getElementById('has-group').textContent;
+var studentId = document.getElementById('student-id').textContent;
+fetchStudentMarksDataAndPopulate(hasGroup);
+function fetchStudentMarksDataAndPopulate(hasGroup) {
+    const queryParams = new URLSearchParams({ student_id: studentId });
+    const url = window.location.origin + `/api/v1/studentresults/?${queryParams}`;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const table = $('#student-marks').DataTable();
+            table.clear();
+
+            data.forEach((result) => {
+                let tag;
+                if (result.tag) {
+                    tag = `<div id="tag-label" class="ui tiny pink label">${result.tag}</div>`
+                } else {
+                    tag = ''
+                };
+                let delFunc, updFunc;
+                if (hasGroup === 'True') {
+                    delFunc = `onclick="showDeleteResult(${result.id})"`;
+                    updFunc = `onclick="showUpdateResult(${result.id})"`;
+                } else {
+                    delFunc = '';
+                    updFunc = '';
+                };
+                lastMark = result.mark[result.mark.length - 1];
+                console.log(lastMark);
+                if ('2нянз'.includes(lastMark)) {
+                    negative = 'red'
+                } else {negative = ''};
+                console.log(negative);
+                mark1 = `<div name="result" class="column ${negative} collapsing">${result.mark[0]}</div>`;
+                mark2 = (result.mark[1]) ? `<div name="result" class="column ${negative} collapsing">${result.mark[1]}</div>` : `<div name="result" class="column ${negative} collapsing"></div>`;
+                mark3 = (result.mark[2]) ? `<div name="result" class="column ${negative} collapsing">${result.mark[2]}</div>` : `<div name="result" class="column ${negative} collapsing"></div>`;
+                let rowData = [
+                    result.groupsubject.subjects.semester,
+                    `<div id="${result.groupsubject.groups.id}" name="group" onclick="getAbsoluteURLforGroup([${result.groupsubject.groups.id}, '${result.groupsubject.groups.name}', ${result.groupsubject.subjects.semester}])"><a>${result.groupsubject.groups.name}</a></div>`,
+                    `<div id="${result.groupsubject.subjects.id}" name="subject" onclick="getAbsoluteURLforSubject(${result.groupsubject.subjects.id})"><a>${result.groupsubject.subjects.name}</a> ${tag}</div>`,
+                    result.groupsubject.subjects.form_control,
+                    (result.groupsubject.teacher) ? result.groupsubject.teacher : '<td class="negative"><i class="icon close"></i> Нет</td>',
+                    (result.groupsubject.att_date) ? formatDate(result.groupsubject.att_date) : '<td class="negative"><i class="icon close"></i> Нет</td>',
+                    `<a id="${result.id}" ${updFunc}>
+                        <div class="ui equal width stackable grid center aligned">
+                            ${mark1}${mark2}${mark3}
+                        </div>
+                    </a>`,
+                    `<button id="trash-button" ${delFunc} class="circular ui red mini icon button"><i class="trash alternate outline icon"></i></button>`,
+                ];
+                table.row.add(rowData);
+            });
+            table.draw();
+        })
+        .catch(error => {
+            console.error(error);
+            $.toast({
+                class: 'error center aligned',
+                position: 'centered',
+                message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            });
+        });
 };
 
 function formatDate(dateString) {

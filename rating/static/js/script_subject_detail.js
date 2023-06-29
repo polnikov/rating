@@ -2,28 +2,28 @@
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
-       var cookies = document.cookie.split(';');
-       for (let i = 0; i < cookies.length; i++) {
-          var cookie = jQuery.trim(cookies[i]);
-          // Does this cookie string begin with the name we want?
-          if (cookie.substring(0, name.length + 1) === (name + '=')) {
-             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-             break;
-          }
-       }
+        var cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
     }
     return cookieValue;
 };
-const csrftoken = getCookie('csrftoken');
+var csrftoken = getCookie('csrftoken');
 
 function showUpdateSubject(subjectId) {
     var url = window.location.origin + `/api/v1/subjects/${subjectId}/`;
-    var updateModal = document.getElementById('update-modal');
+    var updateModal = document.getElementById('subject-update-modal');
     
     fetch(url)
     .then(response => response.json())
     .then(data => {
-        var form = document.querySelector('#update-form').elements;
+        var form = document.querySelector('#subject-update-form').elements;
 
         form.name.value = data.name;
         $('.ui.dropdown').dropdown('set selected', data.form_control);
@@ -54,8 +54,8 @@ function updateSubject() {
     var button = document.getElementById("update-btn");
     var subjectId = button.getAttribute("data-subject-id");
     var url = window.location.origin + `/api/v1/subjects/${subjectId}/update_subject/`;
-    var updateModal = document.getElementById('update-modal');
-    var form = document.querySelector('#update-form');
+    var updateModal = document.getElementById('subject-update-modal');
+    var form = document.querySelector('#subject-update-form');
     var formData = new FormData(form);
 
     fetch(url, {
@@ -90,7 +90,7 @@ function updateSubject() {
 
 function showDeleteSubject(subjectId) {
     var url = window.location.origin + `/api/v1/subjects/${subjectId}/`;
-    var deleteModal = document.getElementById('delete-modal');
+    var deleteModal = document.getElementById('subject-delete-modal');
     
     fetch(url)
     .then(response => response.json())
@@ -141,7 +141,7 @@ function deleteSubject() {
     var button = document.getElementById("delete-btn");
     var subjectId = button.getAttribute("data-subject-id");
     var url = window.location.origin + `/api/v1/subjects/${subjectId}/delete_subject/`;
-    var deleteSubjectModal = document.getElementById('delete-modal');
+    var deleteSubjectModal = document.getElementById('subject-delete-modal');
 
     fetch(url, {
         method: 'DELETE',

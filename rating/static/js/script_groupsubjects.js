@@ -2,21 +2,21 @@
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
-       var cookies = document.cookie.split(';');
-       for (let i = 0; i < cookies.length; i++) {
-          var cookie = jQuery.trim(cookies[i]);
-          // Does this cookie string begin with the name we want?
-          if (cookie.substring(0, name.length + 1) === (name + '=')) {
-             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-             break;
-          }
-       }
+        var cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
     }
     return cookieValue;
 };
-const csrftoken = getCookie('csrftoken');
+var csrftoken = getCookie('csrftoken');
 
-const hasGroup = document.getElementById('has-group').textContent;
+var hasGroup = document.getElementById('has-group').textContent;
 fetchGroupSubjectsDataAndPopulate(hasGroup);
 
 function fetchGroupSubjectsDataAndPopulate(hasGroup) {
@@ -109,12 +109,13 @@ function saveGroupSubjectForm() {
 
 function showUpdateGroupSubject(groupSubjectId) {
     var url = window.location.origin + `/api/v1/groupsubjects/${groupSubjectId}/`;
-    var updateGroupSubjectsModal = document.getElementById('update-modal');
+    var updateGroupSubjectsModal = document.getElementById('group-subject-update-modal');
     
     fetch(url)
     .then(response => response.json())
     .then(data => {
-        var form = document.querySelector('#update-form').elements;
+        console.log(data);
+        var form = document.querySelector('#group-subject-update-form').elements;
         $('div.ui.selection.dropdown').dropdown('set selected', data.subjects.id);
         $('div.ui.selection.dropdown').dropdown('set selected', data.groups.id);
         form.teacher.value = data.teacher;
@@ -141,8 +142,8 @@ function updateGroupSubject() {
     var button = document.getElementById("edit-button");
     var groupSubjectId = button.getAttribute("data-group-subject-id");
     var url = window.location.origin + `/api/v1/groupsubjects/${groupSubjectId}/update_groupsubject/`;
-    var updateModal = document.getElementById('update-modal');
-    var form = document.querySelector('#update-form');
+    var updateModal = document.getElementById('group-subject-update-modal');
+    var form = document.querySelector('#group-subject-update-form');
     var formData = new FormData(form);
 
     fetch(url, {
@@ -155,7 +156,11 @@ function updateGroupSubject() {
     .then(response => response.json())
     .then(data => {
         if (!data.errors) {
-            fetchGroupSubjectsDataAndPopulate(hasGroup);
+            if (location.href.includes('archive')) {
+                fetchArchivedGroupSubjectsDataAndPopulate(hasGroup);
+            } else {
+                fetchGroupSubjectsDataAndPopulate(hasGroup);
+            };
             $(updateModal).modal({blurring: true}).modal('hide');
             $.toast({
                 class: 'success center aligned',
@@ -177,7 +182,7 @@ function updateGroupSubject() {
 
 function showDeleteGroupSubject(groupSubjectId) {
     var url = window.location.origin + `/api/v1/groupsubjects/${groupSubjectId}/`;
-    var deleteModal = document.getElementById('delete-modal');
+    var deleteModal = document.getElementById('group-subject-delete-modal');
     
     fetch(url)
     .then(response => response.json())
@@ -229,7 +234,7 @@ function deleteGroupSubject() {
     var button = document.getElementById("delete-btn");
     var groupSubjectId = button.getAttribute("data-group-subject-id");
     var url = window.location.origin + `/api/v1/groupsubjects/${groupSubjectId}/delete_groupsubject/`;
-    var deleteModal = document.getElementById('delete-modal');
+    var deleteModal = document.getElementById('group-subject-delete-modal');
 
     fetch(url, {
         method: 'DELETE',
@@ -239,7 +244,11 @@ function deleteGroupSubject() {
     })
     .then(response => {
         if (response.ok) {
-            fetchGroupSubjectsDataAndPopulate(hasGroup);
+            if (location.href.includes('archive')) {
+                fetchArchivedGroupSubjectsDataAndPopulate(hasGroup);
+            } else {
+                fetchGroupSubjectsDataAndPopulate(hasGroup);
+            };
             $(deleteModal).modal({blurring: true}).modal('hide');
             $.toast({
                 class: 'success center aligned',

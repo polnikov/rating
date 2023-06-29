@@ -254,6 +254,28 @@ function getAbsoluteURL(id) {
    });
 };
 
+//  функция формирования ссылки на студента
+function getAbsoluteURLforStudent(id) {
+   let baseURL = window.location.origin;
+   let pathName = 'students';
+   let url = `${baseURL}/${pathName}/${id}`;
+   let hrefs = document.querySelectorAll(`[id='${id}'] a`);
+   hrefs.forEach(a => {
+      a.href = url;
+   });
+};
+
+//  функция формирования ссылки на студента
+function getAbsoluteURLforSubject(id) {
+   let baseURL = window.location.origin;
+   let pathName = 'subjects';
+   let url = `${baseURL}/${pathName}/${id}`;
+   let hrefs = document.querySelectorAll(`[id='${id}'] a`);
+   hrefs.forEach(a => {
+      a.href = url;
+   });
+};
+
 //  функция формирования ссылки на карточку группы
 function getAbsoluteURLforGroup([id, name, semester]) {
    let baseURL = window.location.origin;

@@ -127,6 +127,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             'rating': rating,
             'rating_by_semester': rating_by_semester,
             'form': form,
+            'result_form': ResultForm(),
         }
         return render(request, 'students/student_detail.html', context=context)
 
