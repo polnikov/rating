@@ -160,7 +160,7 @@
                                     class="ui positive small animated circular icon button"
                                     style="font-family: Hack"
                                     tabindex="0"
-                                    onclick="window.location.href = '{% url 'students:result_add' %}'">
+                                    onclick="showResultModal('{{ student.student_id }}')">
                                     <div class="visible content"><i class="icon plus circle"></i> Добавить</div>
                                     <div class="hidden content">оценку</div>
                                 </button>
@@ -416,6 +416,65 @@
     </div>
 </div>
 
+<!-- Modal for add result -->
+<div id="add-result-modal" class="ui large modal">
+    <div class="basic center aligned header" style="font-family: Hack">Добавить оценку</div>
+    <div class="content" style="font-family: Hack">
+        <form id="add-form" method="POST">
+			{% csrf_token %}
+            <div class="ui form">
+                <table class="ui very basic table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="required field">
+                                    <label>Студент</label>
+                                    {% render_field result_form.students _no_label='True' %}
+                                </div>
+                                                
+                                <div class="required field">
+                                    <label>Дисциплина</label>
+                                    <div class="ui search selection dropdown" id="groupsubjects">
+                                        <input type="hidden" name="groupsubjects">
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text">Выбрать</div>
+                                        <div class="menu">
+                                            {% for g in result_form.groupsubject %}
+                                                <div class="item">{{ g }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="two wide top center aligned">
+                                <div class="required {% if result_form.mark.errors %} error {% endif %} field">
+                                    <label>Оценки</label>
+                                    {% render_field result_form.mark _no_label='True' _help='True' %}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="inline fields">
+                    <label>Тэг</label>
+                    {% for tag in result_form.tag %}
+                    <div class="field">
+                        <div class="ui basic circular label">{{ tag }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="field">
+                    {% render_field result_form.is_archived _no_label='True' %}
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <div class="ui circular cancel button" onclick="resetAddForm()" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
+        <div class="ui green circular button" onclick="saveResultForm()" style="font-family: Hack"><i class="save icon"></i>Сохранить</div>
+    </div>
+</div>
+
 <!-- Modal for update result -->
 <div id="result-update-modal" class="ui large modal">
     <div class="basic center aligned header" style="font-family: Hack">Изменить оценку</div>
@@ -423,43 +482,42 @@
         <form id="result-update-form" method="POST">
             {% csrf_token %}
             <div class="ui form">
-            <table class="ui very basic table">
-                <tbody>
-                <tr>
-                    <td>
-                        <div class="required field">
-                            <label>Студент</label>
-                            {% render_field result_form.students _no_label='True' placeholder='Выбрать...' _style='ChoiceField' %}
-                        </div>
-                        
-                        <div class="required field">
-                            <label>Назначение</label>
-                            {% render_field result_form.groupsubject _no_label='True' placeholder='Выбрать...' %}
-                        </div>
-                    </td>
-                    <td class="two wide top center aligned">
-                        <div class="required {% if result_form.mark.errors %} error {% endif %} field">
-                            <label>Оценки</label>
-                            {% render_field result_form.mark _no_label='True' _help='True' %}
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <div class="inline fields">
-                <label>Тэг</label>
-                {% for tag in result_form.tag %}
-                <div class="field">
-                    <div class="ui basic circular label">{{ tag }}</div>
+                <table class="ui very basic table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="required field">
+                                    <label>Студент</label>
+                                    {% render_field result_form.students _no_label='True' placeholder='Выбрать...' _style='ChoiceField' %}
+                                </div>
+                                
+                                <div class="required field">
+                                    <label>Назначение</label>
+                                    {% render_field result_form.groupsubject _no_label='True' placeholder='Выбрать...' %}
+                                </div>
+                            </td>
+                            <td class="two wide top center aligned">
+                                <div class="required {% if result_form.mark.errors %} error {% endif %} field">
+                                    <label>Оценки</label>
+                                    {% render_field result_form.mark _no_label='True' _help='True' %}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="inline fields">
+                    <label>Тэг</label>
+                    {% for tag in result_form.tag %}
+                    <div class="field">
+                        <div class="ui basic circular label">{{ tag }}</div>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+                <div class="field">
+                    {% render_field result_form.is_archived _no_label='True' %}
+                </div>
             </div>
-
-            <div class="field">
-                {% render_field result_form.is_archived _no_label='True' %}
-            </div>
-        </div>
-    </form>
+        </form>
     </div>
     <div class="basic actions">
         <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
@@ -514,7 +572,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ru.js"></script>
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/script_student_detail.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/script_archive.js' %}"></script>
 <script type="text/javascript">
     $('.menu .item').tab();
     $(document).ready(function () {

@@ -306,6 +306,38 @@ class ResultViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ResultSerializer
 
 
+    @action(methods=['post'], detail=False)
+    def create_result(self, request):
+        student = request.POST['students']
+        groupsubject = request.POST['groupsubjects'].replace('<option value=&quot;', '').split('&')[0]
+        mark_0 = request.POST['mark_0']
+        mark_1 = request.POST['mark_1']
+        mark_2 = request.POST['mark_2']
+        tag = request.POST['tag']
+        is_archived = request.POST.get('is_archived', False)
+
+        if is_archived:
+            form = ResultForm(data={'students': student,
+                                    'groupsubject': groupsubject,
+                                    'mark_0': mark_0,
+                                    'mark_1': mark_1,
+                                    'mark_2': mark_2,
+                                    'is_archived': is_archived,
+                                    'tag': tag})
+        else:
+            form = ResultForm(data={'students': student,
+                                    'groupsubject': groupsubject,
+                                    'mark_0': mark_0,
+                                    'mark_1': mark_1,
+                                    'mark_2': mark_2,
+                                    'tag': tag})
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True}, status=201)
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
     @action(methods=['patch'], detail=True)
     def update_result(self, request, pk=None):
         try:

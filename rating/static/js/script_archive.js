@@ -113,7 +113,7 @@ function fetchArchivedSubjectsDataAndPopulate() {
         });
 };
 
-function fetchArchivedMarksDataAndPopulate() {
+function fetchArchivedMarksDataAndPopulate(hasGroup) {
     const url = window.location.origin + "/api/v1/archivedresults/";
     fetch(url)
         .then(response => response.json())
@@ -224,7 +224,9 @@ function updateResult() {
                 position: 'centered',
                 message: '<i class="checkmark icon"></i> Обновлено!'
             });
-            fetchArchivedMarksDataAndPopulate();
+            const table = $('#marks-table').DataTable();
+            table.clear();
+            fetchArchivedMarksDataAndPopulate(hasGroup);
         };
     })
     .catch(error => {
@@ -284,7 +286,9 @@ function deleteResult() {
     .then(response => {
         if (response.ok) {
             $(deletetModal).modal({blurring: true}).modal('hide');
-            fetchArchivedMarksDataAndPopulate();
+            const table = $('#marks-table').DataTable();
+            table.clear();
+            fetchArchivedMarksDataAndPopulate(hasGroup);
         };
     })
     .catch(error => {
