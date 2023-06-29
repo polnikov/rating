@@ -295,9 +295,11 @@
 
                     <div class="required three wide field {% if form.start_date.errors %} error {% endif %}">
                         <label>Дата зачисления</label>
-                        <div class="ui input left icon">
-                            <i class="calendar alternate outline icon"></i>
-                            {{ form.start_date }}
+                        <div class="ui calendar">
+                            <div class="ui input left icon">
+                                <i class="calendar alternate outline icon"></i>
+                                {{ form.start_date }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -515,16 +517,6 @@
 <script type="text/javascript" src="{% static 'js/script_archive.js' %}"></script>
 <script type="text/javascript">
     $('.menu .item').tab();
-    $(function () {
-        $("#id_start_date").datepicker({
-            weekStart: 1,
-            daysMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-            monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-            format:'dd.mm.yyyy',
-            autoHide: true,
-        });
-    });
-
     $(document).ready(function () {
         if ($.fn.DataTable.isDataTable('#student-marks')) {
             $('#student-marks').DataTable().destroy();
