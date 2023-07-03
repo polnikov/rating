@@ -166,3 +166,189 @@ function deleteSubject() {
         });
     });
 };
+
+var hasGroup = document.getElementById('has-group').textContent;
+var subjectId = document.getElementById('subject-id').textContent;
+fetchSubjectMarksDataAndPopulate(hasGroup);
+function fetchSubjectMarksDataAndPopulate(hasGroup) {
+    const queryParams = new URLSearchParams({ subject_id: subjectId });
+    const url = window.location.origin + `/api/v1/subjectresults/?${queryParams}`;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const table = $('#subject-marks').DataTable();
+            table.clear();
+
+            data.forEach((result) => {
+                let tag;
+                if (result.tag) {
+                    tag = `<div id="tag-label" class="ui tiny pink label">${result.tag}</div>`
+                } else {
+                    tag = ''
+                };
+                let delFunc, updFunc;
+                if (hasGroup === 'True') {
+                    delFunc = `onclick="showDeleteResult(${result.id})"`;
+                    updFunc = `onclick="showUpdateResult(${result.id})"`;
+                } else {
+                    delFunc = '';
+                    updFunc = '';
+                };
+                lastMark = result.mark[result.mark.length - 1];
+                if ('2нянз'.includes(lastMark)) {
+                    negative = 'red'
+                } else {negative = ''};
+                mark1 = `<div name="result" class="column ${negative} collapsing">${result.mark[0]}</div>`;
+                mark2 = (result.mark[1]) ? `<div name="result" class="column ${negative} collapsing">${result.mark[1]}</div>` : `<div name="result" class="column ${negative} collapsing"></div>`;
+                mark3 = (result.mark[2]) ? `<div name="result" class="column ${negative} collapsing">${result.mark[2]}</div>` : `<div name="result" class="column ${negative} collapsing"></div>`;
+                let rowData = [
+                    result.groupsubject.subjects.semester,
+                    `<div id="${result.groupsubject.groups.id}" name="group" onclick="getAbsoluteURLforGroup([${result.groupsubject.groups.id}, '${result.groupsubject.groups.name}', ${result.groupsubject.subjects.semester}])"><a>${result.groupsubject.groups.name}</a></div>`,
+                    `<div id="${result.students.student_id}" name="student" onclick="getAbsoluteURLforStudent(${result.students.student_id})"><a>${result.students.fullname}</a> ${tag}</div>`,
+                    (result.groupsubject.teacher) ? result.groupsubject.teacher : '<td class="negative"><i class="icon close"></i> Нет</td>',
+                    (result.groupsubject.att_date) ? formatDate(result.groupsubject.att_date) : '<td class="negative"><i class="icon close"></i> Нет</td>',
+                    `<a id="${result.id}" ${updFunc}>
+                        <div class="ui equal width stackable grid center aligned">
+                            ${mark1}${mark2}${mark3}
+                        </div>
+                    </a>`,
+                    `<button id="trash-button" ${delFunc} class="circular ui red mini icon button"><i class="trash alternate outline icon"></i></button>`,
+                ];
+                table.row.add(rowData);
+            });
+            table.draw();
+        })
+        .catch(error => {
+            console.error(error);
+            $.toast({
+                class: 'error center aligned',
+                position: 'centered',
+                message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+            });
+        });
+};
+
+function saveResultForm() {
+    var url = window.location.origin + `/api/v1/results/create_result/`;
+    var addModal = document.getElementById('add-result-modal');
+    var form = document.querySelector('#add-form');
+    var formData = new FormData(form);
+ 
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+        },
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.errors) {
+            $(addModal).modal({blurring: true}).modal('hide');
+            resetAddForm();
+            const table = $('#subject-marks').DataTable();
+            table.clear();
+            fetchSubjectMarksDataAndPopulate(hasGroup);
+            $.toast({
+                class: 'success center aligned',
+                position: 'centered',
+                message: '<i class="checkmark icon"></i> Добавлено!'
+            });
+        };
+    })
+    .catch(error => {
+        console.error(error);
+        $(addModal).modal({blurring: true}).modal('hide');
+        $.toast({
+            class: 'error center aligned',
+            position: 'centered',
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
+    });
+};
+
+function showUpdateResult(resultId) {
+    var url = window.location.origin + `/api/v1/results/${resultId}/`;
+    var updateModal = document.getElementById('result-update-modal');
+    
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        var form = document.querySelector('#result-update-form').elements;
+
+        $('.ui.dropdown').dropdown('set selected', data.students.student_id);
+        $('.ui.dropdown').dropdown('set selected', data.groupsubject.id);
+        form.id_mark_0.value = data.mark[0];
+        form.id_mark_1.value = (data.mark[1]) ? data.mark[1] : '';
+        form.id_mark_2.value = (data.mark[2]) ? data.mark[2] : '';
+        form.tag.value = data.tag;
+        form.is_archived.checked = data.is_archived;
+
+        var updateButton = document.getElementById('update-btn');
+        updateButton.dataset.resultId = resultId;
+
+        $(updateModal).modal({blurring: true}).modal('show');
+    })
+    .catch(error => {
+        console.error(error);
+        $.toast({
+            class: 'error center aligned',
+            position: 'centered',
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
+    });
+};
+
+function updateResult() {
+    var button = document.getElementById("update-btn");
+    var resultId = button.getAttribute("data-result-id");
+    var url = window.location.origin + `/api/v1/results/${resultId}/update_result/`;
+    var updateModal = document.getElementById('result-update-modal');
+    var form = document.querySelector('#result-update-form');
+    var formData = new FormData(form);
+
+    fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'X-CSRFToken': csrftoken,
+        },
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.errors) {
+            $(updateModal).modal({blurring: true}).modal('hide');
+            $.toast({
+                class: 'success center aligned',
+                position: 'centered',
+                message: '<i class="checkmark icon"></i> Обновлено!'
+            });
+            const table = $('#subject-marks').DataTable();
+            table.clear();
+            fetchSubjectMarksDataAndPopulate(hasGroup);
+        };
+    })
+    .catch(error => {
+        console.error(error);
+        $(updateModal).modal({blurring: true}).modal('hide');
+        $.toast({
+            class: 'error center aligned',
+            position: 'centered',
+            message: '<i class="exclamation circle large icon"></i> Упс! Похоже что-то пошло не так....попробуйте попозже снова.'
+        });
+    });
+};
+
+function formatDate(dateString) {
+    var dateParts = dateString.split("-");
+    var year = dateParts[0];
+    var month = dateParts[1];
+    var day = dateParts[2];
+    return day + "." + month + "." + year;
+};
+
+function showResultModal(id) {
+    var element = document.getElementById('add-result-modal');
+    $(element).modal({blurring: true}).modal('show');
+};
+ 

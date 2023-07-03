@@ -26,9 +26,4 @@ urlpatterns = [
 
     # Searching
     path('search/', views.search_results, name='search'),
-
-    # Results
-    path('results/add/', views.ResultCreateView.as_view(), name='result_add'),
-    path('results/delete/<int:pk>/', views.ResultDeleteView.as_view(), name='result_delete'),
-    path('results/update/<int:pk>/', views.ResultUpdateView.as_view(), name='result_update'),
 ]

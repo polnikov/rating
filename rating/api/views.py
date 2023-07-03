@@ -372,13 +372,21 @@ class ResultsArchivedList(generics.ListAPIView):
 
 
 class ResultsForStudentList(generics.ListAPIView):
-    queryset = Result.objects.select_related().filter(is_archived=False)
     serializer_class = serializers.ResultSerializer
 
 
     def get_queryset(self):
         student_id = self.request.query_params.get('student_id')
         return Result.objects.select_related().filter(students=student_id, is_archived=False)
+
+
+class ResultsForSubjectList(generics.ListAPIView):
+    serializer_class = serializers.ResultSerializer
+
+
+    def get_queryset(self):
+        subject_id = self.request.query_params.get('subject_id')
+        return Result.objects.select_related().filter(groupsubject__subjects=subject_id, is_archived=False)
 
 
 def import_results(request):

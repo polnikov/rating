@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import (TemplateView, DetailView, ListView)
 from students.models import Result
+from students.forms import ResultForm
 from subjects.forms import (CathedraForm, FacultyForm, GroupSubjectForm, SubjectForm)
 from subjects.models import (Cathedra, Faculty, GroupSubject, Subject, SubjectLog)
 
@@ -26,10 +27,6 @@ class SubjectDetailView(LoginRequiredMixin, DetailView):
         subject = get_object_or_404(Subject, id=pk)
         # groups with subject groupsubject in current semester
         groups = GroupSubject.active_objects.filter(subjects=subject.id).order_by('groups__code', 'groups__name')
-        # выборка студентов, сдававших дисциплину в соответствующем семестре
-        # students who have current subject
-        students = Result.objects.select_related().filter(groupsubject__subjects=subject.id)
-        form = SubjectForm()
 
         # subjects changes history
         try:
@@ -37,12 +34,14 @@ class SubjectDetailView(LoginRequiredMixin, DetailView):
         except:
             history = 'Error'
 
+        groups_names = list(groups.values_list('groups__name').values_list('groups__name', flat=True))
+
         context = {
             'subject': subject,
             'history': history,
             'groups': groups,
-            'students': students,
-            'form': form,
+            'form': SubjectForm(),
+            'result_form': ResultForm(subject_name=subject.name, groups_names=groups_names),
         }
         return render(request, 'subjects/subject_detail.html', context=context)
 

@@ -1,5 +1,4 @@
 import concurrent.futures
-import re
 import logging
 
 from collections import Counter
@@ -8,7 +7,7 @@ from openpyxl.styles import Font
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.http import Http404, JsonResponse, HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -18,9 +17,8 @@ from django.views.generic import (
 
 from groups.models import Group
 from students.forms import ResultForm, StudentForm
-from students.models import Basis, Result, Semester, Student, StudentLog
+from students.models import Result, Semester, Student, StudentLog
 from subjects.models import Cathedra, GroupSubject, Subject
-from rating.settings import IMPORT_DELIMITER
 from rating.functions import calculate_rating
 
 
@@ -114,16 +112,11 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         else:
             rating = 0
 
-        marks = Result.objects.select_related().filter(students=student.student_id).order_by(
-            'groupsubject__subjects__semester',
-            '-groupsubject__subjects__form_control',
-        )
         form = StudentForm()
 
         context = {
             'student': student,
             'history': history,
-            'marks': marks,
             'rating': rating,
             'rating_by_semester': rating_by_semester,
             'form': form,
@@ -236,45 +229,6 @@ class GraduatesView(LoginRequiredMixin, TemplateView):
         graduates = Student.archived_objects.filter(status='Выпускник')
         context['graduates'] = graduates
         return context
-
-
-class ResultCreateView(LoginRequiredMixin, CreateView):
-    model = Result
-    form_class = ResultForm
-    template_name = 'students/result_add.html'
-
-    def post(self, request, *args, **kwargs):
-        student = request.POST['students'].replace('<option value=&quot;', '').split('&')[0]
-        groupsubject = request.POST['groupsubjects'].replace('<option value=&quot;', '').split('&')[0]
-        mark_0 = request.POST['mark_0']
-        mark_1 = request.POST['mark_1']
-        mark_2 = request.POST['mark_2']
-        tag = request.POST['tag']
-
-        form = ResultForm(data={'students': student,
-                                'groupsubject': groupsubject,
-                                'mark_0': mark_0,
-                                'mark_1': mark_1,
-                                'mark_2': mark_2,
-                                'tag': tag})
-        if form.is_valid():
-            form.save()
-            return redirect('groups:cards')
-
-        return super().post(request, *args, **kwargs)
-
-
-class ResultUpdateView(LoginRequiredMixin, UpdateView):
-    model = Result
-    form_class = ResultForm
-    template_name = 'students/result_update.html'
-    success_url = '/groups/cards'
-
-
-class ResultDeleteView(LoginRequiredMixin, DeleteView):
-    model = Result
-    template_name = 'students/result_delete.html'
-    success_url = '/groups/cards'
 
 
 class StudentsMoneyListView(LoginRequiredMixin, ListView):

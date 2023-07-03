@@ -373,7 +373,7 @@ function deleteResult() {
     var button = document.getElementById("delete-btn");
     var resultId = button.getAttribute("data-result-id");
     var url = window.location.origin + `/api/v1/results/${resultId}/delete_result/`;
-    var deletetModal = document.getElementById('result-delete-modal');
+    var deleteModal = document.getElementById('result-delete-modal');
 
     fetch(url, {
         method: 'DELETE',
@@ -383,7 +383,7 @@ function deleteResult() {
     })
     .then(response => {
         if (response.ok) {
-            $(deletetModal).modal({blurring: true}).modal('hide');
+            $(deleteModal).modal({blurring: true}).modal('hide');
             const table = $('#student-marks').DataTable();
             table.clear();
             fetchStudentMarksDataAndPopulate(hasGroup);
@@ -391,7 +391,7 @@ function deleteResult() {
     })
     .catch(error => {
         console.error(error);
-        $(deletetModal).modal({blurring: true}).modal('hide');
+        $(deleteModal).modal({blurring: true}).modal('hide');
         $.toast({
             class: 'error center aligned',
             position: 'centered',
@@ -412,5 +412,5 @@ function showResultModal(id) {
     var element = document.getElementById('add-result-modal');
     $(element).modal({blurring: true}).modal('show');
     $('div.ui.selection.dropdown').dropdown('set selected', id);
- };
+};
  

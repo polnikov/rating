@@ -433,7 +433,7 @@
                                 </div>
                                                 
                                 <div class="required field">
-                                    <label>Дисциплина</label>
+                                    <label>Назначение</label>
                                     <div class="ui search selection dropdown" id="groupsubjects">
                                         <input type="hidden" name="groupsubjects">
                                         <i class="dropdown icon"></i>
@@ -622,6 +622,7 @@
 					}
 				},
             ],
+            order: [[0, 'desc']],
             headerCallback: function(thead, cellData, start, end, display) {
                 $(thead).find('th').addClass('center aligned');
             },

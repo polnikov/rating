@@ -7,7 +7,7 @@ from django.forms.widgets import DateInput, MultiWidget, RadioSelect, TextInput,
 
 from groups.models import Group
 from students.models import Result, Student
-from subjects.models import Subject
+from subjects.models import Subject, GroupSubject
 
 
 class StudentForm(forms.ModelForm):
@@ -68,6 +68,18 @@ class StudentForm(forms.ModelForm):
 
 
 class ResultForm(forms.ModelForm):
+    def __init__(self, subject_name=None, groups_names=None, *args, **kwargs):
+        super(ResultForm, self).__init__(*args, **kwargs)
+        if subject_name:
+            self.fields['groupsubject'].queryset = GroupSubject.active_objects.filter(
+                subjects__name=subject_name
+            ).order_by(
+                'groups__name',
+                'subjects__semester__semester',
+            )
+        if groups_names:
+            self.fields['students'].queryset = Student.active_objects.filter(group__name__in=groups_names)
+
     students = Input()
     groupsubject = Input()
 
