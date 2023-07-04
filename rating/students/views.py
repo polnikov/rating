@@ -309,10 +309,10 @@ def download_excel_data(request):
     match att_level:
         case 'att1':
             negative_groupsubjects_ids = Result.objects.select_related().filter(
-                mark__0__in=negative).values('groupsubject__id')
+                Q(mark__len=1) & Q(mark__0__in=negative)).values('groupsubject__id')
         case 'att2':
             negative_groupsubjects_ids = Result.objects.select_related().filter(
-                mark__1__in=negative).values('groupsubject__id')
+                Q(mark__len=2) & Q(mark__1__in=negative)).values('groupsubject__id')
         case 'att3':
             negative_groupsubjects_ids = Result.objects.select_related().filter(
                 mark__2__in=negative).values('groupsubject__id')
