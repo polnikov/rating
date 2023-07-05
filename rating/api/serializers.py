@@ -189,9 +189,6 @@ class StudentLogSerializer(serializers.ModelSerializer):
             return False
 
 
-# ! TODO: API for students debts
-
-
 class StudentMoneySerializer(serializers.ModelSerializer):
     group = serializers.SlugRelatedField(slug_field='name', queryset=Group.objects)
     basis = serializers.SlugRelatedField(slug_field='name', queryset=Basis.objects)

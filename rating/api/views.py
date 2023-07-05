@@ -7,7 +7,7 @@ from datetime import datetime
 from collections import Counter
 
 from rest_framework import generics, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 
 from django.http.response import JsonResponse
@@ -298,6 +298,52 @@ def student_rating(request):
     serialized_data = sorted(serialized_data, key=lambda d: d['rating'])
 
     return JsonResponse({'data': serialized_data})
+
+
+@api_view(['GET'])
+def students_debts(request):
+    """Show current students debts."""
+    data = []
+    negative = ['ня', 'нз', '2']
+
+    # students ids who has debts
+    negative_students = Result.objects.select_related('students').filter(
+        mark__contained_by=negative, is_archived=False).values('students__student_id')
+    # filter students by ids
+    students = Student.active_objects.select_related('basis', 'group', 'semester').filter(
+        student_id__in=negative_students)
+
+    for st in students:
+        all_marks = [
+            i[0]
+            for i in st.result_set.select_related().filter(
+                groupsubject__subjects__semester__semester=st.semester.semester, groupsubject__groups__name=st.group.name,
+                mark__contained_by=negative).values_list('mark')]
+        marks_att1 = [i[0] for i in all_marks]
+        marks_att2 = [i[1] for i in list(filter(lambda x: len(x) in [2, 3], all_marks))]
+        marks_att3 = [i[2] for i in list(filter(lambda x: len(x) == 3, all_marks))]
+        count_marks_att1 = dict(Counter(marks_att1))
+        count_marks_att2 = dict(Counter(marks_att2))
+        count_marks_att3 = dict(Counter(marks_att3))
+        st.att1 = sum(list(map(lambda x: count_marks_att1.get(x, 0), negative)))
+        st.att2 = sum(list(map(lambda x: count_marks_att2.get(x, 0), negative)))
+        st.att3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
+
+        data.append({
+            'student_id': st.student_id,
+            'fullname': st.fullname,
+            'group': st.group.name,
+            'group_id': st.group.id,
+            'semester': st.semester.semester,
+            'basis': st.basis.name,
+            'debts': {
+                'att1': st.att1,
+                'att3': st.att2,
+                'att2': st.att3,
+            },
+        })
+
+    return Response({'data': data})
 
 
 # Results
@@ -793,48 +839,6 @@ def group_marks(request):
         })
 
 
-def students_debts(request):
-    """Отобразить задолженности всех студентов."""
-    data = []
-    negative = ['ня', 'нз', '2']
-
-    # id всех студентов с отрицательными оценками
-    negative_students = Result.objects.select_related('students').filter(
-        mark__contained_by=negative).values('students__student_id')
-    # студенты
-    students = Student.active_objects.select_related('basis', 'group', 'semester').filter(student_id__in=negative_students)
-
-    for st in students:
-        all_marks = [
-            i[0]
-            for i in st.result_set.select_related().filter(
-                groupsubject__subjects__semester__semester=st.semester.semester, groupsubject__groups__name=st.group.name,
-                mark__contained_by=negative).values_list('mark')]
-        marks_att1 = [i[0] for i in all_marks]
-        marks_att2 = [i[1] for i in list(filter(lambda x: len(x) in [2, 3], all_marks))]
-        marks_att3 = [i[2] for i in list(filter(lambda x: len(x) == 3, all_marks))]
-        count_marks_att1 = dict(Counter(marks_att1))
-        count_marks_att2 = dict(Counter(marks_att2))
-        count_marks_att3 = dict(Counter(marks_att3))
-        st.att1 = sum(list(map(lambda x: count_marks_att1.get(x, 0), negative)))
-        st.att2 = sum(list(map(lambda x: count_marks_att2.get(x, 0), negative)))
-        st.att3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
-        data.append({
-            'student_id': st.student_id,
-            'fullname': st.fullname,
-            'group': st.group.name,
-            'semester': st.semester.semester,
-            'basis': st.basis.name,
-            'debts': {
-                'att1': st.att1,
-                'att3': st.att2,
-                'att2': st.att3,
-            },
-        })
-
-    return JsonResponse({'data': data})
-
-
 # Faculties
 class FacultyViewSet(viewsets.ModelViewSet):
     queryset = Faculty.objects.all()
@@ -1002,6 +1006,7 @@ class SubjectViewSet(viewsets.ModelViewSet):
 
     @action(methods=['patch'], detail=True)
     def update_subject(self, request, pk=None):
+        print('======', pk)
         try:
             subject = Subject.objects.get(id=pk)
         except Subject.DoesNotExist:
@@ -1068,8 +1073,12 @@ def import_subjects(request):
                         errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
                         break
 
-                    if row[3] and Cathedra.objects.filter(name=row[3]).exists():
+                    is_cathedra = Cathedra.objects.filter(name=row[3]).exists()
+                    if is_cathedra:
                         cathedra = Cathedra.objects.get(name=row[3])
+                    else:
+                        errors.append(f'[{n+1}] ошибка в кафедре или её не существует: {row[3]}')
+                        break
 
                     form_control = row[1].strip()
                     choices = list(map(lambda x: x[0], Subject._meta.get_field('form_control').choices))
@@ -1082,21 +1091,13 @@ def import_subjects(request):
                     else:
                         subject_name = row[0].strip()
 
-                    if cathedra:
-                        obj, created = Subject.objects.get_or_create(
-                            name=subject_name,
-                            form_control=form_control,
-                            semester=semester,
-                            cathedra=cathedra,
-                            zet=zet
-                        )
-                    else:
-                        obj, created = Subject.objects.get_or_create(
-                            name=subject_name,
-                            form_control=form_control,
-                            semester=semester,
-                            zet=zet
-                        )
+                    obj, created = Subject.objects.get_or_create(
+                        name=subject_name,
+                        form_control=form_control,
+                        semester=semester,
+                        cathedra=cathedra,
+                        zet=zet,
+                    )
                     if not created:
                         errors.append(f'[{n+1}] {subject_name} {row[1]} {row[2]} семестр - уже существует')
                         print('[!] ---> ', row)

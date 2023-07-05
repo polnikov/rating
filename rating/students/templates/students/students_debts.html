@@ -49,140 +49,115 @@
 
 	<!-- Table -->
    <div id="datatable-segment" class="ui basic segment">
-		{% if student_list %}
-         <table id="students-debts" class="ui selectable celled compact small table">
-
-            <thead>
-               <tr class="center aligned">
-                  <th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
-                  <th class="collapsing">Группа</th>
-                  <th id="semester" class="collapsing">Семестр</th>
-                  <th>Студент <div id="count-label" class="ui left pointing grey tiny label">{{ student_list.count }}</div></th>
-                  <th class="collapsing">Основа обучения</th>
-                  <th class="collapsing">Сессия</th>
-                  <th class="collapsing">Пересдача</th>
-                  <th class="collapsing">Комиссия</th>
-               </tr>
-            </thead>
-
-            <tbody>
-               {% for item in student_list %}
-                  <tr>
-                     <td class="collapsing center aligned">{{ forloop.counter }}</td>
-                     <td class="collapsing center aligned">
-                        <a href="{% url 'groups:detail' groupname=item.group.name semester=item.semester.semester %}">
-                           {{ item.group.name }}
-                        </a>
-                     </td>
-                     <td class="collapsing center aligned">{{ item.semester.semester }}</td>
-                     <td><a href="{{ item.get_absolute_url }}">{{ item.fullname }}</a></td>
-
-                     {% if item.basis.name == 'Контракт' %}
-                        <td class="collapsing center aligned negative">{{ item.basis }}</td>
-                     {% elif item.basis.name == 'ИГ' %}
-                        <td class="collapsing center aligned blue">{{ item.basis }}</td>
-                     {% else %}
-                        <td class="collapsing center aligned">{{ item.basis }}</td>
-                     {% endif %}
-
-                     <td class="collapsing center aligned" style="width: 80px">
-                        {% if item.att1 == 0 %}
-                           <div id="att-label" class="ui red tiny label">{{ item.att1 }}</div>
-                        {% else %}
-                           <div id="att-label" class="ui grey tiny label">{{ item.att1 }}</div>
-                        {% endif %}
-                     </td>
-
-                     <td class="collapsing center aligned" style="width: 80px">
-                        {% if item.att2 %}
-                           <div id="att-label" class="ui grey tiny label">{{ item.att2 }}</div>
-                        {% else %}
-                           {{ item.att2|default:"" }}
-                        {% endif %}
-                     </td>
-
-                     <td class="collapsing center aligned" style="width: 80px">
-                        {% if item.att3 %}
-                           <div id="att-label" class="ui red tiny label">{{ item.att3 }}</div>
-                        {% else %}
-                           {{ item.att3|default:"" }}
-                        {% endif %}
-                     </td>
-                  </tr>
-               {% endfor %}
-            </tbody>
-
-         </table>
-      {% else %}
-			{% include 'empty_records.html' %}
-		{% endif %}
-   </div>
+        <table id="students-debts" class="ui selectable celled compact small table">
+			<!-- data from script -->
+        </table>
+    </div>
 </div>
 
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/script_students_debts.js' %}"></script>
 <script>
-   $(document).ready(function() {
-      let firstRow = $('#students-debts thead tr')[0];
-      let secondRow = firstRow.cloneNode(true);
-      firstRow.after(secondRow);
+    $('.ui.radio.checkbox').checkbox();
+    $(document).ready(function() {
+        if ($.fn.DataTable.isDataTable('#students-debts')) {
+            $('#students-debts').DataTable().destroy();
+        };
+        const dataTableOptions = {
+			columns: [
+                { title: '<i class="hashtag small icon"></i>' },
+                { title: 'Группа' },
+                { title: 'Семестр' },
+                { title: 'Студент' },
+                { title: 'Основа обучения' },
+                { title: 'Сессия' },
+                { title: 'Пересдача' },
+                { title: 'Комиссия' },
+            ],
+			language: {
+				lengthMenu: '_MENU_ записей на страницу',
+				zeroRecords: 'Записей нет...',
+				info: 'Всего записей: _MAX_',
+				infoEmpty: '',
+				infoFiltered: 'Найдено: _TOTAL_',
+				search: '',
+				searchPlaceholder: 'поиск',
+				paginate: {
+					first:    '«',
+					previous: '‹',
+					next:     '›',
+					last:     '»'
+				}
+			},
+			lengthMenu: [
+				[20, 50, -1],
+				[20, 50, 'Все']
+			],
+			pageLength: 20,
+            searching: true,
+			autoWidth: false,
+			columnDefs: [
+				{ width: "3%", targets: 0 },
+				{ width: "7%", targets: [1, 2] },
+				{ width: "43%", targets: 3 },
+				{ width: "10%", targets: [4, 5, 6, 7] },
+				{ searchable: false, targets: 0 },
+                { className: 'center aligned', targets: [0, 1, 2, 4, 5, 6, 7] },
+				{
+					targets: 4,
+					createdCell: function(td, cellData, rowData, row, col) {
+                        switch(cellData) {
+                            case 'Контракт':
+                                $(td).addClass('negative');
+                                break
+                            case 'ИГ':
+                                $(td).addClass('blue');
+                                break
+                        };
+					}
+				},
+			],
+			headerCallback: function(thead, cellData, start, end, display) {
+                $(thead).find('th').addClass('center aligned');
+            },
+		};
+		var table = $('#students-debts').DataTable(dataTableOptions);
 
-      let filterColumns = $('#students-debts thead tr')[0].children;
-      for (let i = 0; i < filterColumns.length; i++) {
-         let inputWidth = filterColumns[i].offsetWidth - 15;
-         if(i != 0) {
-            filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 500px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-         } else {filterColumns[i].innerHTML = ""};
-      };
+        let firstRow = $('#students-debts thead tr')[0];
+        let secondRow = firstRow.cloneNode(true);
+        firstRow.after(secondRow);
 
-      document.querySelector('#students-debts').style.width = "100%";
-      var table = $('#students-debts').DataTable({
-         language: {
-            lengthMenu: '_MENU_ записей на страницу',
-            zeroRecords: 'Записей нет...',
-            info: 'Всего записей: _MAX_',
-            infoEmpty: '',
-            infoFiltered: 'Найдено: _TOTAL_',
-            search: '',
-            searchPlaceholder: 'поиск',
-            paginate: {
-               first:    '«',
-               previous: '‹',
-               next:     '›',
-               last:     '»'
-            }
-         },
-         lengthMenu: [
-            [20, 50, -1],
-            [20, 50, 'Все']
-         ],
-         pageLength: 20,
-         columnDefs: [
-            { searchable: false, targets: 0 }
-         ],
-      });
+        let filterColumns = $('#students-debts thead tr')[1].children;
+        for (let i = 0; i < filterColumns.length; i++) {
+            let inputWidth = filterColumns[i].offsetWidth - 60;
+            if(i != 0) {
+                filterColumns[i].innerHTML = `
+                                                <div class="ui input">
+                                                    <input name="filter" type="text" style="width: ${inputWidth}px" data-index=${i}>
+                                                </div>
+                                            `;
+            } else {filterColumns[i].innerHTML = ""};
+        };
 
-      // Filter event handler
-      $(table.table().container()).on('keyup', 'thead input', function() {
-         table
+        // Filter event handler
+        $(table.table().container()).on('keyup', 'thead input', function() {table
             .column($(this).data('index'))
             .search(this.value)
             .draw();
-      });
+        });
 
-      // Clean filters inputs by double-clicking above the head
-      $(document).on("dblclick", ".ui.stackable.grid", function() {
-         let inputs = document.getElementsByName("filter");
-         inputs.forEach(e => {
-            e.value = "";
-         });
-         table.search('');
-         table.columns().search('').draw();
-      });
-      changeDatatableInputFont();
-      deletePaddingTopForDatatableSegment();
-   });
-
-   $('.ui.radio.checkbox').checkbox();
+        // Clean filters inputs by double-clicking above the head
+        $(document).on("dblclick",  ".ui.stackable.grid", function() {
+            let inputs = document.getElementsByName("filter");
+            inputs.forEach(e => {
+                e.value = "";
+            });
+            table.search('');
+            table.columns().search('').draw();
+        });
+		changeDatatableInputFont();
+		removeSortingLabel('students-debts');
+    });
 </script>
 
 {% endblock %}

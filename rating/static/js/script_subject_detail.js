@@ -35,7 +35,7 @@ function showUpdateSubject(subjectId) {
         form.comment.value = data.comment;
         form.is_archived.checked = data.is_archived;
 
-        var updateButton = document.getElementById('update-btn');
+        var updateButton = document.getElementById('update-subject-btn');
         updateButton.dataset.subjectId = subjectId;
 
         $(updateModal).modal({blurring: true}).modal('show');
@@ -51,7 +51,7 @@ function showUpdateSubject(subjectId) {
 };
 
 function updateSubject() {
-    var button = document.getElementById("update-btn");
+    var button = document.getElementById("update-subject-btn");
     var subjectId = button.getAttribute("data-subject-id");
     var url = window.location.origin + `/api/v1/subjects/${subjectId}/update_subject/`;
     var updateModal = document.getElementById('subject-update-modal');
@@ -122,7 +122,7 @@ function showDeleteSubject(subjectId) {
         document.querySelector('#del-zet').textContent = data.zet;
         document.querySelector('#del-comment').textContent = data.comment;
 
-        var deleteButton = document.getElementById('delete-btn');
+        var deleteButton = document.getElementById('delete-subject-btn');
         deleteButton.dataset.subjectId = subjectId;
 
         $(deleteModal).modal({blurring: true}).modal('show');
@@ -138,7 +138,7 @@ function showDeleteSubject(subjectId) {
 };
 
 function deleteSubject() {
-    var button = document.getElementById("delete-btn");
+    var button = document.getElementById("delete-subject-btn");
     var subjectId = button.getAttribute("data-subject-id");
     var url = window.location.origin + `/api/v1/subjects/${subjectId}/delete_subject/`;
     var deleteSubjectModal = document.getElementById('subject-delete-modal');
@@ -284,7 +284,7 @@ function showUpdateResult(resultId) {
         form.tag.value = data.tag;
         form.is_archived.checked = data.is_archived;
 
-        var updateButton = document.getElementById('update-btn');
+        var updateButton = document.getElementById('update-result-btn');
         updateButton.dataset.resultId = resultId;
 
         $(updateModal).modal({blurring: true}).modal('show');
@@ -300,7 +300,7 @@ function showUpdateResult(resultId) {
 };
 
 function updateResult() {
-    var button = document.getElementById("update-btn");
+    var button = document.getElementById("update-result-btn");
     var resultId = button.getAttribute("data-result-id");
     var url = window.location.origin + `/api/v1/results/${resultId}/update_result/`;
     var updateModal = document.getElementById('result-update-modal');

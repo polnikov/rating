@@ -24,7 +24,7 @@
             <div class="column right aligned">
                 {% if request.user|has_group:"Сотрудники" %}
                     <button id="trash-button" class="ui red small circular button" onclick="showDeleteSubject({{ subject.id }})"><i class="trash alternate outline icon"></i>Удалить</button>
-                    <button id="update-button" class="positive ui small circular button" onclick="showUpdateStudent({{ subject.id }})"><i class="sync alternate icon"></i>Обновить</button>
+                    <button id="update-button" class="positive ui small circular button" onclick="showUpdateSubject({{ subject.id }})"><i class="sync alternate icon"></i>Обновить</button>
                 {% endif %}
             </div>
         </div>
@@ -311,7 +311,7 @@
     </div>
     <div class="basic actions">
         <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="update-btn" class="ui blue circular button" onclick="updateSubject()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+        <div id="update-subject-btn" class="ui blue circular button" onclick="updateSubject()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
     </div>
 </div>
 
@@ -358,7 +358,7 @@
     </div>
     <div class="basic actions">
         <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="delete-btn" class="ui red circular button" onclick="deleteSubject()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
+        <div id="delete-subject-btn" class="ui red circular button" onclick="deleteSubject()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
     </div>
 </div>
 
@@ -475,53 +475,10 @@
     </div>
     <div class="basic actions">
         <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-        <div id="update-btn" class="ui blue circular button" onclick="updateResult()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
+        <div id="update-result-btn" class="ui blue circular button" onclick="updateResult()" style="font-family: Hack"><i class="sync alternate icon"></i>Изменить</div>
     </div>
 </div>
  
-<!-- Modal for delete result -->
-<div id="result-delete-modal" class="ui modal">
-    <div class="basic center aligned header" style="font-family: Hack">Удалить оценку</div>
-    <div class="content" style="font-family: Hack">
-    <table class="ui definition table" style="margin-top: 0">
-        <tbody>
-            <tr>
-                <td style="width: 150px">Студент</td>
-                <td id="del-name"></td>
-            </tr>
-            <tr>
-                <td>Группа</td>
-                <td id="del-group"></td>
-            </tr>
-            <tr>
-                <td>Семестр</td>
-                <td id="del-semester"></td>
-            </tr>
-            <tr>
-                <td>Дисциплина</td>
-                <td id="del-subject"></td>
-            </tr>
-            <tr>
-                <td>Форма контроя</td>
-                <td id="del-formcontrol"></td>
-            </tr>
-            <tr>
-                <td>Дата аттестации</td>
-                <td id="del-date"></td>
-            </tr>
-            <tr>
-                <td>Оценки</td>
-                <td id="del-marks"></td>
-            </tr>
-        </tbody>
-    </table>
-    </div>
-    <div class="basic actions">
-    <div class="ui circular cancel button" style="font-family: Hack"><i class="times circle icon"></i>Отмена</div>
-    <div id="delete-btn" class="ui red circular button" onclick="deleteResult()" style="font-family: Hack"><i class="trash alternate outline icon"></i>Удалить</div>
-    </div>
-</div>
-
 <script type="text/javascript" src="{% static 'js/moment.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/moment_ru.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>

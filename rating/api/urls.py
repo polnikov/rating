@@ -22,14 +22,15 @@ urlpatterns = [
     path('v1/history/students/', views.StudentLogList.as_view()),        # [+]
     path('v1/archivedstudents/', views.StudentsArchivedList.as_view()),  # [+]
     path('v1/studentresults/', views.ResultsForStudentList.as_view()),   # [+]
+    path('v1/studentsdebts/', views.students_debts),                     # [+]
+
     path('v1/activesubjects/', views.SubjectsList.as_view()),            # [+]
     # path('v1/history/subjects/', views.SubjectLogList.as_view()),        # [-]
     path('v1/archivedsubjects/', views.SubjectsArchivedList.as_view()),  # [+]
     path('v1/archivedresults/', views.ResultsArchivedList.as_view()),    # [+]
-    path('v1/subjectresults/', views.ResultsForSubjectList.as_view()),  # [+]
+    path('v1/subjectresults/', views.ResultsForSubjectList.as_view()),   # [+]
     path('v1/activegroupsubjects/', views.GroupSubjectsList.as_view()),  # [+]
     # path('v1/money/', views.StudentMoneyList.as_view()),                 # [-]
-    # path('v1/debts/students/', views.students_debts),                    # [-]
     # path('v1/rating/', views.student_rating),  # [-]
 
     path('v1/resetgroupsubjects/', views.reset_groupsubjects),  # [+]

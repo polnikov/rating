@@ -54,7 +54,7 @@
 						<label>Семестр</label>
 						{% render_field form.semester _no_label='True' placeholder='Выбрать' %}
 					</div>
-					<div class="nine wide field">
+					<div class="nine wide required field">
 						<label>Кафедра</label>
 						{% render_field form.cathedra _no_label='True' placeholder='Выбрать' %}
 					</div>
@@ -98,7 +98,7 @@
 				  <td><div name="point" class="ui red circular small label">1</div></td>
 				  <td><div name="point" class="ui red circular small label">2</div></td>
 				  <td><div name="point" class="ui red circular small label">3</div></td>
-				  <td><div name="point" class="ui grey circular small label">4</div></td>
+				  <td><div name="point" class="ui red circular small label">4</div></td>
 				  <td><div name="point" class="ui grey circular small label">5</div></td>
 			   </tr>
 			   <tr>
@@ -122,8 +122,8 @@
 					<td>номер семестра дисциплины</td>
 				</tr>
 				<tr>
-					<td class="center aligned" style="width: 30px"><div name="point" class="ui grey circular small label">4</div></td>
-					<td>полное название кафедры | пусто</td>
+					<td class="center aligned" style="width: 30px"><div name="point" class="ui red circular small label">4</div></td>
+					<td>полное название кафедры</td>
 				</tr>
 				<tr>
 					<td class="center aligned" style="width: 30px"><div name="point" class="ui grey circular small label">5</div></td>

@@ -41,7 +41,7 @@ function showUpdateStudent(studentId) {
         form.comment.value = data.comment;
         form.is_archived.checked = data.is_archived;
 
-        var updateButton = document.getElementById('update-btn');
+        var updateButton = document.getElementById('update-student-btn');
         updateButton.dataset.studentId = studentId;
 
         $(updateModal).modal({blurring: true}).modal('show');
@@ -57,7 +57,7 @@ function showUpdateStudent(studentId) {
 };
 
 function updateStudent() {
-    var button = document.getElementById("update-btn");
+    var button = document.getElementById("update-student-btn");
     var studentId = button.getAttribute("data-student-id");
     var url = window.location.origin + `/api/v1/students/${studentId}/update_student/`;
     var updateModal = document.getElementById('student-update-modal');
@@ -112,7 +112,7 @@ function showDeleteStudent(studentId) {
         document.querySelector('#del-status').textContent = data.status;
         document.querySelector('#del-comment').textContent = data.comment;
 
-        var deleteButton = document.getElementById('delete-btn');
+        var deleteButton = document.getElementById('delete-student-btn');
         deleteButton.dataset.studentId = studentId;
 
         $(deleteModal).modal({blurring: true}).modal('show');
@@ -128,7 +128,7 @@ function showDeleteStudent(studentId) {
 };
 
 function deleteStudent() {
-    var button = document.getElementById("delete-btn");
+    var button = document.getElementById("delete-student-btn");
     var studentId = button.getAttribute("data-student-id");
     var url = window.location.origin + `/api/v1/students/${studentId}/delete_student/`;
     var deleteStudentModal = document.getElementById('student-delete-modal');
@@ -283,7 +283,7 @@ function showUpdateResult(resultId) {
         form.tag.value = data.tag;
         form.is_archived.checked = data.is_archived;
 
-        var updateButton = document.getElementById('update-btn');
+        var updateButton = document.getElementById('update-result-btn');
         updateButton.dataset.resultId = resultId;
 
         $(updateModal).modal({blurring: true}).modal('show');
@@ -299,7 +299,7 @@ function showUpdateResult(resultId) {
 };
 
 function updateResult() {
-    var button = document.getElementById("update-btn");
+    var button = document.getElementById("update-result-btn");
     var resultId = button.getAttribute("data-result-id");
     var url = window.location.origin + `/api/v1/results/${resultId}/update_result/`;
     var updateModal = document.getElementById('result-update-modal');
@@ -354,7 +354,7 @@ function showDeleteResult(resultId) {
         document.querySelector(`${modal} #del-date`).textContent = (data.groupsubject.att_date) ? formatDate(data.groupsubject.att_date) : 'Нет';
         document.querySelector(`${modal} #del-marks`).textContent = data.mark.join(' ');
 
-        var deleteButton = document.getElementById('delete-btn');
+        var deleteButton = document.getElementById('delete-result-btn');
         deleteButton.dataset.resultId = resultId;
 
         $(deleteModal).modal({blurring: true}).modal('show');
@@ -370,7 +370,7 @@ function showDeleteResult(resultId) {
 };
 
 function deleteResult() {
-    var button = document.getElementById("delete-btn");
+    var button = document.getElementById("delete-result-btn");
     var resultId = button.getAttribute("data-result-id");
     var url = window.location.origin + `/api/v1/results/${resultId}/delete_result/`;
     var deleteModal = document.getElementById('result-delete-modal');

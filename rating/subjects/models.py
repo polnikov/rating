@@ -48,10 +48,8 @@ class Subject(CommonArchivedModel, CommonTimestampModel):
     )
     cathedra = models.ForeignKey(
         'subjects.Cathedra',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        default='',
+        on_delete=models.PROTECT,
+        blank=False,
         verbose_name='Кафедра',
     )
     zet = models.CharField(

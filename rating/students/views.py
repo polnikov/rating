@@ -8,12 +8,10 @@ from openpyxl.styles import Font
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.views.generic import (
-    CreateView, DeleteView, DetailView, ListView, UpdateView, View, TemplateView,
-)
+from django.views.generic import (DetailView, ListView, View, TemplateView,)
 
 from groups.models import Group
 from students.forms import ResultForm, StudentForm
@@ -237,38 +235,8 @@ class StudentsMoneyListView(LoginRequiredMixin, ListView):
     queryset = Student.active_objects.select_related('basis', 'group', 'semester')
 
 
-class StudentsDebtsListView(LoginRequiredMixin, ListView):
-    model = Student
+class StudentsDebtsView(LoginRequiredMixin, TemplateView):
     template_name = 'students/students_debts.html'
-
-    def get_queryset(self):
-        negative = ['ня', 'нз', '2']
-
-        # students ids who has debts
-        negative_students = Result.objects.select_related('students').filter(
-            mark__contained_by=negative, is_archived=False).values('students__student_id')
-        # filter students by ids
-        students = Student.active_objects.select_related(
-            'basis', 'group', 'semester').filter(
-            student_id__in=negative_students)
-
-        for st in students:
-            all_marks = [
-                i[0]
-                for i in st.result_set.select_related().filter(
-                    groupsubject__subjects__semester__semester=st.semester.semester, groupsubject__groups__name=st.group.name,
-                    mark__contained_by=negative).values_list('mark')]
-            marks_att1 = [i[0] for i in all_marks]
-            marks_att2 = [i[1] for i in list(filter(lambda x: len(x) in [2, 3], all_marks))]
-            marks_att3 = [i[2] for i in list(filter(lambda x: len(x) == 3, all_marks))]
-            count_marks_att1 = dict(Counter(marks_att1))
-            count_marks_att2 = dict(Counter(marks_att2))
-            count_marks_att3 = dict(Counter(marks_att3))
-            st.att1 = sum(list(map(lambda x: count_marks_att1.get(x, 0), negative)))
-            st.att2 = sum(list(map(lambda x: count_marks_att2.get(x, 0), negative)))
-            st.att3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
-
-        return students
 
 
 def search_results(request):

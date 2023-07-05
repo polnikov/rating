@@ -67,7 +67,10 @@ class SubjectAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     ]
 
     def get_faculty(self, obj):
-        return f'{obj.cathedra.faculty.short_name}'
+        if obj.cathedra and obj.cathedra.faculty:
+            return f'{obj.cathedra.faculty.short_name}'
+        else:
+            return '---'
     get_faculty.short_description = 'Факультет'
 
 
