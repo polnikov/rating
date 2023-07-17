@@ -386,15 +386,39 @@ class ResultViewSet(viewsets.ModelViewSet):
 
     @action(methods=['patch'], detail=True)
     def update_result(self, request, pk=None):
+        instance = self.get_object()
         try:
-            result = Result.objects.get(id=pk)
-        except Result.DoesNotExist:
-            return JsonResponse({'success': False, 'errors': 'Result not found'}, status=404)
+            mark_1 = instance.mark[1]
+        except IndexError:
+            mark_1 = ''
+        try:
+            mark_2 = instance.mark[2]
+        except IndexError:
+            mark_2 = ''
 
-        form = ResultForm(request.POST, instance=result)
+        student = request.data.get('students', instance.students)
+        groupsubject = request.data.get('groupsubject', instance.groupsubject)
+        mark_0 = request.data.get('mark_0', instance.mark[0])
+        mark_1 = request.data.get('mark_1', mark_1)
+        mark_2 = request.data.get('mark_2', mark_2)
+        tag = request.data.get('tag', instance.tag)
+        is_archived = request.data.get('is_archived', instance.is_archived)
+
+        form_data = {
+            'students': student,
+            'groupsubject': groupsubject,
+            'mark_0': mark_0,
+            'mark_1': mark_1,
+            'mark_2': mark_2,
+            'tag': tag,
+            'is_archived': is_archived,
+        }
+
+        form = ResultForm(data=form_data, instance=instance)
+
         if form.is_valid():
             form.save()
-            return JsonResponse({'success': True}, status=200)
+            return JsonResponse({'success': True}, status=201)
         else:
             return JsonResponse({'success': False, 'errors': form.errors}, status=400)
 
