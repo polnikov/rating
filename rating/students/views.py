@@ -6,7 +6,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.db.models import Q, F
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
@@ -73,14 +73,33 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             3: 0,
             4: 0,
         }
+        debts_by_semester_bac = {
+            1: [],
+            2: [],
+            3: [],
+            4: [],
+            5: [],
+            6: [],
+            7: [],
+            8: [],
+        }
+        debts_by_semester_mag = {
+            1: [],
+            2: [],
+            3: [],
+            4: [],
+        }
+
         all_num_marks = []
         all_marks = []
         if student.level == Student.Level.BAC:
             semesters = range(1, 9)
             rating_by_semester = rating_by_semester_bac
+            debts_by_semester = debts_by_semester_bac
         elif student.level == Student.Level.MAG:
             semesters = range(1, 5)
             rating_by_semester = rating_by_semester_mag
+            debts_by_semester = debts_by_semester_mag
 
         for i in semesters:
             # all marks per semester
@@ -110,8 +129,45 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
         else:
             rating = 0
 
-        form = StudentForm()
+        negative = ['ня', 'нз', '2']
+        marks = Result.objects.select_related().filter(
+            students=student.student_id,
+            is_archived=False,
+        ).annotate(semester=F('groupsubject__subjects__semester__semester')
+        ).values(
+            'semester',
+            'mark',
+        )
+        debts_by_level_per_semester = {
+            1: [],
+            2: [],
+            3: [],
+        }
+        debts_data = {}
 
+        for record in marks:
+            semester = record['semester']
+            mark = record['mark']
+            debts_by_semester[semester].append(mark)
+
+        for k, v in debts_by_semester.items():
+            all_marks = v
+            marks_att1 = [i[0] for i in all_marks]
+            marks_att2 = [i[1] for i in list(filter(lambda x: len(x) in [2, 3], all_marks))]
+            marks_att3 = [i[2] for i in list(filter(lambda x: len(x) == 3, all_marks))]
+            count_marks_att1 = dict(Counter(marks_att1))
+            count_marks_att2 = dict(Counter(marks_att2))
+            count_marks_att3 = dict(Counter(marks_att3))
+            debts_1 = sum(list(map(lambda x: count_marks_att1.get(x, 0), negative)))
+            debts_2 = sum(list(map(lambda x: count_marks_att2.get(x, 0), negative)))
+            debts_3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
+            debts_data[k] = [debts_1, debts_2, debts_3]
+
+        for s in range(1, 4):
+            debts_by_level_per_semester[s] = [i[s-1] if i else 0 for i in debts_data.values()]
+            debts_by_level_per_semester[s].append(sum(debts_by_level_per_semester[s]))
+
+        form = StudentForm()
         context = {
             'student': student,
             'history': history,
@@ -119,6 +175,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
             'rating_by_semester': rating_by_semester,
             'form': form,
             'result_form': ResultForm(),
+            'debts_by_level_per_semester': debts_by_level_per_semester,
         }
         return render(request, 'students/student_detail.html', context=context)
 

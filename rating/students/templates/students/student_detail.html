@@ -113,6 +113,44 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="column">
+                        <!-- Debts -->
+                        <div class="row">
+                            <div class="column">
+                                <h4 style="font-family: Hack">История задолженностей</h4>
+                                <table class="ui compact celled fixed table center aligned" style="max-width: 1000px">
+                                    <thead>
+                                        <tr>
+                                            <th>1</th>
+                                            <th>2</th>
+                                            <th>3</th>
+                                            <th>4</th>
+                                            {% if student.level == "Бакалавриат" %}
+                                                <th>5</th>
+                                                <th>6</th>
+                                                <th>7</th>
+                                                <th>8</th>
+                                            {% endif %}
+                                            <th>Всего</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for key, value in debts_by_level_per_semester.items %}
+                                            <tr>
+                                                {% for v in value %}
+                                                    {% if v != 0 %}
+                                                        <td class="negative">{{ v }}</td>
+                                                    {% else %}
+                                                        <td>-</td>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- Ranking -->
                 <div class="row">
