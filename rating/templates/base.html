@@ -99,18 +99,30 @@
 
 <!-- Content -->
 <div id="content" style="padding-bottom: 35px">
-    <div class="ui top ios dimmed inverted flyout">
-        {% if messages %}
-            <div class="ui center aligned header"><span class="ui large red text">Внимание!</span></div>
-            <div class="left aligned content">
-                {% for message in messages %}
-                    <div class="ui relaxed divided list">
-                        <div class="item">{{ message|safe }}</div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </div>
+    {% if messages %}
+        <div class="ui black tiny nag" style="display: block;">
+            {% for message in messages %}
+                {% if message.tags == 'info' %}
+                    {% if forloop.counter == 1 %}
+                        <div class="title">
+                            <p>{{ message|safe }}</p>
+                        </div>
+                    {% else %}
+                        <p align="left">{{ message|safe }}</p>
+                    {% endif %}
+                {% else %}
+                    {% if forloop.counter == 1 %}
+                        <div class="title">
+                            <p>{{ message|safe }}</p>
+                        </div>
+                    {% else %}
+                        <p align="left">{{ message|safe }}</p>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {% block content %}{% endblock %}
 </div>
 
@@ -139,7 +151,7 @@
 <script type="text/javascript">
     $('.ui.dropdown').dropdown();
     $('.ui.rating').rating();
-    $('.ui.flyout').flyout();
+    $('.ui.nag').nag({displayTime: 50_000});
     $('div.ui.calendar')
         .calendar({
             type: 'date',

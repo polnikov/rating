@@ -48,7 +48,9 @@ class ShowMessageMiddleware:
 
         if not request.session.get('message_shown', False):
             if sick_students:
-                message_text = '<div class="ui label"><i class="heart broken red icon"></i> Следующие студенты всё еще болеют</div>\n'
+                message_text = '<div class="ui large label"><i class="heart broken red icon"></i> Следующие студенты всё еще болеют</div>\n'
+                messages.info(request, message_text)
+                message_text = '<div class="ui fitted divider"></div>'
                 messages.info(request, message_text)
                 for st in sick_students:
                     message_text = f'{st.fullname} | {st.group.name}-{st.semester}\n'
@@ -56,11 +58,13 @@ class ShowMessageMiddleware:
 
             if students_for_return:
                 students_for_return = sorted(students_for_return, key=lambda o: (o.delta_days))
-                message_text = '<div class="ui label"><i class="hourglass blue icon"></i> Следующие студенты скоро выходят из АО</div>\n'
+                message_text = '<div class="ui large label"><i class="hourglass blue icon"></i> Следующие студенты скоро выходят из АО</div>\n'
                 messages.warning(request, message_text)
+                message_text = '<div class="ui fitted divider"></div>'
+                messages.info(request, message_text)
                 for st in students_for_return:
-                    delta_days = f'<div class="ui circular red label">{st.delta_days}</div>' if st.delta_days > 0 else '<i class="times red large icon"></i>'
-                    message_text = f'{st.fullname} | {st.group.name}-{st.semester} | Осталось до выхода: {delta_days}\n'
+                    delta_days = f'<a class="ui circular red label">{st.delta_days}</a>' if st.delta_days > 0 else '<i class="times red large icon"></i>'
+                    message_text = f'{st.fullname} | {st.group.name}-{st.semester} | До выхода: {delta_days}\n'
                     messages.warning(request, message_text)
 
             request.session['message_shown'] = True
