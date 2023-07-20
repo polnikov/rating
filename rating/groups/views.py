@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, TemplateView
 from django.shortcuts import get_object_or_404
+from django.db.models.functions import Length
 
 from groups.forms import GroupForm
 from groups.models import Group
@@ -23,10 +24,11 @@ class GroupCardsView(LoginRequiredMixin, ListView):
     """Отобразить карточки групп."""
     model = Group
     template_name = 'groups/group_cards.html'
-    ordering = ['code', 'name']
 
     def get_queryset(self):
-        return Group.objects.filter(is_archived=False).values('id', 'name', 'direction', 'profile', 'level', 'code')
+        queryset = Group.objects.filter(is_archived=False).annotate(name_length=Length('name')).values('id', 'name', 'direction', 'profile', 'level', 'code')
+        queryset = queryset.order_by('name_length', 'name')
+        return queryset
 
 
 class GroupDetailListView(LoginRequiredMixin, TemplateView):
@@ -53,11 +55,11 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
 
         if group.level == 'Бакалавриат':
             if 'Сб(ИС)' in group.name:
-                max_semester = 4
+                max_semester = 6
                 min_semester = 1
             elif 'Сб(ИС-' in group.name:
                 max_semester = 8
-                min_semester = 5
+                min_semester = 7
             else:
                 max_semester = 8
                 min_semester = 1
@@ -67,7 +69,7 @@ class GroupDetailListView(LoginRequiredMixin, TemplateView):
 
         previous_semester = semester - 1 if semester > min_semester else False
         next_semester = semester + 1 if semester < max_semester else False
-        
+
         # профильные группы строительства
         groups = Group.objects.filter(is_archived=False, name__contains='Сб(ИС-')
 
