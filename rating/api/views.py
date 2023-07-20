@@ -121,7 +121,7 @@ def transfer_students(request):
         for st in students_id:
             student = Student.objects.get(student_id=st)
             student.group = group
-            semester = Semester.objects.get(semester='5')
+            semester = Semester.objects.get(semester='7')
             student.semester = semester
             student.save()
 

@@ -306,7 +306,7 @@ $(document).ready(function() {
     });
 
     const button = document.getElementById('transfer');
-    if (semester === '4' && groupName.includes('Сб(ИС)')) {
+    if (semester === '6' && groupName.includes('Сб(ИС)')) {
         button.onclick = function(){
             var element = document.getElementById('choose-profile');
             $(element).modal({blurring: true}).modal('show');
