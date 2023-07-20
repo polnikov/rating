@@ -53,6 +53,7 @@ MIDDLEWARE = [
     # add
     'stronghold.middleware.LoginRequiredMiddleware',
     'django_currentuser.middleware.ThreadLocalUserMiddleware',
+    'rating.middleware.ShowMessageMiddleware',
 ]
 
 ROOT_URLCONF = 'rating.urls'
