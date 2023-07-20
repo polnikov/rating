@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-
+from datetime import timedelta
 from dotenv import load_dotenv
 
 
@@ -182,3 +182,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
+SESSION_COOKIE_AGE = timedelta(days=1).total_seconds()
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
