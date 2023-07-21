@@ -367,17 +367,19 @@ def students_all_debts(request):
             i[0]
             for i in st.result_set.select_related().filter(
                 groupsubject__subjects__semester__semester=st.semester.semester,
-                groupsubject__groups__name=st.group.name).values_list('mark')
+                groupsubject__groups__name=st.group.name,
+                ).values_list('mark')
         ]
         marks_att1 = [i[0] for i in all_marks]
-        if marks_att1:
-            marks_att2 = [i[1] for i in list(filter(lambda x: len(x) in [2, 3], all_marks))]
-            marks_att3 = [i[2] for i in list(filter(lambda x: len(x) == 3, all_marks))]
-            count_marks_att1 = dict(Counter(marks_att1))
-            count_marks_att2 = dict(Counter(marks_att2))
-            count_marks_att3 = dict(Counter(marks_att3))
+        marks_att2 = [i[1] for i in list(filter(lambda x: len(x) in [2, 3], all_marks))]
+        marks_att3 = [i[2] for i in list(filter(lambda x: len(x) == 3, all_marks))]
+        count_marks_att1 = dict(Counter(marks_att1))
+        count_marks_att2 = dict(Counter(marks_att2))
+        count_marks_att3 = dict(Counter(marks_att3))
 
-            st.att1 = sum(list(map(lambda x: count_marks_att1.get(x, 0), negative)))
+        att1 = sum(list(map(lambda x: count_marks_att1.get(x, 0), negative)))
+        if att1:
+            st.att1 = att1
             st.att2 = sum(list(map(lambda x: count_marks_att2.get(x, 0), negative)))
             st.att3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
 
