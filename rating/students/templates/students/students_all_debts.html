@@ -10,49 +10,15 @@
 
 <div id="segments" class="ui basic segments">
 
-   <!-- Title & button -->
-   <div id="buttons-segment" class="ui basic segment">
-      <form id="form" action="{% url 'students:debts-to-excel' %}" method="GET">
-         {% csrf_token %}
-         <div class="ui stackable two column grid">
-            <div class="eight wide column">
-                <h2 style="font-family: Hack">Все задолженности по студентам в текущем семестре</h2>
-            </div>
-            <div class="eight wide column right aligned">
-               <button id="export-button" type="submit" class="ui positive small circular button" style="font-family: Hack"><i class="cloud download alternate icon"></i> Экспорт</button>
-            </div>
-            <div class="sixteen wide column right aligned">
-               <div class="ui small form">
-                  <div class="inline fields">
-                     <div class="field">
-                        <div class="ui radio checkbox checked">
-                           <input type="radio" value="att1" name="att" id="att1" checked="" tabindex="0" class="hidden">
-                           <label>Сессия</label>
-                        </div>
-                     </div>
-                     <div class="field">
-                        <div class="ui radio checkbox">
-                           <input type="radio" value="att2" name="att" id="att2" tabindex="0" class="hidden">
-                           <label>Пересдача</label>
-                        </div>
-                     </div>
-                     <div class="field">
-                        <div class="ui radio checkbox">
-                           <input type="radio" value="att3" name="att" id="att3" tabindex="0" class="hidden">
-                           <label>Комиссия</label>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </form>
-   </div>
+    <!-- Title & button -->
+    <div id="buttons-segment" class="ui basic segment">
+        <h2 style="font-family: Hack">Все задолженности по студентам в текущем семестре</h2>
+    </div>
 
-	<!-- Table -->
-   <div id="datatable-segment" class="ui basic segment">
+        <!-- Table -->
+    <div id="datatable-segment" class="ui basic segment">
         <table id="students-debts" class="ui selectable celled compact small table">
-			<!-- data from script -->
+            <!-- data from script -->
         </table>
     </div>
 </div>
