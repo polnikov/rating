@@ -77,8 +77,9 @@
         <div class="ui horizontal red divider">
 
         <li><div class="header"><i class="exclamation circle red icon"></i> Задолженности</div>
-            <li><a class="item" href="{% url 'students:debts' %}"><i class="chevron right icon"></i>Студенты</a>
-            <li><a class="item" href="{% url 'subjects:debts' %}"><i class="chevron right icon"></i>Дисциплины</a>
+            <li><a class="item" href="{% url 'students:debts' %}"><i class="chevron right icon"></i>Текущие по студентам</a>
+            <li><a class="item" href="{% url 'students:all-debts' %}"><i class="chevron right icon"></i>Все по студентам</a>
+            <li><a class="item" href="{% url 'subjects:debts' %}"><i class="chevron right icon"></i>Текущие по дисциплинам</a>
 
         <div class="ui horizontal red divider">
 

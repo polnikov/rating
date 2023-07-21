@@ -23,6 +23,7 @@ urlpatterns = [
     path('v1/archivedstudents/', views.StudentsArchivedList.as_view()),  # [+]
     path('v1/studentresults/', views.ResultsForStudentList.as_view()),   # [+]
     path('v1/studentsdebts/', views.students_debts),                     # [+]
+    path('v1/studentsalldebts/', views.students_all_debts),              # [+]
 
     path('v1/activesubjects/', views.SubjectsList.as_view()),            # [+]
     # path('v1/history/subjects/', views.SubjectLogList.as_view()),        # [-]

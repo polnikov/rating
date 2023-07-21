@@ -15,6 +15,7 @@ urlpatterns = [
 
     # Students debts
     path('debts/', views.StudentsDebtsView.as_view(), name='debts'),
+    path('debts/all/', views.StudentsAllDebtsView.as_view(), name='all-debts'),
     path('debts/debts-to-excel/', views.download_excel_data, name='debts-to-excel'),
 
     # Students rating

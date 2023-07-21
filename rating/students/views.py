@@ -296,6 +296,10 @@ class StudentsDebtsView(LoginRequiredMixin, TemplateView):
     template_name = 'students/students_debts.html'
 
 
+class StudentsAllDebtsView(LoginRequiredMixin, TemplateView):
+    template_name = 'students/students_all_debts.html'
+
+
 def search_results(request):
     if request.method == 'GET':
         search = request.GET.get('search')
