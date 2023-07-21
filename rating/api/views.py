@@ -370,32 +370,30 @@ def students_all_debts(request):
                 groupsubject__groups__name=st.group.name).values_list('mark')
         ]
         marks_att1 = [i[0] for i in all_marks]
-        marks_att2 = [i[1] for i in list(filter(lambda x: len(x) in [2, 3], all_marks))]
-        marks_att3 = [i[2] for i in list(filter(lambda x: len(x) == 3, all_marks))]
         if marks_att1:
+            marks_att2 = [i[1] for i in list(filter(lambda x: len(x) in [2, 3], all_marks))]
+            marks_att3 = [i[2] for i in list(filter(lambda x: len(x) == 3, all_marks))]
             count_marks_att1 = dict(Counter(marks_att1))
+            count_marks_att2 = dict(Counter(marks_att2))
+            count_marks_att3 = dict(Counter(marks_att3))
+
             st.att1 = sum(list(map(lambda x: count_marks_att1.get(x, 0), negative)))
-        else:
-            break
+            st.att2 = sum(list(map(lambda x: count_marks_att2.get(x, 0), negative)))
+            st.att3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
 
-        count_marks_att2 = dict(Counter(marks_att2))
-        count_marks_att3 = dict(Counter(marks_att3))
-        st.att2 = sum(list(map(lambda x: count_marks_att2.get(x, 0), negative)))
-        st.att3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
-
-        data.append({
-            'student_id': st.student_id,
-            'fullname': st.fullname,
-            'group': st.group.name,
-            'group_id': st.group.id,
-            'semester': st.semester.semester,
-            'basis': st.basis.name,
-            'debts': {
-                'att1': st.att1,
-                'att2': st.att2,
-                'att3': st.att3,
-            },
-        })
+            data.append({
+                'student_id': st.student_id,
+                'fullname': st.fullname,
+                'group': st.group.name,
+                'group_id': st.group.id,
+                'semester': st.semester.semester,
+                'basis': st.basis.name,
+                'debts': {
+                    'att1': st.att1,
+                    'att2': st.att2,
+                    'att3': st.att3,
+                },
+            })
 
     return Response({'data': data})
 
