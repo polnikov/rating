@@ -32,11 +32,7 @@ function fetchStudentsAllDebtsDataAndPopulate() {
 
             for(let i = 0; i < data.data.length; i++) {
                 line = data.data[i];
-                if(line.debts.att1 === 0) {
-                    att1 = `<div id="att-label" class="ui red tiny label">${line.debts.att1}</div>`;
-                } else {
-                    att1 = `<div id="att-label" class="ui grey tiny label">${line.debts.att1}</div>`;
-                };
+                att1 = `<div id="att-label" class="ui grey tiny label">${line.debts.att1}</div>`;
                 att2 = (line.debts.att2) ? `<div id="att-label" class="ui grey tiny label">${line.debts.att2}</div>` : ''
                 att3 = (line.debts.att3) ? `<div id="att-label" class="ui red tiny label">${line.debts.att3}</div>` : ''
 

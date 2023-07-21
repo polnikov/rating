@@ -372,10 +372,14 @@ def students_all_debts(request):
         marks_att1 = [i[0] for i in all_marks]
         marks_att2 = [i[1] for i in list(filter(lambda x: len(x) in [2, 3], all_marks))]
         marks_att3 = [i[2] for i in list(filter(lambda x: len(x) == 3, all_marks))]
-        count_marks_att1 = dict(Counter(marks_att1))
+        if marks_att1:
+            count_marks_att1 = dict(Counter(marks_att1))
+            st.att1 = sum(list(map(lambda x: count_marks_att1.get(x, 0), negative)))
+        else:
+            break
+
         count_marks_att2 = dict(Counter(marks_att2))
         count_marks_att3 = dict(Counter(marks_att3))
-        st.att1 = sum(list(map(lambda x: count_marks_att1.get(x, 0), negative)))
         st.att2 = sum(list(map(lambda x: count_marks_att2.get(x, 0), negative)))
         st.att3 = sum(list(map(lambda x: count_marks_att3.get(x, 0), negative)))
 
