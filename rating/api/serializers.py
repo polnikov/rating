@@ -189,8 +189,14 @@ class StudentLogSerializer(serializers.ModelSerializer):
             return False
 
 
+class GroupForMoneySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('id', 'name')
+
+
 class StudentMoneySerializer(serializers.ModelSerializer):
-    group = serializers.SlugRelatedField(slug_field='name', queryset=Group.objects)
+    group = GroupForMoneySerializer()
     basis = serializers.SlugRelatedField(slug_field='name', queryset=Basis.objects)
 
     class Meta:

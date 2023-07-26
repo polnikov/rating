@@ -31,7 +31,7 @@ urlpatterns = [
     path('v1/archivedresults/', views.ResultsArchivedList.as_view()),    # [+]
     path('v1/subjectresults/', views.ResultsForSubjectList.as_view()),   # [+]
     path('v1/activegroupsubjects/', views.GroupSubjectsList.as_view()),  # [+]
-    # path('v1/money/', views.StudentMoneyList.as_view()),                 # [-]
+    path('v1/money/', views.StudentMoneyList.as_view()),                 # [+]
     # path('v1/rating/', views.student_rating),  # [-]
 
     path('v1/resetgroupsubjects/', views.reset_groupsubjects),  # [+]

@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-
 {% extends "base.html" %}
 
 {% load static %}
@@ -19,125 +17,130 @@
 
 	<!-- Table -->
     <div id="datatable-segment" class="ui basic segment">
-        {% if student_list %}
-            <table id="students-money" class="ui selectable celled compact table">
-                <thead>
-                    <tr class="center aligned">
-                        <th id="numbers" class="collapsing" style="width: 50px"><i class="hashtag small icon"></i></th>
-                        <th class="collapsing">Группа</th>
-                        <th id="semester" class="collapsing">Семестр</th>
-                        <th>Студент</th>
-                        <th class="collapsing">Стипендия</th>
-                        <th class="collapsing">Основа обучения</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for item in student_list %}
-                        <tr>
-                            <td class="collapsing center aligned">{{ forloop.counter }}</td>
-                            <td class="collapsing center aligned">
-                                <a href="{% url 'groups:detail' groupname=item.group.name semester=item.semester.semester %}">
-                                    {{ item.group.name }}
-                                </a>
-                            </td>
-                            <td class="collapsing center aligned">{{ item.semester.semester }}</td>
-                            <td>
-                                {% if item.is_ill %}<i class="heart broken red icon"></i>{% endif %}
-                                <a href="{{ item.get_absolute_url }}">{{ item.fullname }}</a>
-                                {% if item.tag %}<div id="tag-label" class="ui small pink label">{{ item.tag }}</div>{% endif %}
-                            </td>
-                                {% if item.money == 'нет' %}
-                                    <td class="collapsing center aligned negative">{{ item.money }}</td>
-                                {% else %}
-                                    <td class="collapsing center aligned">{{ item.money }}</td>
-                                {% endif %}
-
-                                {% if item.basis.name == 'Контракт' %}
-                                    <td class="center aligned negative">{{ item.basis }}</td>
-                                {% elif item.basis.name == 'ИГ' %}
-                                    <td class="center aligned blue">{{ item.basis }}</td>
-                                {% else %}
-                                    <td class="center aligned">{{ item.basis }}</td>
-                                {% endif %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            {% include 'empty_records.html' %}
-        {% endif %}
+		<table id="students-money-table" class="ui selectable celled compact fixed single line table">
+			<!-- data from script -->
+        </table>
     </div>
 </div>
 
 <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/script_students_money.js' %}"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		if ($.fn.DataTable.isDataTable('#students-money-table')) {
+			$('#students-money-table').DataTable().destroy();
+		};
 
-<!-- DataTable -->
-<script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
-
-<script>
-    $(document).ready(function() {
-        let firstRow = $('#students-money thead tr')[0];
-        let secondRow = firstRow.cloneNode(true);
-        firstRow.after(secondRow);
-
-        let filterColumns = $('#students-money thead tr')[0].children;
-        for (let i = 0; i < filterColumns.length; i++) {
-            let inputWidth = filterColumns[i].offsetWidth - 15;
-            if(i != 0) {
-                filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 500px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-            } else {filterColumns[i].innerHTML = ""};
-        };
-
-        document.querySelector('#students-money').style.width = "100%";
-        // DataTable
-        let table = $('#students-money').DataTable({
-            language: {
-                lengthMenu: '_MENU_ записей на страницу',
-                zeroRecords: 'Записей нет...',
-                info: 'Всего записей: _MAX_',
-                infoEmpty: '',
-                infoFiltered: 'Найдено: _TOTAL_',
-                search: '',
-                searchPlaceholder: 'поиск',
-                paginate: {
-                first:    '«',
-                previous: '‹',
-                next:     '›',
-                last:     '»'
-                }
+		const dataTableOptions = {
+			columns: [
+                { title: '<i class="hashtag small icon"></i>' },
+                { title: 'Группа' },
+                { title: 'Семестр' },
+                { title: 'Студент' },
+                { title: 'Стипендия' },
+                { title: 'Форма обучения' },
+            ],
+			language: {
+				lengthMenu: '_MENU_ записей на страницу',
+				zeroRecords: 'Записей нет...',
+				info: 'Всего записей: _MAX_',
+				infoEmpty: '',
+				infoFiltered: 'Найдено: _TOTAL_',
+				search: '',
+				searchPlaceholder: 'поиск',
+				paginate: {
+					first:    '«',
+					previous: '‹',
+					next:     '›',
+					last:     '»'
+				}
+			},
+			lengthMenu: [
+				[20, 50, -1],
+				[20, 50, 'Все']
+			],
+			pageLength: 20,
+            searching: true,
+			autoWidth: false,
+			columnDefs: [
+				{ width: "3%", targets: 0 },
+				{ width: "8%", targets: [1, 2] },
+				{ width: "12%", targets: [4, 5] },
+				{ width: "59%", targets: 3 },
+				{ searchable: false, targets: 0 },
+                { className: 'center aligned', targets: [0, 1, 2, 4, 5] },
+				{
+					targets: 4,
+					createdCell: function(td, cellData, rowData, row, col) {
+						if (cellData.includes('нет')) {
+							$(td).addClass('negative');
+						};
+					}
+				},
+				{
+					targets: 5,
+					createdCell: function(td, cellData, rowData, row, col) {
+						if (cellData.includes('ИГ')) {
+							$(td).addClass('blue');
+						} else if (cellData.includes('Контракт')) {
+							$(td).addClass('negative');
+                        };
+					}
+				},
+			],
+			headerCallback: function(thead, cellData, start, end, display) {
+                $(thead).find('th').addClass('center aligned');
             },
-            lengthMenu: [
-                [20, 50, -1],
-                [20, 50, 'Все']
-            ],
-            pageLength: 20,
-            columnDefs: [
-                { searchable: false, targets: 0 }
-            ],
-        });
+		};
+		var table = $('#students-money-table').DataTable(dataTableOptions);
 
-        // Filter event handler
-        $(table.table().container()).on('keyup', 'thead input', function() {
-            table
-                .column($(this).data('index'))
-                .search(this.value)
-                .draw();
-        });
+		let firstRow = $('#students-money-table thead tr')[0];
+		let secondRow = firstRow.cloneNode(true);
+		firstRow.after(secondRow);
 
-        // Clean filters inputs by double-clicking above the head
-        $(document).on("dblclick",  ".ui.stackable.grid", function() {
-            let inputs = document.getElementsByName("filter");
-            inputs.forEach(e => {
-                e.value = "";
-            });
-            table.search('');
-            table.columns().search('').draw();
-        });
-        changeDatatableInputFont();
-        deletePaddingTopForDatatableSegment();
-    });
+		let filterColumns = $('#students-money-table thead tr')[1].children;
+		for (let i = 0; i < filterColumns.length; i++) {
+			let inputWidth = filterColumns[i].offsetWidth - 60;
+			if(i != 0) {
+				filterColumns[i].innerHTML = `
+												<div class="ui input">
+													<input name="filter" type="text" style="width: ${inputWidth}px" data-index=${i}>
+												</div>
+											`;
+			} else {filterColumns[i].innerHTML = ""};
+		};
+
+		// Filter event handler
+		$(table.table().container()).on('keyup', 'thead input', function() {table
+			.column($(this).data('index'))
+			.search(this.value)
+			.draw();
+		});
+
+		// Clean filters inputs by double-clicking above the head
+		$(document).on("dblclick",  ".ui.stackable.grid", function() {
+			let inputs = document.getElementsByName("filter");
+			inputs.forEach(e => {
+				e.value = "";
+			});
+			table.search('');
+			table.columns().search('').draw();
+		});
+		changeDatatableInputFont();
+		removeSortingLabel('students-money-table');
+
+		$(document).ready(function() {
+			var forms = document.forms;
+			for (let i = 0; i < forms.length; i++) {
+				var formElements = forms[i].elements;
+				for (let j = 0; j < formElements.length; j++) {
+					if (formElements[j].localName == "input" && formElements[j].type == "text") {
+						formElements[j].style.fontFamily = "Hack";
+					};
+				};
+			};
+		});
+	});
 </script>
 
 {% endblock %}

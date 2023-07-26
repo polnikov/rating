@@ -286,10 +286,8 @@ class GraduatesView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class StudentsMoneyListView(LoginRequiredMixin, ListView):
-    model = Student
+class StudentsMoneyListView(LoginRequiredMixin, TemplateView):
     template_name = 'students/students_money.html'
-    queryset = Student.active_objects.select_related('basis', 'group', 'semester')
 
 
 class StudentsDebtsView(LoginRequiredMixin, TemplateView):
