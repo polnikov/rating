@@ -100,18 +100,6 @@
 <script>
    // DataTables
    $(document).ready(function() {
-      let firstRow = $('#subjects-debts thead tr')[0];
-      let secondRow = firstRow.cloneNode(true);
-      firstRow.after(secondRow);
-
-      let filterColumns = $('#subjects-debts thead tr')[0].children;
-      for (let i = 0; i < filterColumns.length; i++) {
-         let inputWidth = filterColumns[i].offsetWidth - 15;
-         if(i != 0) {
-            filterColumns[i].innerHTML = '<div class="ui input">' + '<input name="filter" style="max-width: 100px; width: ' + inputWidth + 'px" type="text" data-index="' + i + '" /></div>';
-         } else {filterColumns[i].innerHTML = ""};
-      };
-
       document.querySelector('#subjects-debts').style.width = "100%";
       // DataTable
       var table = $('#subjects-debts').DataTable({
@@ -144,6 +132,22 @@
          ],
       });
 
+      let firstRow = $('#subjects-debts thead tr')[0];
+		let secondRow = firstRow.cloneNode(true);
+		firstRow.after(secondRow);
+
+		let filterColumns = $('#subjects-debts thead tr')[1].children;
+		for (let i = 0; i < filterColumns.length; i++) {
+			let inputWidth = filterColumns[i].offsetWidth - 60;
+			if(i != 0) {
+				filterColumns[i].innerHTML = `
+												<div class="ui input">
+													<input name="filter" type="text" style="width: ${inputWidth}px" data-index=${i}>
+												</div>
+											`;
+			} else {filterColumns[i].innerHTML = ""};
+		};
+
       // Filter event handler
       $(table.table().container()).on('keyup', 'thead input', function() {
          table
@@ -163,6 +167,7 @@
       });
       changeDatatableInputFont();
       deletePaddingTopForDatatableSegment();
+		removeSortingLabel('subjects-debts');
    });
 </script>
 
