@@ -192,7 +192,7 @@
          </div>
          <div class="ui cards">
             {% for group in group_list %}
-               {% if group.level == 'Бакалавриат' and 'ИС' not in group.name and 'ЗК' not in group.name %}
+               {% if group.level == 'Бакалавриат' and 'ТТ' in group.name or 'ЭЭ' in group.name %}
                   <!-- Card -->
                      <div id="group-cards" class="ui card" style="width: 200px; margin-left: 35px">
                         <div class="content">
