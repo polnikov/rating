@@ -13,7 +13,7 @@ class Group(CommonTimestampModel, CommonArchivedModel):
 
     name = models.CharField(
         verbose_name='Группа',
-        max_length=10,
+        max_length=20,
         unique=True,
     )
     direction = models.CharField(
