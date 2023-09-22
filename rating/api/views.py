@@ -1142,27 +1142,27 @@ def import_subjects(request):
                             zet = re.search(pattern, row[4]).group(0)
                         except AttributeError:
                             errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
-                            break
+                            continue
 
                     is_semester = Semester.objects.filter(id=row[2]).exists()
                     if is_semester:
                         semester = Semester.objects.get(id=row[2])
                     else:
                         errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
-                        break
+                        continue
 
                     is_cathedra = Cathedra.objects.filter(name=row[3]).exists()
                     if is_cathedra:
                         cathedra = Cathedra.objects.get(name=row[3])
                     else:
                         errors.append(f'[{n+1}] ошибка в кафедре или её не существует: {row[3]}')
-                        break
+                        continue
 
-                    form_control = row[1].strip()
+                    form_control = row[1].strip().capitalize()
                     choices = list(map(lambda x: x[0], Subject._meta.get_field('form_control').choices))
                     if form_control not in choices:
                         errors.append(f'[{n+1}] {row[0]} {row[1]} {row[2]} семестр')
-                        break
+                        continue
 
                     if row[0].startswith('"'):
                         subject_name = row[0].replace('"', "")
