@@ -188,14 +188,14 @@ def import_students(request):
                     else:
                         errors.append(f'[{n+1}] {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
                         logger.error(f'|---> Ошибка импорта студента: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-                        break
+                        continue
 
                     # check start date format
                     pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
                     if not re.match(pattern, row[9]):
                         errors.append(f'Неверный формат даты зачисления: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
                         logger.error(f'|---> Неверный формат даты зачисления: {row[1]} {row[2]} {row[3]}, номер: {row[0]}')
-                        break
+                        continue
                     else:
                         # att date transformation
                         start_date = '-'.join(row[9].split('.')[::-1])
@@ -1308,7 +1308,7 @@ def import_groupsubjects(request):
                             if not re.match(pattern, row[5]):
                                 errors.append(f'{n+1}: Неверный формат даты аттестации: {row[0]} [{row[5]}]')
                                 logger.error(f'|---> {n+1}: Неверный формат даты аттестации: {row[0]} [{row[5]}]')
-                                break
+                                continue
                             else:
                                 # att date transformation
                                 att_date = '-'.join(row[5].split('.')[::-1])
