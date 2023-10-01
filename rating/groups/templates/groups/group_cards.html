@@ -192,7 +192,7 @@
          </div>
          <div class="ui cards">
             {% for group in group_list %}
-               {% if group.level == 'Бакалавриат' and 'ТТ' in group.name or group.level == 'Бакалавриат' and 'ЭЭ' in group.name %}
+               {% if group.level == 'Бакалавриат' and 'ТТ' in group.name or group.level == 'Бакалавриат' and 'ЭЭ' in group.name or group.level == 'Бакалавриат' and 'ПИб' in group.name %}
                   <!-- Card -->
                      <div id="group-cards" class="ui card" style="width: 200px; margin-left: 35px">
                         <div class="content">
@@ -207,6 +207,8 @@
                                        yellow
                                     {% elif "ТТб" in group.name %}
                                        red
+                                    {% elif "ПИб" in group.name %}
+                                       brown
                                     {% endif %} 
                                     small circular button" style="font-family: Hack">
                                  {% if group.is_archived %}<i class="archive yellow icon"></i>{% endif %}
