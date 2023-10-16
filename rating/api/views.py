@@ -5,6 +5,7 @@ import logging
 from api import serializers
 from datetime import datetime
 from collections import Counter
+from pathlib import Path
 
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action, api_view
@@ -140,7 +141,7 @@ def import_students(request):
         import_file = request.FILES['import_files'] if request.FILES else False
 
         # checking that the file has been selected and its format is CSV
-        if not import_file or str(import_file).split('.')[-1] != 'csv':
+        if not import_file or not Path(str(import_file)).suffix == '.csv':
             serialized_data.append({'error': 'file_validation', 'success': success})
             logger.error('Файл не выбран или неверный формат')
             return JsonResponse({'data': serialized_data})
@@ -531,7 +532,7 @@ def import_results(request):
 
         # checking file format (xls)
         for import_file in import_files:
-            if str(import_file).split('.')[-1] != 'xls':
+            if not Path(str(import_file)).suffix == '.xls':
                 serialized_data.append({'error': 'file_validation_format', 'success': success})
                 logger.error('Неверный формат файла')
                 return JsonResponse({'data': serialized_data})
@@ -1016,7 +1017,7 @@ def import_cathedras(request):
         import_file = request.FILES['import_files'] if request.FILES else False
 
         # checking that the file has been selected and its format is CSV
-        if not import_file or str(import_file).split('.')[-1] != 'csv':
+        if not import_file or not Path(str(import_file)).suffix == '.csv':
             serialized_data.append({'error': 'file_validation', 'success': success})
             logger.error('Файл не выбран или неверный формат')
             return JsonResponse({'data': serialized_data})
@@ -1122,7 +1123,7 @@ def import_subjects(request):
         import_file = request.FILES['import_files'] if request.FILES else False
 
         # checking that the file has been selected and its format is CSV
-        if not import_file or str(import_file).split('.')[-1] != 'csv':
+        if not import_file or not Path(str(import_file)).suffix == '.csv':
             serialized_data.append({'error': 'file_validation', 'success': success})
             logger.error('Файл не выбран или неверный формат')
             return JsonResponse({'data': serialized_data})
@@ -1280,7 +1281,7 @@ def import_groupsubjects(request):
         import_file = request.FILES['import_files'] if request.FILES else False
 
         # checking that the file has been selected and its format is CSV
-        if not import_file or str(import_file).split('.')[-1] != 'csv':
+        if not import_file or not Path(str(import_file)).suffix == '.csv':
             serialized_data.append({'error': 'file_validation', 'success': success})
             logger.error('Файл не выбран или неверный формат')
             return JsonResponse({'data': serialized_data})
