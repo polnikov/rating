@@ -773,6 +773,7 @@ def import_results(request):
                 logger.info('|---> Запись оценок в БД успешно выполнена')
             except Exception as ex:
                 logger.error(f'|---> Запись оценок из файла {import_file} в БД не удалась', extra={'Exception': ex})
+                logger.error(f'|---> {ex} ')
 
     serialized_data.append({'errors': errors, 'success': success})
     return JsonResponse({'data': serialized_data})
