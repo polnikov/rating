@@ -231,6 +231,7 @@ def import_students(request):
 
         except Exception as students_import_error:
             logger.error(f'[!] |---> Ошибка импорта студентов: {students_import_error}, {errors}', exc_info=True)
+            logger.error(f'|---> Ошибка: {students_import_error}')
 
     serialized_data.append({'errors': errors, 'success': success})
     return JsonResponse({'data': serialized_data})
@@ -666,6 +667,7 @@ def import_results(request):
                         data['marks'].append(st)
 
             # write data to DB
+            logger.info(f'|---> Данные {data}')
             try:
                 logger.info('|---> Запись оценок в БД...')
                 try:
@@ -678,8 +680,10 @@ def import_results(request):
                     subject = Subject.objects.filter(
                         Q(name=data['subject']) &
                         Q(form_control=data['form_control']) &
-                        Q(semester=data['semester'])
+                        Q(semester=data['semester']) &
+                        Q(is_archived=False)
                     )
+                    logger.info(f'|---> Дисциплина {subject}')
                     if len(subject) > 1:
                         subject = Subject.objects.get(
                             Q(name=data['subject']) &
@@ -712,7 +716,7 @@ def import_results(request):
                         subject.save()
 
                 try:
-                    groupsubject = GroupSubject.objects.get(Q(groups=group) & Q(subjects=subject))
+                    groupsubject = GroupSubject.objects.get(Q(groups=group) & Q(subjects=subject) & Q(is_archived=False))
                 except GroupSubject.DoesNotExist:
                     errors.append(f'{import_file}: Ошибка назначения - проверьте, что назначение существует.')
                     logger.error(f'|---> Назначение предмета {subject} группе {group} отсутствует в БД')
@@ -773,7 +777,7 @@ def import_results(request):
                 logger.info('|---> Запись оценок в БД успешно выполнена')
             except Exception as ex:
                 logger.error(f'|---> Запись оценок из файла {import_file} в БД не удалась', extra={'Exception': ex})
-                logger.error(f'|---> {ex} ')
+                logger.error(f'|---> Ошибка: {ex}')
 
     serialized_data.append({'errors': errors, 'success': success})
     return JsonResponse({'data': serialized_data})
@@ -1188,6 +1192,7 @@ def import_subjects(request):
 
         except Exception as subjects_import_error:
             logger.error(f'[!] ---> Ошибка импорта дисциплин: {subjects_import_error}, {errors}', exc_info=True)
+            logger.error(f'|---> Ошибка: {subjects_import_error}')
 
     serialized_data.append({'errors': errors, 'success': success})
     return JsonResponse({'data': serialized_data})
@@ -1346,6 +1351,7 @@ def import_groupsubjects(request):
 
         except Exception as groupsubjects_import_error:
             logger.error(f'[!] |---> Ошибка импорта назначений: {groupsubjects_import_error}, {errors}', exc_info=True)
+            logger.error(f'|---> Ошибка: {groupsubjects_import_error}')
 
     serialized_data.append({'errors': errors, 'success': success})
     return JsonResponse({'data': serialized_data})
