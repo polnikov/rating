@@ -238,11 +238,11 @@ class Student(CommonArchivedModel, CommonTimestampModel):
     def graduate_year(self):
         """Return graduate year of the student."""
         if self.status == Student.Status.GRADUATED:
-            match self.level:
-                case Student.Level.BAC:
-                    return self.start_date + relativedelta(years=4)
-                case Student.Level.MAG:
-                    return self.start_date + relativedelta(years=2)
+            try:
+                year = Result.objects.filter(students__student_id=self.student_id).dates('groupsubject__att_date', 'year', order='ASC')[0]
+                return year
+            except:
+                return '---'
 
     @property
     def money_rate(self):
