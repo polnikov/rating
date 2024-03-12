@@ -27,7 +27,7 @@ class GroupCardsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = Group.objects.filter(is_archived=False).annotate(name_length=Length('name')).values('id', 'name', 'direction', 'profile', 'level', 'code')
-        queryset = queryset.order_by('name_length', 'name')
+        queryset = queryset.order_by('direction', 'profile', 'name_length')
         return queryset
 
 
