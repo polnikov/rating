@@ -1330,7 +1330,6 @@ def import_groupsubjects(request):
                             defaults = {
                                 'groups': group,
                                 'subjects': subject,
-                                'teacher': row[4],
                             }
 
                         if not GroupSubject.objects.filter(groups=group, subjects=subject).exists():
