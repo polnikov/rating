@@ -1310,7 +1310,7 @@ def import_groupsubjects(request):
                         group = Group.objects.get(name=row[3])
 
                         # check att date format
-                        if row[5] != '':
+                        if len(row) > 4:
                             pattern = r'^([0-9]{2})\.([0-9]{2})\.([0-9]{4})$'  # DD.MM.YYYY
                             if not re.match(pattern, row[5]):
                                 errors.append(f'{n+1}: Неверный формат даты аттестации: {row[0]} [{row[5]}]')
