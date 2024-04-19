@@ -1332,7 +1332,7 @@ def import_groupsubjects(request):
                                 'subjects': subject,
                             }
 
-                        if not GroupSubject.objects.filter(groups=group, subjects=subject).exists():
+                        if not GroupSubject.objects.filter(groups=group, subjects=subject, is_archived=False).exists():
                             GroupSubject.objects.create(**defaults)
                         else:
                             errors.append(f'{n+1}: [{row[0]}] уже существует')
